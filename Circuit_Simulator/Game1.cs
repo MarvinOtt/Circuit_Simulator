@@ -4,78 +4,71 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Circuit_Simulator
 {
-    /// <summary>
-    /// This is the main type for your game.
-    /// </summary>
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        #region INPUT
+
+        KeyboardState kb_state, kb_state_old;
+        MouseState mo_state, mo_state_old;
+
+        #endregion
+
+        public static int Screenwidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
+        public static int Screenheight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+
         public Game1()
         {
+            // Graphic Initialization
             graphics = new GraphicsDeviceManager(this);
+            graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            graphics.PreferredBackBufferHeight = Screenheight;
+            graphics.PreferredBackBufferWidth = Screenwidth;
+            graphics.IsFullScreen = false;
+            graphics.SynchronizeWithVerticalRetrace = true;
+            IsFixedTimeStep = false;
+            Window.IsBorderless = true;
+
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            IsMouseVisible = true;
+            var form = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(this.Window.Handle);
+            form.Location = new System.Drawing.Point(0, 0);
 
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            // TODO: use this.Content to load your game content here
+
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// game-specific content.
-        /// </summary>
-        protected override void UnloadContent()
-        {
-            // TODO: Unload any non ContentManager content here
-        }
-
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            kb_state = Keyboard.GetState();
+            mo_state = Mouse.GetState();
 
-            // TODO: Add your update logic here
 
+
+            kb_state_old = kb_state;
+            mo_state_old = mo_state;
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            // TODO: Add your drawing code here
+            
 
             base.Draw(gameTime);
         }
