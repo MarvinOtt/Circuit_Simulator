@@ -58,9 +58,9 @@ namespace Circuit_Simulator
 
 
 
+            base.Update(gameTime);
             kb_state_old = kb_state;
             mo_state_old = mo_state;
-            base.Update(gameTime);
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
