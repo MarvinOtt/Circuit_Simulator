@@ -28,20 +28,16 @@ namespace Circuit_Simulator
 		    Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
 
 			//Toolbar
-			Toolbar = new UI_MultiElement(new Vector2(500, 0));
+			Toolbar = new UI_MultiElement(new Vector2(0, 0));
 			Toolbar.Add_UI_Element(new Button(new Vector2(0, 0), new Point(67, 25), new Point(0, 0), Button_tex, 1));
 		    Toolbar.Add_UI_Element(new Button(new Vector2(67, 0), new Point(67, 25), new Point(67, 0), Button_tex, 1));
 		    Toolbar.Add_UI_Element(new Button(new Vector2(67*2, 0), new Point(67, 25), new Point(67*2, 0), Button_tex, 1));
 		    Toolbar.Add_UI_Element(new Button(new Vector2(67*3, 0), new Point(67, 25), new Point(67*3, 0), Button_tex, 1));
-			Toolbar.UpdateFunctions.Add(delegate ()
+
+            Toolbar.Add_UI_Element(new Button(new Vector2(67*4, 0), new Point(26, 25), new Point(67*4, 0), Button_tex, 1));
+            Toolbar.UpdateFunctions.Add(delegate ()
 		    {
-			    foreach (var element in Toolbar.ui_elements)
-			    {
-				    if (((Button) element).IsActivated)
-				    {
-					    int breaki = 2;
-				    }
-			    }
+                Game1.IsSimulating = ((Button)Toolbar.ui_elements[4]).IsActivated;
 		    });
 	    }
 

@@ -27,16 +27,15 @@ namespace Circuit_Simulator
 			ui_elements.Add(element);
 	    }
 
-	    public void Update()
+	    protected override void UpdateSpecific()
 	    {
-			base.Update();
 		    for (int i = 0; i < ui_elements.Count; ++i)
 		    {
 				ui_elements[i].Update();
 		    }
 	    }
 
-	    public void Draw(SpriteBatch spritebatch)
+	    public override void Draw(SpriteBatch spritebatch)
 	    {
 		    base.Draw(spritebatch);
 		    for (int i = 0; i < ui_elements.Count; ++i)

@@ -24,9 +24,8 @@ namespace Circuit_Simulator
 		    this.config = config;
 	    }
 
-	    public override void Update()
+	    protected override void UpdateSpecific()
 	    {
-		    base.Update();
 			Rectangle hitbox = new Rectangle(absolutpos.ToPoint(), size);
 		    if (config == 2)
 			    IsActivated = false;

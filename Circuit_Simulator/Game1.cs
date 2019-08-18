@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Circuit_Simulator.UI;
+//using Circuit_Simulator.UI;
 
 namespace Circuit_Simulator
 {
@@ -37,6 +37,7 @@ namespace Circuit_Simulator
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        SpriteFont basefont;
 
         #region UI
 
@@ -45,8 +46,6 @@ namespace Circuit_Simulator
         //Textures
         Texture2D Button_Map;
 
-        //Entities
-        Button_Tex Play_Button;
 
         #endregion
 
@@ -56,6 +55,8 @@ namespace Circuit_Simulator
         public static Mouse_States mo_states;
 
         #endregion
+
+        public static bool IsSimulating;
 
         public static int Screenwidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
         public static int Screenheight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
@@ -70,7 +71,7 @@ namespace Circuit_Simulator
             graphics.IsFullScreen = false;
             graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
-            Window.IsBorderless = true;
+            Window.IsBorderless = false;
 
             Content.RootDirectory = "Content";
         }
@@ -87,12 +88,13 @@ namespace Circuit_Simulator
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            basefont = Content.Load<SpriteFont>("basefont");
             Button_Map = Content.Load<Texture2D>("UI\\Project Spritemap");
 
             UI_handler = new UI_Handler(Content);
             UI_handler.Initialize();
 
-            Play_Button = new Button_Tex(Button_Map, new Rectangle(268, 0, 48, 48), new Vector2(100, 100));
+            //Play_Button = new Button_Tex(Button_Map, new Rectangle(268, 0, 48, 48), new Vector2(100, 100));
 
         }
 
@@ -117,6 +119,7 @@ namespace Circuit_Simulator
             spriteBatch.Begin();
 
             UI_handler.Draw(spriteBatch);
+            spriteBatch.DrawString(basefont, IsSimulating.ToString(), new Vector2(100, 100), Color.Red);
 
             //Play_Button.Draw(spriteBatch);
             spriteBatch.End();

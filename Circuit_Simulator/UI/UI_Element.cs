@@ -33,14 +33,20 @@ namespace Circuit_Simulator
 		    DrawFunctions = new List<Action>();
         }
 
-	    public virtual void Update()
+	    public void Update()
 	    {
 		    absolutpos = parent == null ? pos : pos + parent.absolutpos;
+            UpdateSpecific();
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)
 		    {
 			    UpdateFunctions[i]();
 		    }
 	    }
+
+        protected virtual void UpdateSpecific()
+        {
+            // Should be overridden
+        }
 
 	    public virtual void Draw(SpriteBatch spritebatch)
         {
