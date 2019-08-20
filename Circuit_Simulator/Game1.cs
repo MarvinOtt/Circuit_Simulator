@@ -57,6 +57,7 @@ namespace Circuit_Simulator
         #endregion
 
         public static bool IsSimulating;
+        public static Texture2D pixel;
 
         public static int Screenwidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
         public static int Screenheight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
@@ -66,6 +67,8 @@ namespace Circuit_Simulator
             // Graphic Initialization
             graphics = new GraphicsDeviceManager(this);
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
+            this.Window.Position = new Point(0, 0);
+            int s = System.Windows.Forms.SystemInformation.CaptionHeight;
             graphics.PreferredBackBufferHeight = Screenheight;
             graphics.PreferredBackBufferWidth = Screenwidth;
             graphics.IsFullScreen = false;
@@ -79,8 +82,6 @@ namespace Circuit_Simulator
         protected override void Initialize()
         {
             IsMouseVisible = true;
-            var form = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(this.Window.Handle);
-            form.Location = new System.Drawing.Point(0, 0);
 
             base.Initialize();
         }
@@ -90,6 +91,10 @@ namespace Circuit_Simulator
             spriteBatch = new SpriteBatch(GraphicsDevice);
             basefont = Content.Load<SpriteFont>("basefont");
             Button_Map = Content.Load<Texture2D>("UI\\Project Spritemap");
+            pixel = new Texture2D(GraphicsDevice, 1, 1, false, SurfaceFormat.Bgra32);
+            Color[] colors = new Color[1];
+            colors[0] = Color.White;
+            pixel.SetData(colors);
 
             UI_handler = new UI_Handler(Content);
             UI_handler.Initialize();
@@ -120,7 +125,6 @@ namespace Circuit_Simulator
 
             UI_handler.Draw(spriteBatch);
             spriteBatch.DrawString(basefont, IsSimulating.ToString(), new Vector2(100, 100), Color.Red);
-
             //Play_Button.Draw(spriteBatch);
             spriteBatch.End();
 

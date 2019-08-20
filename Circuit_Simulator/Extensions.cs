@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +28,12 @@ namespace Circuit_Simulator
                     return false;
             }
             return true;
+        }
+
+        //Spritebatch
+        public static void DrawFilledRectangle(this SpriteBatch sb, Rectangle rec, Color col)
+        {
+            sb.Draw(Game1.pixel, rec, col);
         }
     }
 }

@@ -17,8 +17,9 @@ namespace Circuit_Simulator
 	    private Texture2D Button_tex;
 
 	    private UI_MultiElement Toolbar;
-
-	    public UI_Handler(ContentManager Content)
+        private UI_MultiElement ButtonMenu1;
+        private UI_MultiElement ButtonMenu2;
+        public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
 	    }
@@ -26,6 +27,7 @@ namespace Circuit_Simulator
 	    public void Initialize()
 	    {
 		    Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
+
 
 			//Toolbar
 			Toolbar = new UI_MultiElement(new Vector2(0, 0));
@@ -39,16 +41,33 @@ namespace Circuit_Simulator
 		    {
                 Game1.IsSimulating = ((Button)Toolbar.ui_elements[4]).IsActivated;
 		    });
-	    }
+
+            //ButtonMenu1
+            ButtonMenu1 = new UI_MultiElement(Toolbar.ui_elements[0].pos);
+            ButtonMenu1.Add_UI_Element(new Button(Toolbar.ui_elements[0].pos + new Vector2(0, 25), new Point(67, 25), new Point(0, 0), Toolbar.ui_elements[0], Game1.pixel, 1));
+            ButtonMenu1.Add_UI_Element(new Button(Toolbar.ui_elements[0].pos + new Vector2(0, 25*2), new Point(67, 25), new Point(0, 0), Toolbar.ui_elements[0], Game1.pixel, 1));
+            ButtonMenu1.Add_UI_Element(new Button(Toolbar.ui_elements[0].pos + new Vector2(0, 25*3), new Point(67, 25), new Point(0, 0), Toolbar.ui_elements[0], Game1.pixel, 1));
+
+            ButtonMenu2 = new UI_MultiElement(Toolbar.ui_elements[1].pos);
+            ButtonMenu1.Add_UI_Element(new Button(Toolbar.ui_elements[1].pos + new Vector2(0, 25), new Point(67, 25), new Point(0, 0), Toolbar.ui_elements[1], Game1.pixel, 1));
+            ButtonMenu1.Add_UI_Element(new Button(Toolbar.ui_elements[1].pos + new Vector2(0, 25*2), new Point(67, 25), new Point(0, 0), Toolbar.ui_elements[1], Game1.pixel, 1));
+            ButtonMenu1.Add_UI_Element(new Button(Toolbar.ui_elements[1].pos + new Vector2(0, 25*3), new Point(67, 25), new Point(0, 0), Toolbar.ui_elements[1], Game1.pixel, 1));
+
+
+
+        }
 
 	    public void Update()
 	    {
 			Toolbar.Update();
+            ButtonMenu1.Update();
+            
 	    }
 
 	    public void Draw(SpriteBatch spritebatch)
 	    {
 			Toolbar.Draw(spritebatch);
+            ButtonMenu1.Draw(spritebatch);
 	    }
     }
 }
