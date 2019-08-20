@@ -51,6 +51,7 @@ namespace Circuit_Simulator
             return !IsKeyToggleDown(key);
         }
     }
+
     public class Game1 : Game
     {
         public static GraphicsDeviceManager graphics;
@@ -89,7 +90,7 @@ namespace Circuit_Simulator
         {
             graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
             graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
-            // Not Applying Graphics here because when resizing happens, ApplyChnages would be called too often which could cause a crash
+            // Not Applying Graphics here because when resizing happens, ApplyChanges would be called too often which could cause a crash
             // When resizing happens, the Update Method is not going to be called so long until resizing is finished, and therefore Apply Changes gets only called once
             GraphicsNeedApplyChanges = true;
         }

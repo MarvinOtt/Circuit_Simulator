@@ -10,22 +10,23 @@ namespace Circuit_Simulator
 {
     public class UI_Element
     {
-	    public Vector2 pos;
-	    public Vector2 absolutpos;
+	    public Point pos;
+	    public Point absolutpos;
 	    public byte ActivationStates;
+        public bool GetsDrawn = true, GetsUpdated = true;
         public UI_Element parent;
-	    public List<Action> UpdateFunctions;
+        public UI_Element child;
+        public List<Action> UpdateFunctions;
 	    public List<Action> DrawFunctions;
 
-        public UI_Element(Vector2 pos)
+        public UI_Element(Point pos)
 	    {
 		    this.pos = pos;
-		    this.parent = null;
 			UpdateFunctions = new List<Action>();
 		    DrawFunctions = new List<Action>();
         }
 
-	    public UI_Element(Vector2 pos, UI_Element parent)
+	    public UI_Element(Point pos, UI_Element parent)
 	    {
 		    this.pos = pos;
 		    this.parent = parent;
@@ -36,7 +37,11 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
 		    absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            UpdateSpecific();
+            if (GetsUpdated)
+            {
+                UpdateSpecific();
+                child?.Update();
+            }
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)
 		    {
 			    UpdateFunctions[i]();
@@ -48,12 +53,22 @@ namespace Circuit_Simulator
             // Should be overridden
         }
 
-	    public virtual void Draw(SpriteBatch spritebatch)
+	    public void Draw(SpriteBatch spritebatch)
         {
+            if (GetsDrawn)
+            {
+                DrawSpecific(spritebatch);
+                child?.Draw(spritebatch);
+            }
 		    for (int i = 0; i < DrawFunctions.Count; ++i)
 		    {
 			    DrawFunctions[i]();
             }
 	    }
+
+        public virtual void DrawSpecific(SpriteBatch spritebatch)
+        {
+            // Should be overridden
+        }
     }
 }

@@ -12,11 +12,11 @@ namespace Circuit_Simulator
     {
 	    public List<UI_Element> ui_elements;
 
-        public UI_MultiElement(Vector2 pos) : base(pos)
+        public UI_MultiElement(Point pos) : base(pos)
         {
 			ui_elements = new List<UI_Element>();
         }
-	    public UI_MultiElement(Vector2 pos, UI_Element parent) : base(pos, parent)
+	    public UI_MultiElement(Point pos, UI_Element parent) : base(pos, parent)
 	    {
 		    ui_elements = new List<UI_Element>();
 	    }
@@ -35,9 +35,8 @@ namespace Circuit_Simulator
 		    }
 	    }
 
-	    public override void Draw(SpriteBatch spritebatch)
+	    public override void DrawSpecific(SpriteBatch spritebatch)
 	    {
-		    base.Draw(spritebatch);
 		    for (int i = 0; i < ui_elements.Count; ++i)
 		    {
 			    ui_elements[i].Draw(spritebatch);
