@@ -112,9 +112,10 @@ namespace Circuit_Simulator
             //Play_Button.Update();
             UI_handler.Update();
 
-            base.Update(gameTime);
+
             kb_state_old = kb_state;
-            mo_states.Old = mo_states.New;
+            mo_state_old = mo_state;
+            base.Update(gameTime);
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
