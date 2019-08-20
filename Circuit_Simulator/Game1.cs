@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System;
 //using Circuit_Simulator.UI;
 
 namespace Circuit_Simulator
@@ -31,13 +32,32 @@ namespace Circuit_Simulator
         {
             return New.RightButton == ButtonState.Released && Old.RightButton == ButtonState.Pressed;
         }
+    }
+    public struct Keyboard_States
+    {
+        public KeyboardState New, Old;
 
+        public Keyboard_States(KeyboardState New, KeyboardState Old)
+        {
+            this.New = New;
+            this.Old = Old;
+        }
+        public bool IsKeyToggleDown(Keys key)
+        {
+            return New.IsKeyDown(key) && Old.IsKeyUp(key);
+        }
+        public bool IsKeyToggleUp(Keys key)
+        {
+            return !IsKeyToggleDown(key);
+        }
     }
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
+        public static GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteFont basefont;
+        public static System.Windows.Forms.Form form;
+        public static event EventHandler GraphicsChanged;
 
         #region UI
 
@@ -51,23 +71,42 @@ namespace Circuit_Simulator
 
         #region INPUT
 
-        public static KeyboardState kb_state, kb_state_old;
+        public static Keyboard_States kb_states;
         public static Mouse_States mo_states;
+
+        private bool GraphicsNeedApplyChanges;
 
         #endregion
 
         public static bool IsSimulating;
 
-        public static int Screenwidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width;
-        public static int Screenheight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height;
+        public static int Screenwidth;
+        public static int Screenheight;
+
+        // Gets called everytime the Windows Size gets changed
+        void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+            graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+            // Not Applying Graphics here because when resizing happens, ApplyChnages would be called too often which could cause a crash
+            // When resizing happens, the Update Method is not going to be called so long until resizing is finished, and therefore Apply Changes gets only called once
+            GraphicsNeedApplyChanges = true;
+        }
+
+        public void UpdateEverythingOfGraphics(object sender, EventArgs e)
+        {
+            Screenwidth = graphics.PreferredBackBufferWidth;
+            Screenheight = graphics.PreferredBackBufferHeight;
+        }
 
         public Game1()
         {
             // Graphic Initialization
+            GraphicsChanged += UpdateEverythingOfGraphics;
             graphics = new GraphicsDeviceManager(this);
             graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            graphics.PreferredBackBufferHeight = Screenheight;
-            graphics.PreferredBackBufferWidth = Screenwidth;
+            graphics.PreferredBackBufferWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - 100;
+            graphics.PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height - 100;
             graphics.IsFullScreen = false;
             graphics.SynchronizeWithVerticalRetrace = true;
             IsFixedTimeStep = false;
@@ -79,9 +118,14 @@ namespace Circuit_Simulator
         protected override void Initialize()
         {
             IsMouseVisible = true;
-            var form = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(this.Window.Handle);
+            form = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(this.Window.Handle);
             form.Location = new System.Drawing.Point(0, 0);
+            form.MaximizeBox = true;
+            form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
+            form.Resize += Window_ClientSizeChanged;
 
+            form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            GraphicsChanged(null, EventArgs.Empty);
             base.Initialize();
         }
 
@@ -94,22 +138,44 @@ namespace Circuit_Simulator
             UI_handler = new UI_Handler(Content);
             UI_handler.Initialize();
 
-            //Play_Button = new Button_Tex(Button_Map, new Rectangle(268, 0, 48, 48), new Vector2(100, 100));
-
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            kb_state = Keyboard.GetState();
+            //----------------//
+            // HANDLING INPUT //
+            //----------------//
+            kb_states.New = Keyboard.GetState();
             mo_states.New = Mouse.GetState();
 
-            //Play_Button.Update();
+            //--------------------------------------------//
+            // HANDLING EVERYTHING ABOUT GRAPHICS CHANGES //
+            //--------------------------------------------//
+            if (GraphicsNeedApplyChanges)
+            {
+                graphics.ApplyChanges();
+                GraphicsNeedApplyChanges = false;
+                GraphicsChanged(null, EventArgs.Empty);
+            }
+             
+            //-------------------------//
+            // HANDLING USER INTERFACE //
+            //-------------------------//
             UI_handler.Update();
 
+            //----------------------//
+            // BEGIN OF MAIN UPDATE //
+            //----------------------//
 
-            kb_state_old = kb_state;
-            mo_state_old = mo_state;
+
+
+            //--------------------//
+            // END OF MAIN UPDATE //
+            //--------------------//
+
+            kb_states.Old = kb_states.New;
+            mo_states.Old = mo_states.New;
             base.Update(gameTime);
         }
 
@@ -120,7 +186,9 @@ namespace Circuit_Simulator
             spriteBatch.Begin();
 
             UI_handler.Draw(spriteBatch);
-            spriteBatch.DrawString(basefont, IsSimulating.ToString(), new Vector2(100, 100), Color.Red);
+
+            spriteBatch.DrawString(basefont, Screenwidth.ToString(), new Vector2(100, 100), Color.Red);
+            spriteBatch.DrawString(basefont, Screenheight.ToString(), new Vector2(100, 130), Color.Red);
 
             //Play_Button.Draw(spriteBatch);
             spriteBatch.End();
