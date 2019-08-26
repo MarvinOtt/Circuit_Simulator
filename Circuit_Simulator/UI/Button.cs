@@ -13,7 +13,7 @@ namespace Circuit_Simulator
     {
 	    public Texture2D tex;
 	    public Point size, tex_pos;
-	    public bool IsHovered, IsActivated;
+	    public bool IsHovered, IsActivated, GotActivated;
 	    private byte config;
 
 
@@ -31,13 +31,18 @@ namespace Circuit_Simulator
 	    protected override void UpdateSpecific()
 	    {
 			Rectangle hitbox = new Rectangle(absolutpos, size);
+            GotActivated = false;
 		    if (config == 2)
 			    IsActivated = false;
 		    if (hitbox.Contains(Game1.mo_states.New.Position))
 		    {
 			    IsHovered = true;
 			    if (Game1.mo_states.IsLeftButtonToggleOn())
-				    IsActivated ^= true;
+                {
+                    IsActivated ^= true;
+                    if (IsActivated)
+                        GotActivated = true;
+                }
 		    }
 		    else
 			    IsHovered = false;
