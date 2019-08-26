@@ -105,12 +105,14 @@ namespace Circuit_Simulator
         {
             // Graphic Initialization
             GraphicsChanged += UpdateEverythingOfGraphics;
-            graphics = new GraphicsDeviceManager(this);
-            graphics.GraphicsProfile = GraphicsProfile.HiDef;
-            graphics.PreferredBackBufferWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - 100;
-            graphics.PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height - 100;
-            graphics.IsFullScreen = false;
-            graphics.SynchronizeWithVerticalRetrace = true;
+            graphics = new GraphicsDeviceManager(this)
+            {
+                GraphicsProfile = GraphicsProfile.HiDef,
+                PreferredBackBufferWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - 100,
+                PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height - 100,
+                IsFullScreen = false,
+                SynchronizeWithVerticalRetrace = true
+            };
             IsFixedTimeStep = false;
             Window.IsBorderless = false;
 
