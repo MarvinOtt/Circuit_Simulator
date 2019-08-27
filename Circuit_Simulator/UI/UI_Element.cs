@@ -10,25 +10,26 @@ namespace Circuit_Simulator
 {
     public class UI_Element
     {
-	    public Point pos;
+	    public Point pos, size;
 	    public Point absolutpos;
-	    public byte ActivationStates;
         public bool GetsDrawn = true, GetsUpdated = true;
         public UI_Element parent;
         public UI_Element child;
         public List<Action> UpdateFunctions;
 	    public List<Action> DrawFunctions;
 
-        public UI_Element(Point pos)
+        public UI_Element(Point pos, Point size)
 	    {
 		    this.pos = pos;
-			UpdateFunctions = new List<Action>();
+            this.size = size;
+            UpdateFunctions = new List<Action>();
 		    DrawFunctions = new List<Action>();
         }
 
-	    public UI_Element(Point pos, UI_Element parent)
+	    public UI_Element(Point pos, Point size, UI_Element parent)
 	    {
 		    this.pos = pos;
+            this.size = size;
 		    this.parent = parent;
 		    UpdateFunctions = new List<Action>();
 		    DrawFunctions = new List<Action>();

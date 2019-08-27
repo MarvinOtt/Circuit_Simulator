@@ -10,11 +10,10 @@ namespace Circuit_Simulator.UI
 {
     public class Button_Menu : UI_Element
     {
-        public Point size;
         public bool IsHovered, IsActivated;
         private byte config;
 
-        public Button_Menu(Point pos, Point size, byte config) : base(pos)
+        public Button_Menu(Point pos, Point size, byte config) : base(pos, size)
         {
             this.size = size;
             this.config = config;

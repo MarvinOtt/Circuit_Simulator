@@ -50,6 +50,7 @@
     <Compile Include="UI\UI_Element.cs" />
     <Compile Include="UI\UI_Handler.cs" />
     <Compile Include="UI\UI_MultiElement.cs" />
+    <Compile Include="UI\UI_Window.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

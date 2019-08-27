@@ -12,11 +12,15 @@ namespace Circuit_Simulator
     {
 	    public List<UI_Element> ui_elements;
 
-        public UI_MultiElement(Point pos) : base(pos)
+        public UI_MultiElement(Point pos) : base(pos, Point.Zero)
         {
 			ui_elements = new List<UI_Element>();
         }
-	    public UI_MultiElement(Point pos, UI_Element parent) : base(pos, parent)
+        public UI_MultiElement(Point pos, Point size) : base(pos, size)
+        {
+            ui_elements = new List<UI_Element>();
+        }
+        public UI_MultiElement(Point pos, Point size, UI_Element parent, Color bgc) : base(pos, size, parent)
 	    {
 		    ui_elements = new List<UI_Element>();
 	    }

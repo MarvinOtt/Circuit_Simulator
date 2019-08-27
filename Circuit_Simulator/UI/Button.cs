@@ -12,16 +12,15 @@ namespace Circuit_Simulator
     public class Button : UI_Element
     {
 	    public Texture2D tex;
-	    public Point size, tex_pos;
+	    public Point tex_pos;
 	    public bool IsHovered, IsActivated, GotActivated;
 	    private byte config;
 
 
 
 
-        public Button(Point pos, Point size, Point tex_pos, Texture2D tex, byte config) : base(pos)
+        public Button(Point pos, Point size, Point tex_pos, Texture2D tex, byte config) : base(pos, size)
         {
-            this.size = size;
             this.tex = tex;
             
             this.tex_pos = tex_pos;
