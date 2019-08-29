@@ -19,12 +19,13 @@ namespace Circuit_Simulator
 	    public ContentManager Content;
 
 	    private Texture2D Button_tex;
+        public static bool UI_Element_Pressed;
         static int buttonheight = 25;
         static int buttonwidth = 67;
         static int sqarebuttonwidth = 25;
 
 	    private UI_MultiElement Toolbar;
-        private UI_MultiElement ButtonMenu_File, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
+        private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         private UI_MultiElement ComponentBox;
         public UI_Handler(ContentManager Content)
 	    {
@@ -36,16 +37,18 @@ namespace Circuit_Simulator
             Game1.GraphicsChanged += Window_Graphics_Changed;
             Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
 
-           
+
 
             //Toolbar
             Toolbar = new UI_MultiElement(new Point(0, 0));
+            Toolbar.size = new Point(buttonwidth * 4, buttonheight);
             Toolbar.Add_UI_Element(new Button(new Point(0, 0), new Point(buttonwidth, buttonheight), new Point(0, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 2, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth * 2, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 3, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth * 3, 0), Button_tex, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 1, 0), new Point(buttonwidth, buttonheight), new Point(318, 0), Button_tex, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 2, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth, 0), Button_tex, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 3, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth * 2, 0), Button_tex, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 4, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth * 3, 0), Button_tex, 1));
 
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 4, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 5, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
 
             //ButtonMenu1
             ButtonMenu_File = new UI_MultiElement(new Point(0, 25));
@@ -55,23 +58,33 @@ namespace Circuit_Simulator
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
 
+            ButtonMenu_View = new UI_MultiElement(new Point(0, 25));
+            ButtonMenu_View.parent = Toolbar.ui_elements[1];
+            Toolbar.ui_elements[1].child = ButtonMenu_View;
+            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate (){
+                if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated) ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
+            });
+            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
+
             ButtonMenu_Config = new UI_MultiElement(new Point(0, 25));
-            ButtonMenu_Config.parent = Toolbar.ui_elements[1];
-            Toolbar.ui_elements[1].child = ButtonMenu_Config;
+            ButtonMenu_Config.parent = Toolbar.ui_elements[2];
+            Toolbar.ui_elements[2].child = ButtonMenu_Config;
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
 
             ButtonMenu_Tools = new UI_MultiElement(new Point(0, 25));
-            ButtonMenu_Tools.parent = Toolbar.ui_elements[2];
-            Toolbar.ui_elements[2].child = ButtonMenu_Tools;
+            ButtonMenu_Tools.parent = Toolbar.ui_elements[3];
+            Toolbar.ui_elements[3].child = ButtonMenu_Tools;
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
 
             ButtonMenu_Help = new UI_MultiElement(new Point(0, 25));
-            ButtonMenu_Help.parent = Toolbar.ui_elements[3];
-            Toolbar.ui_elements[3].child = ButtonMenu_Help;
+            ButtonMenu_Help.parent = Toolbar.ui_elements[4];
+            Toolbar.ui_elements[4].child = ButtonMenu_Help;
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
@@ -86,8 +99,8 @@ namespace Circuit_Simulator
             });
 
             //Configs for Main Toolbar Buttons
-            UI_MultiElement[] toolbar_menus = new UI_MultiElement[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
-            for (int i = 0; i < 4; ++i)
+            UI_MultiElement[] toolbar_menus = new UI_MultiElement[] { ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
+            for (int i = 0; i < 5; ++i)
             {
                 int ii = i;
                 Toolbar.ui_elements[i].UpdateFunctions.Add(delegate ()
@@ -123,8 +136,9 @@ namespace Circuit_Simulator
 
 	    public void Update()
 	    {
-            ComponentBox.Update();
+            UI_Element_Pressed = false;
             Toolbar.Update();
+            ComponentBox.Update();
         }
 
 	    public void Draw(SpriteBatch spritebatch)

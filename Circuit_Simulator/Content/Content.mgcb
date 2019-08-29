@@ -16,8 +16,21 @@
 #begin basefont.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
 /processorParam:TextureFormat=Compressed
 /build:basefont.spritefont
+
+#begin fullhdtest.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:fullhdtest.png
 
 #begin UI/but_test.png
 /importer:TextureImporter
@@ -43,7 +56,7 @@
 /processorParam:TextureFormat=Color
 /build:UI/Project Spritemap.png
 
-#begin fullhdtest.png
+#begin UI/Window_SM.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -53,5 +66,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:fullhdtest.png
+/build:UI/Window_SM.png
 

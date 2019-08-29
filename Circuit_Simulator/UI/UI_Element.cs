@@ -37,11 +37,22 @@ namespace Circuit_Simulator
 
 	    public void Update()
 	    {
+            
 		    absolutpos = parent == null ? pos : pos + parent.absolutpos;
+            if(parent != null)
+            {
+                if (pos.X < 0)
+                    absolutpos.X += parent.size.X;
+                if (pos.Y < 0)
+                    absolutpos.Y += parent.size.Y;
+            }
             if (GetsUpdated)
             {
-                UpdateSpecific();
+                if(!UI_Handler.UI_Element_Pressed)
+                    UpdateSpecific();
                 child?.Update();
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
+                    UI_Handler.UI_Element_Pressed = true;
             }
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)
 		    {

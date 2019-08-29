@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -55,10 +56,12 @@ namespace Circuit_Simulator
     public class Game1 : Game
     {
         public static GraphicsDeviceManager graphics;
+        public static ContentManager content;
         SpriteBatch spriteBatch;
         SpriteFont basefont;
         public static System.Windows.Forms.Form form;
         public static event EventHandler GraphicsChanged;
+        
 
         #region UI
 
@@ -121,6 +124,7 @@ namespace Circuit_Simulator
 
         protected override void Initialize()
         {
+            content = Content;
             IsMouseVisible = true;
             form = (System.Windows.Forms.Form)System.Windows.Forms.Control.FromHandle(this.Window.Handle);
             form.Location = new System.Drawing.Point(0, 0);
