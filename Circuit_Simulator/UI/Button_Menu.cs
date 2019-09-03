@@ -51,11 +51,11 @@ namespace Circuit_Simulator.UI
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.main_Hover_Col);
 
             spritebatch.End();
-            spritebatch.Begin(SpriteSortMode.Deferred, null, SamplerState.AnisotropicClamp, null, null, null, Matrix.Identity);
+            spritebatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearClamp, null, null, null, Matrix.Identity);
             spritebatch.DrawString(font, Title, new Vector2(absolutpos.X + 16, absolutpos.Y + size.Y / 2 - Title_height / 2), Color.White);
             spritebatch.End();
             spritebatch.Begin();
-            /*if (!IsHovered && !IsActivated)                                                                                 //PassiveState
+            /*if (!IsHovered && !IsActivated)                                                                               //PassiveState
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.main_BG_Col);
             else if (IsHovered && !IsActivated)                                                                             //Hover
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.Red);
