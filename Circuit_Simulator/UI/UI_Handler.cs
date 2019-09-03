@@ -23,8 +23,10 @@ namespace Circuit_Simulator
         static int buttonheight = 25;
         static int buttonwidth = 67;
         static int sqarebuttonwidth = 25;
+        public static Color main_BG_Col = new Color(new Vector3(0.075f));
+        public static Color main_Hover_Col = new Color(new Vector3(0.175f));
 
-	    private UI_MultiElement Toolbar;
+        private UI_MultiElement Toolbar;
         private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         private UI_MultiElement ComponentBox;
         public UI_Handler(ContentManager Content)
@@ -51,43 +53,43 @@ namespace Circuit_Simulator
             Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 5, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
 
             //ButtonMenu1
-            ButtonMenu_File = new UI_MultiElement(new Point(0, 25));
+            ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_File.parent = Toolbar.ui_elements[0];
             Toolbar.ui_elements[0].child = ButtonMenu_File;
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_View = new UI_MultiElement(new Point(0, 25));
+            ButtonMenu_View = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_View.parent = Toolbar.ui_elements[1];
             Toolbar.ui_elements[1].child = ButtonMenu_View;
-            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Component Box", 2));
             ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate (){
                 if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated) ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
             });
-            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Icon Hotbar", 2));
+            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_Config = new UI_MultiElement(new Point(0, 25));
+            ButtonMenu_Config = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_Config.parent = Toolbar.ui_elements[2];
             Toolbar.ui_elements[2].child = ButtonMenu_Config;
-            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_Tools = new UI_MultiElement(new Point(0, 25));
+            ButtonMenu_Tools = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_Tools.parent = Toolbar.ui_elements[3];
             Toolbar.ui_elements[3].child = ButtonMenu_Tools;
-            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_Help = new UI_MultiElement(new Point(0, 25));
+            ButtonMenu_Help = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_Help.parent = Toolbar.ui_elements[4];
             Toolbar.ui_elements[4].child = ButtonMenu_Help;
-            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), 2));
-            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), 2));
+            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
             //Componentbox
             ComponentBox = new UI_Window(new Point(0, 25), new Point(buttonwidth * 3, 500), "ComponentBox");

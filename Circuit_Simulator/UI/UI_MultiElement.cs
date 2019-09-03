@@ -28,7 +28,11 @@ namespace Circuit_Simulator
         public void Add_UI_Element(UI_Element element)
 	    {
 		    element.parent = this;
-			ui_elements.Add(element);
+            if (element.pos.X + element.size.X > size.X)
+                size.X = element.pos.X + element.size.X;
+            if (element.pos.Y + element.size.Y > size.Y)
+                size.Y = element.pos.Y + element.size.Y;
+            ui_elements.Add(element);
 	    }
 
 	    protected override void UpdateSpecific()
