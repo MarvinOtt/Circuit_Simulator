@@ -28,6 +28,7 @@ namespace Circuit_Simulator
 
         private UI_MultiElement Toolbar;
         private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
+        UI_MultiElement[] toolbar_menus;
         private UI_MultiElement ComponentBox;
         public UI_Handler(ContentManager Content)
 	    {
@@ -54,15 +55,15 @@ namespace Circuit_Simulator
 
             //ButtonMenu1
             ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
-            ButtonMenu_File.parent = Toolbar.ui_elements[0];
-            Toolbar.ui_elements[0].child = ButtonMenu_File;
+            //ButtonMenu_File.parent = Toolbar.ui_elements[0];
+            //Toolbar.ui_elements[0].child = ButtonMenu_File;
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Save", 2));
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Save as", 2));
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_View = new UI_TB_Dropdown(new Point(0, 25));
-            ButtonMenu_View.parent = Toolbar.ui_elements[1];
-            Toolbar.ui_elements[1].child = ButtonMenu_View;
+            ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Point(0, 25));
+            //ButtonMenu_View.parent = Toolbar.ui_elements[1];
+            //Toolbar.ui_elements[1].child = ButtonMenu_View;
             ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Component Box", 2));
             ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate (){
                 if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated) ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
@@ -70,23 +71,23 @@ namespace Circuit_Simulator
             ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Icon Hotbar", 2));
             ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_Config = new UI_TB_Dropdown(new Point(0, 25));
-            ButtonMenu_Config.parent = Toolbar.ui_elements[2];
-            Toolbar.ui_elements[2].child = ButtonMenu_Config;
+            ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Point(0, 25));
+            //ButtonMenu_Config.parent = Toolbar.ui_elements[2];
+            //Toolbar.ui_elements[2].child = ButtonMenu_Config;
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_Tools = new UI_TB_Dropdown(new Point(0, 25));
-            ButtonMenu_Tools.parent = Toolbar.ui_elements[3];
-            Toolbar.ui_elements[3].child = ButtonMenu_Tools;
+            ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Point(0, 25));
+            //ButtonMenu_Tools.parent = Toolbar.ui_elements[3];
+            //Toolbar.ui_elements[3].child = ButtonMenu_Tools;
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
-            ButtonMenu_Help = new UI_TB_Dropdown(new Point(0, 25));
-            ButtonMenu_Help.parent = Toolbar.ui_elements[4];
-            Toolbar.ui_elements[4].child = ButtonMenu_Help;
+            ButtonMenu_Help = new UI_TB_Dropdown(Toolbar.ui_elements[4].pos + new Point(0, 25));
+            //ButtonMenu_Help.parent = Toolbar.ui_elements[4];
+            //Toolbar.ui_elements[4].child = ButtonMenu_Help;
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
@@ -101,16 +102,18 @@ namespace Circuit_Simulator
             });
 
             //Configs for Main Toolbar Buttons
-            UI_MultiElement[] toolbar_menus = new UI_MultiElement[] { ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
+            toolbar_menus = new UI_MultiElement[] { ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
             for (int i = 0; i < 5; ++i)
             {
                 int ii = i;
-                Toolbar.ui_elements[i].UpdateFunctions.Add(delegate ()
+                toolbar_menus[i].UpdateFunctions.Add(delegate ()
                 {
                     Button cur = (Button)Toolbar.ui_elements[ii];
                     toolbar_menus[ii].GetsDrawn = toolbar_menus[ii].GetsUpdated = cur.IsActivated;
                     // Deactivate current active button when something else got pressed
-                    if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOn() && !(new Rectangle(cur.absolutpos, new Point(cur.size.X, cur.size.Y + ((UI_MultiElement)cur.child).ui_elements.Sum(x => ((Button_Menu)x).size.Y))).Contains(Game1.mo_states.New.Position)))
+                    bool IsInOther = new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
+                    IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(Game1.mo_states.New.Position);
+                    if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOn() && !IsInOther)
                         cur.IsActivated = false;
                 });
             }
@@ -139,14 +142,20 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
             UI_Element_Pressed = false;
-            Toolbar.Update();
+
+            for (int i = 0; i < toolbar_menus.Length; ++i)
+                toolbar_menus[i].Update();
             ComponentBox.Update();
+            Toolbar.Update();
+            
         }
 
 	    public void Draw(SpriteBatch spritebatch)
 	    {
-            ComponentBox.Draw(spritebatch);
             Toolbar.Draw(spritebatch);
+            ComponentBox.Draw(spritebatch);
+            for (int i = 0; i < toolbar_menus.Length; ++i)
+                toolbar_menus[i].Draw(spritebatch);
         }
     }
 }
