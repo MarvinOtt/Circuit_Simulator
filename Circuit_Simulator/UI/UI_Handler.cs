@@ -56,8 +56,8 @@ namespace Circuit_Simulator
             ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_File.parent = Toolbar.ui_elements[0];
             Toolbar.ui_elements[0].child = ButtonMenu_File;
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Save", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Save as", 2));
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
             ButtonMenu_View = new UI_TB_Dropdown(new Point(0, 25));
