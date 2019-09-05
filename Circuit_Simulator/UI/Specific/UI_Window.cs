@@ -11,11 +11,13 @@ namespace Circuit_Simulator.UI
 {
     class UI_Window : UI_MultiElement
     {
-        Color BackgroundColor;
-        Color BorderColor;
+        static Color BackgroundColor = new Color(new Vector3(0.15f));
+        static Color BorderColor = new Color(new Vector3(0.45f));
         string Title;
         static Texture2D tex;
+        static int headheight = 20;
         bool IsGrab;
+        Point Grabpos;
 
         public UI_Window(Point pos, Point size, string Title) : base(pos, size)
         {
@@ -24,8 +26,8 @@ namespace Circuit_Simulator.UI
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
             Add_UI_Element(new Button(new Point(-18, 2), new Point(16), new Point(0), tex, 2)); //X Button
            
-            BackgroundColor = new Color(new Vector3(0.15f)); 
-            BorderColor = new Color(new Vector3(0.45f));
+            
+          
         }
 
 
@@ -35,25 +37,32 @@ namespace Circuit_Simulator.UI
         {
             if(((Button)ui_elements[0]).IsActivated)
                 GetsUpdated = GetsDrawn = false;
+            // Handling Draging of Window
             Rectangle Grabbox = new Rectangle(absolutpos, new Point(size.X - ui_elements[0].size.X - 4, ui_elements[0].size.Y + 4));
-            if (Grabbox.Contains(Game1.mo_states.Old.Position) && Game1.mo_states.IsLeftButtonToggleOn())
+            if (Grabbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
             {
                 IsGrab = true;
+                Grabpos = Game1.mo_states.New.Position - pos;
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
             }
-            else if (Grabbox.Contains(Game1.mo_states.Old.Position) && Game1.mo_states.IsLeftButtonToggleOff())
+            if (IsGrab && Game1.mo_states.IsLeftButtonToggleOff())
             {
                 IsGrab = false;
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             }
             if(IsGrab)
             {
-                Point dif = Game1.mo_states.New.Position - Game1.mo_states.Old.Position;
-                pos += dif;
-                absolutpos += dif;
+                pos = Game1.mo_states.New.Position - Grabpos;
             }
-            
-
+            if (pos.X < 0)
+                pos.X = 0;
+            if (pos.X + size.X > Game1.Screenwidth)
+                pos.X = Game1.Screenwidth - size.X;
+            if (pos.Y < 0)
+                pos.Y = 0;
+            if (pos.Y + headheight > Game1.Screenheight)
+                pos.Y = Game1.Screenheight - headheight;
+            absolutpos = pos;
 
 
             base.UpdateSpecific();

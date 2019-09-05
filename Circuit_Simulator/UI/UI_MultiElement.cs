@@ -25,7 +25,7 @@ namespace Circuit_Simulator
 		    ui_elements = new List<UI_Element>();
 	    }
 
-        public void Add_UI_Element(UI_Element element)
+        public virtual void Add_UI_Element(UI_Element element)
 	    {
 		    element.parent = this;
             if (element.pos.X + element.size.X > size.X)

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Circuit_Simulator.UI;
+using Circuit_Simulator.UI.Specific;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,6 +29,7 @@ namespace Circuit_Simulator
 
         private UI_MultiElement Toolbar;
         private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
+        private UI_QuickHBElement QickHotbar;
         UI_MultiElement[] toolbar_menus;
         private UI_MultiElement ComponentBox;
         public UI_Handler(ContentManager Content)
@@ -53,17 +55,14 @@ namespace Circuit_Simulator
 
             Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 5, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
 
-            //ButtonMenu1
+            // Initializing Menus for Toolbar
             ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
-            //ButtonMenu_File.parent = Toolbar.ui_elements[0];
-            //Toolbar.ui_elements[0].child = ButtonMenu_File;
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Save", 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Save as", 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Save As", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Open", 2));
+            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 3), new Point(buttonwidth, buttonheight), "Open Recent", 2));
 
             ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Point(0, 25));
-            //ButtonMenu_View.parent = Toolbar.ui_elements[1];
-            //Toolbar.ui_elements[1].child = ButtonMenu_View;
             ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Component Box", 2));
             ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate (){
                 if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated) ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
@@ -72,25 +71,23 @@ namespace Circuit_Simulator
             ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
             ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Point(0, 25));
-            //ButtonMenu_Config.parent = Toolbar.ui_elements[2];
-            //Toolbar.ui_elements[2].child = ButtonMenu_Config;
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Point(0, 25));
-            //ButtonMenu_Tools.parent = Toolbar.ui_elements[3];
-            //Toolbar.ui_elements[3].child = ButtonMenu_Tools;
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
             ButtonMenu_Help = new UI_TB_Dropdown(Toolbar.ui_elements[4].pos + new Point(0, 25));
-            //ButtonMenu_Help.parent = Toolbar.ui_elements[4];
-            //Toolbar.ui_elements[4].child = ButtonMenu_Help;
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
+
+            //QuickHotbar
+            QickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
+
 
             //Componentbox
             ComponentBox = new UI_Window(new Point(0, 25), new Point(buttonwidth * 3, 500), "ComponentBox");
