@@ -11,6 +11,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_QuickHBElement : UI_MultiElement
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
+        static Color BorderColor = new Color(new Vector3(0.45f));
 
         public UI_QuickHBElement(Point pos) : base(pos)
         {
@@ -19,7 +20,7 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void Add_UI_Element(UI_Element element)
         {
-            int currentSizeX = ui_elements.Sum(x => x.size.X);
+            int currentSizeX = ui_elements.Sum(x => x.size.X) + 8;
             element.pos = new Point(currentSizeX, 0);
 
             base.Add_UI_Element(element);
@@ -28,7 +29,8 @@ namespace Circuit_Simulator.UI.Specific
         public override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-       
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(8, size.Y)), BorderColor);
+
             base.DrawSpecific(spritebatch);
         }
     }

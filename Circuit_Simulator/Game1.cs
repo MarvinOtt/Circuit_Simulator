@@ -148,7 +148,7 @@ namespace Circuit_Simulator
             pixel.SetData(colors);
 
             UI_handler = new UI_Handler(Content);
-            UI_handler.Initialize();
+            UI_handler.Initialize(spriteBatch);
 
         }
 

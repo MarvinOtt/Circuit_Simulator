@@ -51,7 +51,7 @@ namespace Circuit_Simulator
                 if(!UI_Handler.UI_Element_Pressed)
                     UpdateSpecific();
                 child?.Update();
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
             }
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)
@@ -69,13 +69,14 @@ namespace Circuit_Simulator
         {
             if (GetsDrawn)
             {
+                for (int i = 0; i < DrawFunctions.Count; ++i)
+                {
+                    DrawFunctions[i]();
+                }
                 DrawSpecific(spritebatch);
                 child?.Draw(spritebatch);
             }
-		    for (int i = 0; i < DrawFunctions.Count; ++i)
-		    {
-			    DrawFunctions[i]();
-            }
+
 	    }
 
         public virtual void DrawSpecific(SpriteBatch spritebatch)

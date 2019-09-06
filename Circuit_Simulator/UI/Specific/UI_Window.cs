@@ -24,7 +24,7 @@ namespace Circuit_Simulator.UI
             this.Title = Title;
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
-            Add_UI_Element(new Button(new Point(-18, 2), new Point(16), new Point(0), tex, 2)); //X Button
+            Add_UI_Element(new TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, 2)); //X Button
            
             
           
@@ -35,7 +35,7 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateSpecific()
         {
-            if(((Button)ui_elements[0]).IsActivated)
+            if(((TexButton)ui_elements[0]).IsActivated)
                 GetsUpdated = GetsDrawn = false;
             // Handling Draging of Window
             Rectangle Grabbox = new Rectangle(absolutpos, new Point(size.X - ui_elements[0].size.X - 4, ui_elements[0].size.Y + 4));

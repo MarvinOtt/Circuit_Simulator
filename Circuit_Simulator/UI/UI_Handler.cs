@@ -10,8 +10,7 @@ using Circuit_Simulator.UI.Specific;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-
-
+using static Circuit_Simulator.UI.Configs;
 
 namespace Circuit_Simulator
 {
@@ -26,10 +25,15 @@ namespace Circuit_Simulator
         static int sqarebuttonwidth = 25;
         public static Color main_BG_Col = new Color(new Vector3(0.075f));
         public static Color main_Hover_Col = new Color(new Vector3(0.175f));
+        static Color BackgroundColor = new Color(new Vector3(0.15f));
+        static Color HoverColor = new Color(new Vector3(0.3f));
+        static Color ActivColor = Color.Black;
+        static Color ActivHoverColor = Color.Black;
+        static Color BorderColor = new Color(new Vector3(0.45f));
 
         private UI_MultiElement Toolbar;
         private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
-        private UI_QuickHBElement QickHotbar;
+        private UI_QuickHBElement QuickHotbar;
         UI_MultiElement[] toolbar_menus;
         private UI_MultiElement ComponentBox;
         public UI_Handler(ContentManager Content)
@@ -37,24 +41,28 @@ namespace Circuit_Simulator
 		    this.Content = Content;
 	    }
 
-        public void Initialize()
+        public void Initialize(SpriteBatch spriteBatch)
         {
             Game1.GraphicsChanged += Window_Graphics_Changed;
             Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
+            SpriteFont toolbarfont = Content.Load<SpriteFont>("UI\\TB_font");
 
+            // CONFIG
+            Button_Conf toolbarbuttonconf;
+            toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
 
 
             //Toolbar
             Toolbar = new UI_MultiElement(new Point(0, 0));
             Toolbar.size = new Point(buttonwidth * 4, buttonheight);
-            Toolbar.Add_UI_Element(new Button(new Point(0, 0), new Point(buttonwidth, buttonheight), new Point(0, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 1, 0), new Point(buttonwidth, buttonheight), new Point(318, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 2, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 3, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth * 2, 0), Button_tex, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 4, 0), new Point(buttonwidth, buttonheight), new Point(buttonwidth * 3, 0), Button_tex, 1));
-
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 5, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
-
+            Toolbar.Add_UI_Element(new Button(new Point(0, 0), new Point(buttonwidth, buttonheight), "File", toolbarbuttonconf, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 1, 0), new Point(buttonwidth, buttonheight), "Config", toolbarbuttonconf, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 2, 0), new Point(buttonwidth, buttonheight), "View", toolbarbuttonconf, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 3, 0), new Point(buttonwidth, buttonheight), "Tools", toolbarbuttonconf, 1));
+            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 4, 0), new Point(buttonwidth, buttonheight), "Help", toolbarbuttonconf, 1));
+            Toolbar.DrawFunctions.Add(delegate () {
+                spriteBatch.DrawFilledRectangle(new Rectangle(Toolbar.absolutpos, Toolbar.size), BackgroundColor);
+            });
             // Initializing Menus for Toolbar
             ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
             ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Save", 2));
@@ -86,11 +94,12 @@ namespace Circuit_Simulator
             ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
 
             //QuickHotbar
-            QickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
-
+            QuickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4 + sqarebuttonwidth, 0), Button_tex, 2));
 
             //Componentbox
-            ComponentBox = new UI_Window(new Point(0, 25), new Point(buttonwidth * 3, 500), "ComponentBox");
+            ComponentBox = new UI_Window(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");
 
             // Play Button Config
             Toolbar.ui_elements[4].UpdateFunctions.Add(delegate ()
@@ -143,6 +152,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Update();
             ComponentBox.Update();
+            QuickHotbar.Update();
             Toolbar.Update();
             
         }
@@ -150,6 +160,7 @@ namespace Circuit_Simulator
 	    public void Draw(SpriteBatch spritebatch)
 	    {
             Toolbar.Draw(spritebatch);
+            QuickHotbar.Draw(spritebatch);
             ComponentBox.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
