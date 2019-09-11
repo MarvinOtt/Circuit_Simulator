@@ -20,7 +20,7 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void Add_UI_Element(UI_Element element)
         {
-            int currentSizeX = ui_elements.Sum(x => x.size.X) + 8;
+            int currentSizeX = ui_elements.Sum(x => x.size.X);
             element.pos = new Point(currentSizeX, 0);
 
             base.Add_UI_Element(element);
@@ -29,7 +29,6 @@ namespace Circuit_Simulator.UI.Specific
         public override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(8, size.Y)), BorderColor);
 
             base.DrawSpecific(spritebatch);
         }

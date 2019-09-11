@@ -95,8 +95,9 @@ namespace Circuit_Simulator
 
             //QuickHotbar
             QuickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4, 0), Button_tex, 1));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(buttonwidth * 4 + sqarebuttonwidth, 0), Button_tex, 2));
+
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, 1));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, 2));
 
             //Componentbox
             ComponentBox = new UI_Window(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");

@@ -52,11 +52,11 @@ namespace Circuit_Simulator
             if (!IsHovered && !IsActivated)                                                                                 //PassiveState
                 spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
             else if (IsHovered && !IsActivated)                                                                             //Hover
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y), size), Color.White);
+                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y+1), size), Color.White);
             else if (!IsHovered && IsActivated)                                                                             //Click
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2), size), Color.White);
+                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2+2), size), Color.White);
             else                                                                                                            //PostClickHover
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3), size), Color.White);
+                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3+3), size), Color.White);
         }  
     }
 }
