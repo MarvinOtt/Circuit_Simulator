@@ -12,7 +12,7 @@ namespace Circuit_Simulator.UI.Specific
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
-
+        
         public UI_QuickHBElement(Point pos) : base(pos)
         {
             

@@ -36,7 +36,7 @@ namespace Circuit_Simulator
 		    if (hitbox.Contains(Game1.mo_states.New.Position))
 		    {
 			    IsHovered = true;
-			    if (Game1.mo_states.IsLeftButtonToggleOn())
+			    if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsActivated ^= true;
                     if (IsActivated)
@@ -49,14 +49,38 @@ namespace Circuit_Simulator
        
 	    public override void DrawSpecific(SpriteBatch spritebatch)
 	    {
-            if (!IsHovered && !IsActivated)                                                                                 //PassiveState
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
-            else if (IsHovered && !IsActivated)                                                                             //Hover
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y+1), size), Color.White);
-            else if (!IsHovered && IsActivated)                                                                             //Click
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2+2), size), Color.White);
-            else                                                                                                            //PostClickHover
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3+3), size), Color.White);
+            if (config == 1)
+            {
+                if (!IsHovered && !IsActivated)                                                                                 //PassiveState
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
+                else if (IsHovered && !IsActivated)                                                                             //Hover
+                {
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
+                }
+                else if (!IsHovered && IsActivated)                                                                             //Click
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2 + 2), size), Color.White);
+                else if (config == 1 || ((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))                                                                                                            //PostClickHover
+                {
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
+                }
+            }
+            else
+            {
+                if(!IsHovered && !IsActivated)
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
+                else if(((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))
+                {
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
+                }
+                else
+                {
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
+                }
+            }
         }  
     }
 }
