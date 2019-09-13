@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 
 namespace Circuit_Simulator.UI
 {
-    class UI_Window : UI_MultiElement
+    public class UI_Window : UI_MultiElement
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
         string Title;
         static Texture2D tex;
-        static int headheight = 20;
+        public static int headheight = 20;
         bool IsGrab;
         Point Grabpos;
 

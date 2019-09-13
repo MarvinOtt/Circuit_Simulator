@@ -35,7 +35,7 @@ namespace Circuit_Simulator
         private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         private UI_QuickHBElement QuickHotbar;
         UI_MultiElement[] toolbar_menus;
-        private UI_MultiElement ComponentBox;
+        private UI_ComponentBox ComponentBox;
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -46,11 +46,14 @@ namespace Circuit_Simulator
             Game1.GraphicsChanged += Window_Graphics_Changed;
             Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
             SpriteFont toolbarfont = Content.Load<SpriteFont>("UI\\TB_font");
+            SpriteFont componentfont = Content.Load<SpriteFont>("UI\\component_font");
 
             // CONFIG
             Button_Conf toolbarbuttonconf;
             toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
 
+            Button_Conf componentconf;
+            componentconf = new Button_Conf(Color.White, componentfont, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
 
             //Toolbar
             Toolbar = new UI_MultiElement(new Point(0, 0));
@@ -100,7 +103,9 @@ namespace Circuit_Simulator
             QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, 2));
 
             //Componentbox
-            ComponentBox = new UI_Window(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");
+            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");
+            ComponentBox.Add_UI_Element(new UI_Component(new Point(4, UI_Window.headheight + 0), "NAND", "guates Teil", componentconf));
+            ComponentBox.Add_UI_Element(new UI_Component(new Point(4, UI_Window.headheight + 100), "AND", "guates Teil", componentconf));
 
             // Play Button Config
             Toolbar.ui_elements[4].UpdateFunctions.Add(delegate ()

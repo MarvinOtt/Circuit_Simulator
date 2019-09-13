@@ -44,6 +44,13 @@
 /processorParam:TextureFormat=Color
 /build:UI/but_test.png
 
+#begin UI/component_font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:UI/component_font.spritefont
+
 #begin UI/Project Spritemap.png
 /importer:TextureImporter
 /processor:TextureProcessor

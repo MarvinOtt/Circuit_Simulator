@@ -12,7 +12,7 @@ namespace Circuit_Simulator.UI
     {
         public class Button_Conf
         {
-            public Color[] BackgroundCol;
+            public Color[] Syscolors;
             public SpriteFont font;
             public Color fontcol;
 
@@ -20,7 +20,7 @@ namespace Circuit_Simulator.UI
             {
                 this.fontcol = fontcol;
                 this.font = font;
-                BackgroundCol = backroundColors;
+                Syscolors = backroundColors;
             }
 
 

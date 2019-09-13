@@ -47,6 +47,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Configs.cs" />
+    <Compile Include="UI\Specific\UI_Component.cs" />
+    <Compile Include="UI\Specific\UI_ComponentBox.cs" />
+    <Compile Include="UI\Specific\UI_comp_cat.cs" />
     <Compile Include="UI\TexButton.cs" />
     <Compile Include="UI\Button_Menu.cs" />
     <Compile Include="UI\Specific\UI_QuickHBElement.cs" />
