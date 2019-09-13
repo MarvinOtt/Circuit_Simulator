@@ -45,6 +45,7 @@
     <Compile Include="Game1.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulator.cs" />
     <Compile Include="UI\Button.cs" />
     <Compile Include="UI\Configs.cs" />
     <Compile Include="UI\Specific\UI_Component.cs" />
