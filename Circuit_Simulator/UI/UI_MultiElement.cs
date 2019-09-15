@@ -8,31 +8,34 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Circuit_Simulator
 {
-    public class UI_MultiElement : UI_Element
+    public class UI_MultiElement<T> : UI_Element where T : UI_Element
     {
-	    public List<UI_Element> ui_elements;
+	    public List<T> ui_elements;
 
         public UI_MultiElement(Point pos) : base(pos, Point.Zero)
         {
-			ui_elements = new List<UI_Element>();
+			ui_elements = new List<T>();
         }
         public UI_MultiElement(Point pos, Point size) : base(pos, size)
         {
-            ui_elements = new List<UI_Element>();
+            ui_elements = new List<T>();
         }
         public UI_MultiElement(Point pos, Point size, UI_Element parent, Color bgc) : base(pos, size, parent)
 	    {
-		    ui_elements = new List<UI_Element>();
+		    ui_elements = new List<T>();
 	    }
 
-        public virtual void Add_UI_Element(UI_Element element)
+        public virtual void Add_UI_Elements(params T[] elements)
 	    {
-		    element.parent = this;
-            if (element.pos.X + element.size.X > size.X)
-                size.X = element.pos.X + element.size.X;
-            if (element.pos.Y + element.size.Y > size.Y)
-                size.Y = element.pos.Y + element.size.Y;
-            ui_elements.Add(element);
+            foreach (T element in elements)
+            {
+                element.parent = this;
+                if (element.pos.X + element.size.X > size.X)
+                    size.X = element.pos.X + element.size.X;
+                if (element.pos.Y + element.size.Y > size.Y)
+                    size.Y = element.pos.Y + element.size.Y;
+            }
+            ui_elements.AddRange(elements);
 	    }
 
 	    protected override void UpdateSpecific()
@@ -43,7 +46,7 @@ namespace Circuit_Simulator
 		    }
 	    }
 
-	    public override void DrawSpecific(SpriteBatch spritebatch)
+        protected override void DrawSpecific(SpriteBatch spritebatch)
 	    {
 		    for (int i = 0; i < ui_elements.Count; ++i)
 		    {

@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Circuit_Simulator.UI.Specific
 {
-    public class UI_QuickHBElement : UI_MultiElement
+    public class UI_QuickHBElement : UI_MultiElement<UI_Element>
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
@@ -18,15 +18,15 @@ namespace Circuit_Simulator.UI.Specific
             
         }
 
-        public override void Add_UI_Element(UI_Element element)
+        public void Add_UI_Element(UI_Element element)
         {
             int currentSizeX = ui_elements.Sum(x => x.size.X);
             element.pos = new Point(currentSizeX, 0);
 
-            base.Add_UI_Element(element);
+            base.Add_UI_Elements(element);
         }
 
-        public override void DrawSpecific(SpriteBatch spritebatch)
+        protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
 

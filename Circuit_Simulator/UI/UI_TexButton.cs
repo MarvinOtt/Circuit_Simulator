@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator
 {
@@ -13,25 +14,24 @@ namespace Circuit_Simulator
     {
 	    public Texture2D tex;
 	    public Point tex_pos;
+        TexButton_Conf conf;
 	    public bool IsHovered, IsActivated, GotActivated;
-	    private byte config;
 
 
 
 
-        public TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, byte config) : base(pos, size)
+        public TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, TexButton_Conf conf) : base(pos, size)
         {
+            this.conf = conf;
             this.tex = tex;
-            
             this.tex_pos = tex_pos;
-            this.config = config;
         }
 
 	    protected override void UpdateSpecific()
 	    {
 			Rectangle hitbox = new Rectangle(absolutpos, size);
             GotActivated = false;
-		    if (config == 2)
+		    if (conf.behav == 2)
 			    IsActivated = false;
 		    if (hitbox.Contains(Game1.mo_states.New.Position))
 		    {
@@ -46,23 +46,25 @@ namespace Circuit_Simulator
 		    else
 			    IsHovered = false;
 	    }
-       
-	    public override void DrawSpecific(SpriteBatch spritebatch)
+
+        protected override void DrawSpecific(SpriteBatch spritebatch)
 	    {
-            if (config == 1)
+            if (conf.behav == 1)
             {
                 if (!IsHovered && !IsActivated)                                                                                 //PassiveState
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
                 else if (IsHovered && !IsActivated)                                                                             //Hover
                 {
-                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    if (conf.IsHoverEnabled)
+                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
                 }
                 else if (!IsHovered && IsActivated)                                                                             //Click
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2 + 2), size), Color.White);
-                else if (config == 1 || ((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))                                                                                                            //PostClickHover
+                else                                                                                                            //ClickHover
                 {
-                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    if (conf.IsHoverEnabled)
+                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
                 }
             }
@@ -72,12 +74,14 @@ namespace Circuit_Simulator
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
                 else if(((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))
                 {
-                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    if (conf.IsHoverEnabled)
+                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
                 }
                 else
                 {
-                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.White * 0.1f);
+                    if(conf.IsHoverEnabled)
+                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
                 }
             }

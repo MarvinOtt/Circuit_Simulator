@@ -199,10 +199,9 @@ namespace Circuit_Simulator
 
             UI_handler.Draw(spriteBatch);
 
-            spriteBatch.DrawString(basefont, Screenwidth.ToString(), new Vector2(100, 100), Color.Red);
-            spriteBatch.DrawString(basefont, Screenheight.ToString(), new Vector2(100, 130), Color.Red);
+            //spriteBatch.DrawString(basefont, Screenwidth.ToString(), new Vector2(100, 100), Color.Red);
+            //spriteBatch.DrawString(basefont, Screenheight.ToString(), new Vector2(100, 130), Color.Red);
 
-            //Play_Button.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

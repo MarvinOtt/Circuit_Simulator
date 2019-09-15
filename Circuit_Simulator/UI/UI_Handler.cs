@@ -10,7 +10,7 @@ using Circuit_Simulator.UI.Specific;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using static Circuit_Simulator.UI.Configs;
+using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator
 {
@@ -25,17 +25,21 @@ namespace Circuit_Simulator
         static int sqarebuttonwidth = 25;
         public static Color main_BG_Col = new Color(new Vector3(0.075f));
         public static Color main_Hover_Col = new Color(new Vector3(0.175f));
-        static Color BackgroundColor = new Color(new Vector3(0.15f));
-        static Color HoverColor = new Color(new Vector3(0.3f));
-        static Color ActivColor = Color.Black;
-        static Color ActivHoverColor = Color.Black;
-        static Color BorderColor = new Color(new Vector3(0.45f));
+        public static Color BackgroundColor = new Color(new Vector3(0.15f));
+        public static Color HoverColor = new Color(new Vector3(0.3f));
+        public static Color ActivColor = Color.Black;
+        public static Color ActivHoverColor = Color.Black;
+        public static Color BorderColor = new Color(new Vector3(0.45f));
+        public static TexButton_Conf TexButton_baseconf = new TexButton_Conf(1);
 
-        private UI_MultiElement Toolbar;
-        private UI_MultiElement ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
+        private UI_MultiElement<UI_Element> Toolbar;
+        private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         private UI_QuickHBElement QuickHotbar;
-        UI_MultiElement[] toolbar_menus;
+        UI_MultiElement<UI_Element>[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
+        UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops;
+        UI_Component AND, OR, XOR, NAND, NOR, XNOR;
+        UI_Component FF_RS, FF_D, FF_JK, FF_T;
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -48,79 +52,105 @@ namespace Circuit_Simulator
             SpriteFont toolbarfont = Content.Load<SpriteFont>("UI\\TB_font");
             SpriteFont componentfont = Content.Load<SpriteFont>("UI\\component_font");
 
-            // CONFIG
+            // CONFIGS
             Button_Conf toolbarbuttonconf;
-            toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
-
+            toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, 1, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
             Button_Conf componentconf;
-            componentconf = new Button_Conf(Color.White, componentfont, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
+            componentconf = new Button_Conf(Color.White, componentfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
+
+            TexButton_Conf quickbarconf_1 = new TexButton_Conf(1, Color.White * 0.1f);
+            TexButton_Conf quickbarconf_2 = new TexButton_Conf(2, Color.White * 0.1f);
 
             //Toolbar
-            Toolbar = new UI_MultiElement(new Point(0, 0));
-            Toolbar.size = new Point(buttonwidth * 4, buttonheight);
-            Toolbar.Add_UI_Element(new Button(new Point(0, 0), new Point(buttonwidth, buttonheight), "File", toolbarbuttonconf, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 1, 0), new Point(buttonwidth, buttonheight), "Config", toolbarbuttonconf, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 2, 0), new Point(buttonwidth, buttonheight), "View", toolbarbuttonconf, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 3, 0), new Point(buttonwidth, buttonheight), "Tools", toolbarbuttonconf, 1));
-            Toolbar.Add_UI_Element(new Button(new Point(buttonwidth * 4, 0), new Point(buttonwidth, buttonheight), "Help", toolbarbuttonconf, 1));
-            Toolbar.DrawFunctions.Add(delegate () {
-                spriteBatch.DrawFilledRectangle(new Rectangle(Toolbar.absolutpos, Toolbar.size), BackgroundColor);
-            });
+            Toolbar = new UI_MultiElement<UI_Element>(new Point(0, 0));
+            string[] TB_Names = new string[] { "File", "Config", "View", "Tools", "Help" };
+            for(int i = 0; i < TB_Names.Length; ++i)
+                Toolbar.Add_UI_Elements(new UI_Button(new Point(buttonwidth * i, 0), new Point(buttonwidth, buttonheight), TB_Names[i], toolbarbuttonconf));
+
             // Initializing Menus for Toolbar
             ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Save", 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Save As", 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Open", 2));
-            ButtonMenu_File.Add_UI_Element(new Button_Menu(new Point(0, 25 * 3), new Point(buttonwidth, buttonheight), "Open Recent", 2));
+            string[] FileButton_Names = new string[] { "Save", "Save As", "Open", "Open Recent" };
+            for(int i = 0; i < FileButton_Names.Length; ++i)
+                ButtonMenu_File.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), FileButton_Names[i]));
 
             ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Point(0, 25));
-            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Component Box", 2));
-            ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate (){
-                if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated) ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
-            });
-            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Icon Hotbar", 2));
-            ButtonMenu_View.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
+            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Test" };
+            for (int i = 0; i < ViewButton_Names.Length; ++i)
+                ButtonMenu_View.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i]));
 
             ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Point(0, 25));
-            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_Config.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
+            string[] ConfigButton_Names = new string[] { "Test", "Test", "Test" };
+            for (int i = 0; i < ConfigButton_Names.Length; ++i)
+                ButtonMenu_Config.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ConfigButton_Names[i]));
 
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Point(0, 25));
-            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_Tools.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
+            string[] ToolsButton_Names = new string[] { "Test", "Test", "Test" };
+            for (int i = 0; i < ToolsButton_Names.Length; ++i)
+                ButtonMenu_Tools.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i]));
 
             ButtonMenu_Help = new UI_TB_Dropdown(Toolbar.ui_elements[4].pos + new Point(0, 25));
-            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 0), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25), new Point(buttonwidth, buttonheight), "Test", 2));
-            ButtonMenu_Help.Add_UI_Element(new Button_Menu(new Point(0, 25 * 2), new Point(buttonwidth, buttonheight), "Test", 2));
+            string[] HelpButton_Names = new string[] { "Test", "Test", "Test" };
+            for (int i = 0; i < HelpButton_Names.Length; ++i)
+                ButtonMenu_Help.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), HelpButton_Names[i]));
 
             //QuickHotbar
             QuickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
-
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, 1));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, 2));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, quickbarconf_1));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
 
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");
-            ComponentBox.Add_UI_Element(new UI_Component(new Point(4, UI_Window.headheight + 0), "NAND", "guates Teil", componentconf));
-            ComponentBox.Add_UI_Element(new UI_Component(new Point(4, UI_Window.headheight + 100), "AND", "guates Teil", componentconf));
 
+            // Sample Components
+            AND = new UI_Component("AND", componentconf);
+            OR = new UI_Component("OR", componentconf);
+            XOR = new UI_Component("XOR", componentconf);
+            NAND = new UI_Component("NAND", componentconf);
+            NOR = new UI_Component("NOR", componentconf);
+            XNOR = new UI_Component("XNOR", componentconf);
+
+            FF_RS = new UI_Component("RS", componentconf);
+            FF_JK = new UI_Component("JK", componentconf);
+            FF_D = new UI_Component("Data", componentconf);
+            FF_T = new UI_Component("Toggle", componentconf);
+
+
+
+            //Catagories
+            Cat_Gates = new UI_Comp_Cat("Gates", componentconf);
+            Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", componentconf);
+
+            Cat_Gates.AddComponents(AND, NAND, OR, NOR, XOR, XNOR);
+            Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
+
+            ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops);
+
+            InitializeUISettings();
+        }
+
+        //
+        public void InitializeUISettings()
+        {
             // Play Button Config
             Toolbar.ui_elements[4].UpdateFunctions.Add(delegate ()
             {
-                Game1.IsSimulating = ((Button)Toolbar.ui_elements[4]).IsActivated;
+                Game1.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
+            });
+
+            // Config for opening ComponentBox
+            ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate () {
+                if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated)
+                    ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
             });
 
             //Configs for Main Toolbar Buttons
-            toolbar_menus = new UI_MultiElement[] { ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
+            toolbar_menus = new UI_MultiElement<UI_Element>[] { ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
             for (int i = 0; i < 5; ++i)
             {
                 int ii = i;
                 toolbar_menus[i].UpdateFunctions.Add(delegate ()
                 {
-                    Button cur = (Button)Toolbar.ui_elements[ii];
+                    UI_Button cur = (UI_Button)Toolbar.ui_elements[ii];
                     toolbar_menus[ii].GetsDrawn = toolbar_menus[ii].GetsUpdated = cur.IsActivated;
                     // Deactivate current active button when something else got pressed
                     bool IsInOther = new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
@@ -128,20 +158,6 @@ namespace Circuit_Simulator
                     if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOn() && !IsInOther)
                         cur.IsActivated = false;
                 });
-            }
-            
-
-
-        }
-
-        public void DisableAllOtherToolbarButtons(int id)
-        {
-            for(int i = 0; i < 4; ++i)
-            {
-                if(i != id)
-                {
-                    ((Button)Toolbar.ui_elements[i]).IsActivated = false;
-                }
             }
         }
 

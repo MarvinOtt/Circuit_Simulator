@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI
 {
-    public class UI_Window : UI_MultiElement
+    public class UI_Window : UI_MultiElement<UI_Element>
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
@@ -24,14 +25,16 @@ namespace Circuit_Simulator.UI
             this.Title = Title;
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
-            Add_UI_Element(new TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, 2)); //X Button
+            Add_UI_Elements(new TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, new TexButton_Conf(2))); //X Button
            
             
-          
+            
         }
 
+        protected virtual void IsResize()
+        {
 
-
+        }
 
         protected override void UpdateSpecific()
         {
@@ -67,13 +70,15 @@ namespace Circuit_Simulator.UI
 
             base.UpdateSpecific();
         }
-        public override void DrawSpecific(SpriteBatch spritebatch)
+
+        protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, ui_elements[0].size.Y + 4)), BorderColor); //Chartreuse Best Color
-            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
 
             base.DrawSpecific(spritebatch);
+
+            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
         }
     }
 }

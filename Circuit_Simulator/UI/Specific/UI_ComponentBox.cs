@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +10,34 @@ namespace Circuit_Simulator.UI.Specific
 {
     public class UI_ComponentBox : UI_Window
     {
-        public List<UI_comp_cat> catlist;
+        public UI_List<UI_Comp_Cat> Catagories;
         public UI_ComponentBox(Point pos, Point size, string title) : base(pos, size, title )
         {
-
+            Catagories = new UI_List<UI_Comp_Cat>(new Point(0, 50));
+            Add_UI_Elements(Catagories);
         }
-        public override void Add_UI_Element(UI_Element element)
+
+        protected override void IsResize()
         {
-            base.Add_UI_Element(element);
-            if (element.GetType() == typeof(UI_Component))
-                element.size.X = size.X;
+            Catagories.ui_elements.ForEach(x => x.SetXSize(size.X));
+            //ui_elements.Where(x => x.GetType() == typeof(UI_Comp_Cat)).ForEach(c => ((UI_Comp_Cat)c).SetXSize(size.X));
         }
 
+        public void Add_Categories(params UI_Comp_Cat[] cats)
+        {
+            cats.ForEach(x => x.SetXSize(size.X));
+            Catagories.Add_UI_Elements(cats);
+        }
+
+        protected override void UpdateSpecific()
+        {
+            base.UpdateSpecific();
+        }
+
+        protected override void DrawSpecific(SpriteBatch spritebatch)
+        {
+            base.DrawSpecific(spritebatch);
+        }
 
     }
 }

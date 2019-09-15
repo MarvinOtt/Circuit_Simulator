@@ -79,7 +79,7 @@ namespace Circuit_Simulator
 
 	    }
 
-        public virtual void DrawSpecific(SpriteBatch spritebatch)
+        protected virtual void DrawSpecific(SpriteBatch spritebatch)
         {
             // Should be overridden
         }

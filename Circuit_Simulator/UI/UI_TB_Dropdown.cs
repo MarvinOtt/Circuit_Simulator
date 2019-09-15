@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Circuit_Simulator.UI
 {
-    class UI_TB_Dropdown : UI_MultiElement
+    class UI_TB_Dropdown : UI_MultiElement<UI_Element>
     {
         Color BackgroundColor;
         Color BorderColor;
@@ -25,14 +25,12 @@ namespace Circuit_Simulator.UI
             BorderColor = new Color(new Vector3(0.25f));
         }
 
-
-
-
         protected override void UpdateSpecific()
         {
             base.UpdateSpecific();
         }
-        public override void DrawSpecific(SpriteBatch spritebatch)
+
+        protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
 
