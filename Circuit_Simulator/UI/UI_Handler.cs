@@ -51,8 +51,11 @@ namespace Circuit_Simulator
             Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
             SpriteFont toolbarfont = Content.Load<SpriteFont>("UI\\TB_font");
             SpriteFont componentfont = Content.Load<SpriteFont>("UI\\component_font");
+            SpriteFont catfont = Content.Load<SpriteFont>("UI\\cat_font");
 
             // CONFIGS
+            Button_Conf cat_conf;
+            cat_conf = new Button_Conf(Color.White, catfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
             Button_Conf toolbarbuttonconf;
             toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, 1, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
             Button_Conf componentconf;
@@ -117,8 +120,8 @@ namespace Circuit_Simulator
 
 
             //Catagories
-            Cat_Gates = new UI_Comp_Cat("Gates", componentconf);
-            Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", componentconf);
+            Cat_Gates = new UI_Comp_Cat("Gates", cat_conf);
+            Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", cat_conf);
 
             Cat_Gates.AddComponents(AND, NAND, OR, NOR, XOR, XNOR);
             Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);

@@ -11,9 +11,10 @@ namespace Circuit_Simulator.UI.Specific
 {
     public class UI_Component : UI_Element
     {
-        public static int height = 16;
+        public static int height = 20;
         public string name;
-        public bool IsGrab, IsHover;
+        public int ID;
+        public bool IsDrag, IsHover;
         Button_Conf conf;
         Vector2 text_pos;
 
@@ -29,21 +30,29 @@ namespace Circuit_Simulator.UI.Specific
         protected override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            IsGrab = false;
+            IsDrag = false;
 
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
+                if (Game1.mo_states.IsLeftButtonToggleOn())
+                {
+                    IsDrag = true;
+                }
+
                 IsHover = true;
             }
             else
                 IsHover = false;
-            
+            if (IsDrag && Game1.mo_states.IsLeftButtonToggleOff())
+            {
+                IsDrag = false;
+            }
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             if(IsHover)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.Syscolors[3]);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.Syscolors[1]);
             spritebatch.DrawString(conf.font, name, absolutpos.ToVector2() + text_pos, conf.fontcol);
         }
     }

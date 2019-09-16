@@ -50,6 +50,13 @@
 /processorParam:TextureFormat=Color
 /build:UI/but_test.png
 
+#begin UI/cat_font.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:UI/cat_font.spritefont
+
 #begin UI/component_font.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor

@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
         public string title;
         public Button_Conf conf;
         UI_List<UI_Component> Components;
-        public bool IsFold;
+        public bool IsFold, IsHover;
         Vector2 title_pos;
 
         public UI_Comp_Cat(string title, Button_Conf conf ) : base(Point.Zero)
@@ -46,16 +46,25 @@ namespace Circuit_Simulator.UI.Specific
                 size.Y = UI_Component.height * (1 + Components.ui_elements.Count);
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, UI_Component.height));
 
-            if (hitbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOff())
+            if (hitbox.Contains(Game1.mo_states.New.Position))
             {
-                IsFold ^= true;
-                Components.GetsUpdated = Components.GetsDrawn = !IsFold;
+                IsHover = true;
+                if (Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    IsFold ^= true;
+                    Components.GetsUpdated = Components.GetsDrawn = !IsFold;
+                }
             }
+            else
+                IsHover = false;
+
             base.UpdateSpecific();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
+            if (IsHover)
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, UI_Component.height)),conf.Syscolors[1]);
             spritebatch.DrawString(conf.font, title, absolutpos.ToVector2() + title_pos, conf.fontcol);
 
             base.DrawSpecific(spritebatch);
