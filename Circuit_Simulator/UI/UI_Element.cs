@@ -69,12 +69,12 @@ namespace Circuit_Simulator
         {
             if (GetsDrawn)
             {
+                DrawSpecific(spritebatch);
+                child?.Draw(spritebatch);
                 for (int i = 0; i < DrawFunctions.Count; ++i)
                 {
                     DrawFunctions[i]();
                 }
-                DrawSpecific(spritebatch);
-                child?.Draw(spritebatch);
             }
 
 	    }

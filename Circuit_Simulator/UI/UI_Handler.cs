@@ -20,6 +20,7 @@ namespace Circuit_Simulator
 
 	    private Texture2D Button_tex;
         public static bool UI_Element_Pressed;
+        public static UI_Element ZaWarudo;      //JoJo Reference
         static int buttonheight = 25;
         static int buttonwidth = 67;
         static int sqarebuttonwidth = 25;
@@ -128,11 +129,11 @@ namespace Circuit_Simulator
 
             ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops);
 
-            InitializeUISettings();
+            InitializeUISettings(spriteBatch);
         }
 
         //
-        public void InitializeUISettings()
+        public void InitializeUISettings(SpriteBatch spritebatch)
         {
             // Play Button Config
             Toolbar.ui_elements[4].UpdateFunctions.Add(delegate ()
@@ -162,6 +163,15 @@ namespace Circuit_Simulator
                         cur.IsActivated = false;
                 });
             }
+            // DragDraw
+            ComponentBox.Catagories.DrawFunctions.Add(delegate ()
+            {
+                ComponentBox.Catagories.ui_elements.ForEach(cat => cat.Components.ui_elements.ForEach(c =>
+                {
+                    if (c.IsDrag)
+                        spritebatch.DrawString(c.conf.font, c.name, Game1.mo_states.New.Position.ToVector2() + new Vector2(16, 0), c.conf.fontcol);
+                }));
+            });
         }
 
         // Gets called when something of the Window or Graphics got changed
@@ -173,6 +183,12 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
             UI_Element_Pressed = false;
+
+            if(ZaWarudo != null)
+            {
+                ZaWarudo.Update();
+                return;
+            }
 
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Update();

@@ -13,7 +13,7 @@ namespace Circuit_Simulator.UI.Specific
     {
         public string title;
         public Button_Conf conf;
-        UI_List<UI_Component> Components;
+        public UI_List<UI_Component> Components;
         public bool IsFold, IsHover;
         Vector2 title_pos;
 
