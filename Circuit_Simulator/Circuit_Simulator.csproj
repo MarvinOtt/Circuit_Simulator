@@ -46,6 +46,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulator.cs" />
+    <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
     <Compile Include="UI\UI_Button.cs" />
     <Compile Include="UI\UI_Configs.cs" />
     <Compile Include="UI\Specific\UI_Component.cs" />

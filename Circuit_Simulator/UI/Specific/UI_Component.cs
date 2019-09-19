@@ -37,7 +37,9 @@ namespace Circuit_Simulator.UI.Specific
                 if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
                     IsDrag = true;
-                    UI_Handler.ZaWarudo = this;
+                    UI_Handler.dragcomp.GetsUpdated = true;
+                    UI_Handler.dragcomp.GetsDrawn = true;
+                    UI_Handler.dragcomp.comp = this;
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
                 }
 
@@ -47,7 +49,6 @@ namespace Circuit_Simulator.UI.Specific
                 IsHover = false;
             if (IsDrag && Game1.mo_states.IsLeftButtonToggleOff())
             {
-                UI_Handler.ZaWarudo = null;
                 IsDrag = false;
                 //System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             }

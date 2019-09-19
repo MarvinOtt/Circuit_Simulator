@@ -20,7 +20,7 @@ namespace Circuit_Simulator
 
 	    private Texture2D Button_tex;
         public static bool UI_Element_Pressed;
-        public static UI_Element ZaWarudo;      //JoJo Reference
+        public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
         static int buttonheight = 25;
         static int buttonwidth = 67;
         static int sqarebuttonwidth = 25;
@@ -164,14 +164,14 @@ namespace Circuit_Simulator
                 });
             }
             // DragDraw
-            ComponentBox.Catagories.DrawFunctions.Add(delegate ()
-            {
-                ComponentBox.Catagories.ui_elements.ForEach(cat => cat.Components.ui_elements.ForEach(c =>
-                {
-                    if (c.IsDrag)
-                        spritebatch.DrawString(c.conf.font, c.name, Game1.mo_states.New.Position.ToVector2() + new Vector2(16, 0), c.conf.fontcol);
-                }));
-            });
+            //ComponentBox.Catagories.DrawFunctions.Add(delegate ()
+            //{
+            //    ComponentBox.Catagories.ui_elements.ForEach(cat => cat.Components.ui_elements.ForEach(c =>
+            //    {
+            //        if (c.IsDrag)
+            //            spritebatch.DrawString(c.conf.font, c.name, Game1.mo_states.New.Position.ToVector2() + new Vector2(16, 0), c.conf.fontcol);
+            //    }));
+            //});
         }
 
         // Gets called when something of the Window or Graphics got changed
@@ -183,13 +183,7 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
             UI_Element_Pressed = false;
-
-            if(ZaWarudo != null)
-            {
-                ZaWarudo.Update();
-                return;
-            }
-
+            dragcomp.Update();
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Update();
             ComponentBox.Update();
@@ -205,6 +199,7 @@ namespace Circuit_Simulator
             ComponentBox.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
+            dragcomp.Draw(spritebatch);
         }
     }
 }
