@@ -57,10 +57,11 @@ namespace Circuit_Simulator
     {
         public static GraphicsDeviceManager graphics;
         public static ContentManager content;
-        SpriteBatch spriteBatch;
-        SpriteFont basefont;
         public static System.Windows.Forms.Form form;
         public static event EventHandler GraphicsChanged;
+        Simulator simulator;
+        SpriteBatch spriteBatch;
+        SpriteFont basefont;
         
 
         #region UI
@@ -150,6 +151,8 @@ namespace Circuit_Simulator
             UI_handler = new UI_Handler(Content);
             UI_handler.Initialize(spriteBatch);
 
+            simulator = new Simulator();
+
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
@@ -180,7 +183,7 @@ namespace Circuit_Simulator
             // BEGIN OF MAIN UPDATE //
             //----------------------//
 
-
+            simulator.Update();
 
             //--------------------//
             // END OF MAIN UPDATE //
@@ -196,6 +199,8 @@ namespace Circuit_Simulator
         {
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
+
+            simulator.Draw(spriteBatch);
 
             UI_handler.Draw(spriteBatch);
 
