@@ -17,6 +17,8 @@ namespace Circuit_Simulator.UI
         string Title;
         static Texture2D tex;
         public static int headheight = 20;
+        public int resize_type;
+        public bool IsResize;
         bool IsGrab;
         Point Grabpos;
 
@@ -31,7 +33,7 @@ namespace Circuit_Simulator.UI
             
         }
 
-        protected virtual void IsResize()
+        protected virtual void Resize()
         {
 
         }
@@ -67,6 +69,65 @@ namespace Circuit_Simulator.UI
                 pos.Y = Game1.Screenheight - headheight;
             absolutpos = pos;
 
+            Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y - 5), new Point(size.X, 10));
+            if (Resize_bottom_box.Contains(Game1.mo_states.New.Position))
+            {
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                if(Game1.mo_states.IsLeftButtonToggleOn())
+                {
+                    IsResize = true;
+                    resize_type = 1;
+                }
+                   
+            }
+            Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X - 5, headheight), new Point(10, size.Y - headheight));
+            if (Resize_right_box.Contains(Game1.mo_states.New.Position))
+            {
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                if (Game1.mo_states.IsLeftButtonToggleOn())
+                {
+                    IsResize = true;
+                    resize_type = 2;
+                }
+
+            }
+            Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-5, headheight), new Point(10, size.Y - headheight));
+            if (Resize_left_box.Contains(Game1.mo_states.New.Position))
+            {
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                if (Game1.mo_states.IsLeftButtonToggleOn())
+                {
+                    IsResize = true;
+                    resize_type = 3;
+                }
+
+            }
+            if (IsResize)
+            {
+                Resize();
+                if (Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    IsResize = false;
+                }
+                switch (resize_type)
+                {
+                    case 1:
+                        size.Y += Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y;
+                        break;
+                    case 2:
+                        size.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        break;
+                    case 3:
+                        size.X -= Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        pos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        absolutpos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        break;
+
+
+
+                }
+            }
+                
 
             base.UpdateSpecific();
         }

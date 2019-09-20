@@ -17,7 +17,7 @@ namespace Circuit_Simulator.UI.Specific
             Add_UI_Elements(Catagories);
         }
 
-        protected override void IsResize()
+        protected override void Resize()
         {
             Catagories.ui_elements.ForEach(x => x.SetXSize(size.X));
             //ui_elements.Where(x => x.GetType() == typeof(UI_Comp_Cat)).ForEach(c => ((UI_Comp_Cat)c).SetXSize(size.X));
