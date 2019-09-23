@@ -13,10 +13,13 @@ namespace Circuit_Simulator
     {
         public const int SIZEX = 16384;
         public const int SIZEY = 16384;
+        public const int LAYER_NUM = 8;
 
         Effect sim_effect;
         RenderTarget2D main_target;
         Texture2D outputtex, logictex;
+        byte[,] IsWire;
+        byte[,,] WireID_Chunks;
 
         Point worldpos;
         int worldzoom = 0;
@@ -31,6 +34,8 @@ namespace Circuit_Simulator
             main_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
             outputtex = new Texture2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
             logictex = new Texture2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8);
+            IsWire = new byte[SIZEX, SIZEY];
+            WireID_Chunks = new byte[SIZEX, SIZEY, LAYER_NUM];
 
             sim_effect.Parameters["Screenwidth"].SetValue(Game1.Screenwidth);
             sim_effect.Parameters["Screenheight"].SetValue(Game1.Screenheight);
@@ -62,6 +67,7 @@ namespace Circuit_Simulator
             int mo_worldposx, mo_worldposy;
             screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
 
+            #region INPUT
             if (Game1.kb_states.New.IsKeyDown(Keys.W))
                 worldpos.Y += 10;
             if (Game1.kb_states.New.IsKeyDown(Keys.S))
@@ -73,19 +79,20 @@ namespace Circuit_Simulator
 
             if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
             {
-                if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue) // Zooming Out
+                if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
                 {
                     worldzoom -= 1;
                     Point diff = Game1.mo_states.New.Position - worldpos;
                     worldpos += new Point(diff.X / 2, diff.Y / 2);
                 }
-                else // Zooming In
+                else if(Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && worldzoom < 8) // Zooming In
                 {
                     worldzoom += 1;
                     Point diff = Game1.mo_states.New.Position - worldpos;
                     worldpos -= diff;
                 }
             }
+            #endregion
 
             sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
             sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
@@ -101,6 +108,7 @@ namespace Circuit_Simulator
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, sim_effect, Matrix.Identity);
             spritebatch.Draw(outputtex, Vector2.Zero, Color.White);
             spritebatch.End();
+
 
 
             spritebatch.Begin();
