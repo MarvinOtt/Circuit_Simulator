@@ -111,13 +111,16 @@ namespace Circuit_Simulator.UI
                 }
                 switch (resize_type)
                 {
-                    case 1:
-                        size.Y += Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y;
+                    case 1: // Bottom Resize
+                        if (size.Y >= 20)
+                            size.Y += Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y;
+                        else
+                            size.Y = 20;
                         break;
-                    case 2:
+                    case 2: // Right Resize
                         size.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
                         break;
-                    case 3:
+                    case 3: // Left Resize
                         size.X -= Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
                         pos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
                         absolutpos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;

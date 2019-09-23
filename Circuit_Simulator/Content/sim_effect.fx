@@ -94,7 +94,7 @@ float4 getcoloratpos(float x, float y)
 		if ((x % 10.0f >= 10 - factor || x % 10.0f <= factor) || (y % 10.0f >= 10 - factor || y % 10.0f <= factor))
 			OUT = float4(0.15f, 0.15f, 0.15f, 1);
 		else if (zoom > 4 && ((x % 1 >= 1 - factor || x % 1 <= factor) || (y % 1 >= 1 - factor || y % 1 <= factor)))
-			OUT = float4(0.04f, 0.04f, 0.04f, 1);
+			OUT = float4(0.08f, 0.08f, 0.08f, 1);
 	}
 	if ((x >= mousepos_X && x <= mousepos_X + 1) || (y >= mousepos_Y && y <= mousepos_Y + 1))
 	{
