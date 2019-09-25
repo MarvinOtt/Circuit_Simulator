@@ -103,7 +103,7 @@ namespace Circuit_Simulator
             QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
 
             //Componentbox
-            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");
+            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox", new Point(100, 300));
 
             // Sample Components
             AND = new UI_Component("AND", componentconf);

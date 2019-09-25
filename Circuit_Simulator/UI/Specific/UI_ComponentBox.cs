@@ -11,7 +11,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_ComponentBox : UI_Window
     {
         public UI_List<UI_Comp_Cat> Catagories;
-        public UI_ComponentBox(Point pos, Point size, string title) : base(pos, size, title )
+        public UI_ComponentBox(Point pos, Point size, string title, Point minsize) : base(pos, size, title, minsize )
         {
             Catagories = new UI_List<UI_Comp_Cat>(new Point(0, 50));
             Add_UI_Elements(Catagories);

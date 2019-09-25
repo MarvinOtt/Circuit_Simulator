@@ -15,6 +15,9 @@ namespace Circuit_Simulator.UI
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
         string Title;
+        Point minsize;
+        Point oldsize;
+        Point oldrightborderpos;
         static Texture2D tex;
         public static int headheight = 20;
         public int resize_type;
@@ -22,8 +25,9 @@ namespace Circuit_Simulator.UI
         bool IsGrab;
         Point Grabpos;
 
-        public UI_Window(Point pos, Point size, string Title) : base(pos, size)
+        public UI_Window(Point pos, Point size, string Title, Point minsize) : base(pos, size)
         {
+            this.minsize = minsize;
             this.Title = Title;
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
@@ -97,6 +101,7 @@ namespace Circuit_Simulator.UI
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
                 if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
+                    oldrightborderpos = new Point(pos.X + size.X, 0);
                     IsResize = true;
                     resize_type = 3;
                 }
@@ -112,20 +117,24 @@ namespace Circuit_Simulator.UI
                 switch (resize_type)
                 {
                     case 1: // Bottom Resize
-                        if (size.Y >= 20)
-                            size.Y += Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y;
-                        else
-                            size.Y = 20;
+                        size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
+                        if (size.Y <= headheight + minsize.Y)
+                            size.Y = headheight + minsize.Y;
                         break;
                     case 2: // Right Resize
-                        size.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        size.X = Game1.mo_states.New.Position.X - absolutpos.X;
+                        if (size.X <= headheight + minsize.X)
+                            size.X = headheight + minsize.X;
                         break;
                     case 3: // Left Resize
-                        size.X -= Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
-                        pos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
-                        absolutpos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
-                        break;
+                        size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
+                        if (size.X <= headheight + minsize.X)
+                            size.X = headheight + minsize.X;
+                        pos.X = oldrightborderpos.X - size.X;
+                        absolutpos.X = oldrightborderpos.X - size.X;
 
+                        break;
+                
 
 
                 }
