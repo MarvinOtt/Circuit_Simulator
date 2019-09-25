@@ -61,7 +61,7 @@ namespace Circuit_Simulator
         public static event EventHandler GraphicsChanged;
         Simulator simulator;
         SpriteBatch spriteBatch;
-        SpriteFont basefont;
+        public static SpriteFont basefont;
         
 
         #region UI
