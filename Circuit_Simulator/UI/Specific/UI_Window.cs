@@ -73,10 +73,10 @@ namespace Circuit_Simulator.UI
                 pos.Y = Game1.Screenheight - headheight;
             absolutpos = pos;
 
-            Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y - 5), new Point(size.X, 10));
-            if (Resize_bottom_box.Contains(Game1.mo_states.New.Position))
+            Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y), new Point(size.X, 10));
+            if (Resize_bottom_box.Contains(Game1.mo_states.New.Position) && !IsResize)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNS;
                 if(Game1.mo_states.IsLeftButtonToggleOn())
                 {
                     IsResize = true;
@@ -84,10 +84,10 @@ namespace Circuit_Simulator.UI
                 }
                    
             }
-            Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X - 5, headheight), new Point(10, size.Y - headheight));
-            if (Resize_right_box.Contains(Game1.mo_states.New.Position))
+            Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X, headheight), new Point(10, size.Y - headheight));
+            if (Resize_right_box.Contains(Game1.mo_states.New.Position) && !IsResize)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
                 if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
                     IsResize = true;
@@ -95,10 +95,10 @@ namespace Circuit_Simulator.UI
                 }
 
             }
-            Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-5, headheight), new Point(10, size.Y - headheight));
-            if (Resize_left_box.Contains(Game1.mo_states.New.Position))
+            Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-10, headheight), new Point(10, size.Y - headheight));
+            if (Resize_left_box.Contains(Game1.mo_states.New.Position) && !IsResize)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
                 if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
                     oldrightborderpos = new Point(pos.X + size.X, 0);
@@ -109,7 +109,6 @@ namespace Circuit_Simulator.UI
             }
             if (IsResize)
             {
-                Resize();
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsResize = false;
@@ -132,22 +131,19 @@ namespace Circuit_Simulator.UI
                             size.X = headheight + minsize.X;
                         pos.X = oldrightborderpos.X - size.X;
                         absolutpos.X = oldrightborderpos.X - size.X;
-
                         break;
-                
-
-
                 }
+                Resize();
             }
                 
-
-            base.UpdateSpecific();
+            if(!IsResize)
+                base.UpdateSpecific();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, ui_elements[0].size.Y + 4)), BorderColor); //Chartreuse Best Color
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
 
             base.DrawSpecific(spritebatch);
 

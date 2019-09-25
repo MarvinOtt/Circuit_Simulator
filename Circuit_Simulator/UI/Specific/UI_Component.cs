@@ -30,28 +30,30 @@ namespace Circuit_Simulator.UI.Specific
         protected override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            
 
-            if (hitbox.Contains(Game1.mo_states.New.Position))
+            if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
             {
-                if (Game1.mo_states.IsLeftButtonToggleOn())
+                if (hitbox.Contains(Game1.mo_states.New.Position))
                 {
-                    IsDrag = true;
-                    UI_Handler.dragcomp.GetsUpdated = true;
-                    UI_Handler.dragcomp.GetsDrawn = true;
-                    UI_Handler.dragcomp.comp = this;
-                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
-                }
+                    if (Game1.mo_states.IsLeftButtonToggleOn())
+                    {
+                        IsDrag = true;
+                        UI_Handler.dragcomp.GetsUpdated = true;
+                        UI_Handler.dragcomp.GetsDrawn = true;
+                        UI_Handler.dragcomp.comp = this;
+                        UI_Handler.ZaWarudo = UI_Handler.dragcomp;
+                        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                    }
 
-                IsHover = true;
+                    IsHover = true;
+                }
+                else
+                    IsHover = false;
             }
             else
                 IsHover = false;
             if (IsDrag && Game1.mo_states.IsLeftButtonToggleOff())
-            {
                 IsDrag = false;
-                //System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
-            }
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
@@ -59,9 +61,6 @@ namespace Circuit_Simulator.UI.Specific
             if(IsHover)
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.Syscolors[1]);
             spritebatch.DrawString(conf.font, name, absolutpos.ToVector2() + text_pos, conf.fontcol);
-
-            //if(IsDrag)
-            //    spritebatch.DrawString(conf.font, name,Game1.mo_states.New.Position.ToVector2(), conf.fontcol);
 
         }
     }

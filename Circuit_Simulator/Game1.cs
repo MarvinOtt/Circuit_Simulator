@@ -105,6 +105,8 @@ namespace Circuit_Simulator
             Screenheight = graphics.PreferredBackBufferHeight;
         }
 
+        void SetToPreserve(object sender, PreparingDeviceSettingsEventArgs eventargs) { eventargs.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents; }
+
         public Game1()
         {
             // Graphic Initialization
@@ -116,7 +118,9 @@ namespace Circuit_Simulator
                 PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height - 100,
                 IsFullScreen = false,
                 SynchronizeWithVerticalRetrace = true
+                
             };
+            graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(SetToPreserve);
             IsFixedTimeStep = false;
             Window.IsBorderless = false;
 
