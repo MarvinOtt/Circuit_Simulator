@@ -32,6 +32,12 @@
 /processorParam:TextureFormat=Color
 /build:fullhdtest.png
 
+#begin line_effect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:line_effect.fx
+
 #begin sim_effect.fx
 /importer:EffectImporter
 /processor:EffectProcessor

@@ -17,6 +17,15 @@ namespace Circuit_Simulator
             this.Old = Old;
         }
 
+        public bool IsMiddleButtonToggleOn()
+        {
+            return New.MiddleButton == ButtonState.Pressed && Old.MiddleButton == ButtonState.Released;
+        }
+        public bool IsMiddleButtonToggleOff()
+        {
+            return New.MiddleButton == ButtonState.Released && Old.MiddleButton == ButtonState.Pressed;
+        }
+
         public bool IsLeftButtonToggleOn()
         {
             return New.LeftButton == ButtonState.Pressed && Old.LeftButton == ButtonState.Released;

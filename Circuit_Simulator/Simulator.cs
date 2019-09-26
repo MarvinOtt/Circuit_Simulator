@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
 
 namespace Circuit_Simulator
 {
@@ -15,7 +17,7 @@ namespace Circuit_Simulator
     }
     public struct Line
     {
-        byte layers;
+        public byte layers;
         public int length;
         public Point start, end, dir;
 
@@ -54,19 +56,69 @@ namespace Circuit_Simulator
                 }
             }
         }
+
+        public void Draw()
+        {
+            for (int i = 0; i < lines.Count; ++i)
+            {
+                if(lines[i].layers == 255)
+                {
+                    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].start, 255);
+                    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].end + lines[i].dir, 255);
+                    continue;
+                }
+                for(int j = 0; j < Simulator.LAYER_NUM; ++j) // Iterating all Layers
+                {
+                    if((lines[i].layers & (1 << j)) > 0)
+                    {
+                        Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = new VertexPositionLine(lines[i].start, (1 << j));
+                        Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
+                    }
+                }
+            }
+        }
     }
+
+    public struct VertexPositionLine : IVertexType
+    {
+        public Vector3 Position;
+        public float layers;
+
+        public VertexPositionLine(Point pos, float layers)
+        {
+            this.Position = new Vector3(pos.X + 0.45f, pos.Y + 0.45f, 0);
+            this.layers = layers;
+        }
+
+        public readonly static VertexDeclaration VertexDeclaration = new VertexDeclaration
+        (
+            new VertexElement(0, VertexElementFormat.Vector3, VertexElementUsage.Position, 0),
+            new VertexElement(12, VertexElementFormat.Single, VertexElementUsage.Color, 0)
+        );
+
+        VertexDeclaration IVertexType.VertexDeclaration
+        {
+            get { return VertexDeclaration; }
+        }
+    }
+
 
     public class Simulator
     {
-        public const int SIZEX = 16384;
-        public const int SIZEY = 16384;
+        public const int SIZEX = 10240;
+        public const int SIZEY = 10240;
         public const int LAYER_NUM = 7;
 
-        Effect sim_effect;
+        BasicEffect basicEffect;
+        Effect sim_effect, line_effect;
         RenderTarget2D main_target;
-        Texture2D outputtex, logictex;
+        RenderTarget2D[] logic_targets;
+        Texture2D outputtex;
         Network CalcNetwork;
+        
         public static Network[] networks;
+        public static VertexPositionLine[][] lines2draw;
+        public static int[] lines2draw_count;
         public static int highestNetworkID = 3;
         public static int[] emptyNetworkID;
         public static int emptyNetworkID_count;
@@ -94,9 +146,19 @@ namespace Circuit_Simulator
         {
             Game1.GraphicsChanged += Window_Graphics_Changed;
             sim_effect = Game1.content.Load<Effect>("sim_effect");
+            line_effect = Game1.content.Load<Effect>("line_effect");
             main_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
             outputtex = new Texture2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
-            logictex = new Texture2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8);
+            logic_targets = new RenderTarget2D[LAYER_NUM + 1];
+            for (int i = 0; i < logic_targets.Length; ++i)
+                logic_targets[i] = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            //sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            foreach (var rt in logic_targets)
+            {
+                Game1.graphics.GraphicsDevice.SetRenderTargets(rt);
+                Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
+                Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            }
             IsWire = new byte[SIZEX, SIZEY];
             CellType = new byte[SIZEX, SIZEY];
             CalcGridData = new byte[SIZEX, SIZEY];
@@ -105,13 +167,25 @@ namespace Circuit_Simulator
             WireIDs = new int[SIZEX / 2, SIZEY / 2, LAYER_NUM];
             networks = new Network[10000000];
             emptyNetworkID = new int[10000000];
-
             revshiftarray = new byte[256];
             for (int i = 0; i < 8; ++i)
             {
                 for(int j = 0; j < (1 << i); ++j)
                     revshiftarray[(1 << i) + j] = (byte)i;
-            } 
+            }
+            lines2draw_count = new int[LAYER_NUM + 1];
+            lines2draw = new VertexPositionLine[LAYER_NUM + 1][];
+            for (int i = 0; i < lines2draw.Length; ++i)
+                lines2draw[i] = new VertexPositionLine[100000];
+
+            basicEffect = new BasicEffect(Game1.graphics.GraphicsDevice);
+            basicEffect.VertexColorEnabled = true;
+            basicEffect.World = Matrix.CreateScale(1.0f / 1.0f);
+            basicEffect.View = Matrix.CreateTranslation(Vector3.Zero);
+            basicEffect.Projection = Matrix.CreateOrthographicOffCenter
+            (0, SIZEX,     // left, right
+                SIZEY, 0,    // bottom, top
+                0, 1);
 
             sim_effect.Parameters["Screenwidth"].SetValue(Game1.Screenwidth);
             sim_effect.Parameters["Screenheight"].SetValue(Game1.Screenheight);
@@ -177,6 +251,7 @@ namespace Circuit_Simulator
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public int MakeLineDir(int x, int y)
         {
             byte curval = CalcGridData[x, y];
@@ -220,14 +295,15 @@ namespace Circuit_Simulator
             byte linelayers = CalcGridData[x, y];
             Point dirvec = Point.Zero;
             if (dir == 1)
-                dirvec = new Point(0, -1);
+                dirvec = new Point(0, 1);
             if (dir == 2)
                 dirvec = new Point(1, -1);
             if (dir == 3)
                 dirvec = new Point(1, 0);
             if (dir == 4)
                 dirvec = new Point(1, 1);
-
+            if (dir == 0)
+                dirvec = new Point(0, 1);
             // Marching every cell for this line
             int i, j;
             for(i = 0; ;++i)
@@ -305,19 +381,13 @@ namespace Circuit_Simulator
 
             // Clear Calc Grid
             networks[netID].ClearCalcGrid();
-
-
-
-            //if((IsWire[x, y] & (1 << layer)) != 0)
-            //{
-            //    if((IsWire[x - 1, y] & (1 << layer)) != 0)
-            //}
+            networks[netID].Draw();
         }
 
         public void Update()
         {
             screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
-            IsInGrid = mo_worldposx >= 0 && mo_worldposy >= 0 && mo_worldposx < SIZEX && mo_worldposy < SIZEY;
+            IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
             #region INPUT
             if (Game1.kb_states.New.IsKeyDown(Keys.W))
@@ -328,6 +398,10 @@ namespace Circuit_Simulator
                 worldpos.X += 10;
             if (Game1.kb_states.New.IsKeyDown(Keys.D))
                 worldpos.X -= 10;
+            if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
+                currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
+            if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
+                currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
 
             if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
             {
@@ -347,10 +421,17 @@ namespace Circuit_Simulator
             #endregion
 
             // Placing Wires
-            if(IsInGrid && Game1.mo_states.IsLeftButtonToggleOn())
+            if(IsInGrid && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
             {
-                IsWire[mo_worldposx, mo_worldposy] = (1 << 4);
-                CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(1 << 4));
+                IsWire[mo_worldposx, mo_worldposy] |= (byte)(1 << currentlayer);
+                CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(1 << currentlayer));
+            }
+
+            // Placing Via
+            if (IsInGrid && Game1.mo_states.IsMiddleButtonToggleOn())
+            {
+                IsWire[mo_worldposx, mo_worldposy] = 255;
+                CalculateNetworkAt(mo_worldposx, mo_worldposy, 255);
             }
 
             sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
@@ -362,8 +443,30 @@ namespace Circuit_Simulator
         public void Draw(SpriteBatch spritebatch)
         {
             spritebatch.End();
+            for(int i = 0; i < LAYER_NUM + 1; ++i)
+            {
+                if (lines2draw_count[i] > 0)
+                {
+                    Game1.graphics.GraphicsDevice.SetRenderTarget(logic_targets[i]);
 
-            sim_effect.Parameters["logictex"].SetValue(logictex);
+                    line_effect.Parameters["WorldViewProjection"].SetValue(basicEffect.World * basicEffect.View * basicEffect.Projection);
+                    line_effect.CurrentTechnique.Passes[0].Apply();
+                    Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+
+                    Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                    lines2draw_count[i] = 0;
+                }
+            }
+
+
+            sim_effect.Parameters["logictex_L1"].SetValue(logic_targets[0]);
+            sim_effect.Parameters["logictex_L2"].SetValue(logic_targets[1]);
+            sim_effect.Parameters["logictex_L3"].SetValue(logic_targets[2]);
+            sim_effect.Parameters["logictex_L4"].SetValue(logic_targets[3]);
+            sim_effect.Parameters["logictex_L5"].SetValue(logic_targets[4]);
+            sim_effect.Parameters["logictex_L6"].SetValue(logic_targets[5]);
+            sim_effect.Parameters["logictex_L7"].SetValue(logic_targets[6]);
+            sim_effect.Parameters["logictex_LV"].SetValue(logic_targets[7]);
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, sim_effect, Matrix.Identity);
             spritebatch.Draw(outputtex, Vector2.Zero, Color.White);
             spritebatch.End();
@@ -371,8 +474,9 @@ namespace Circuit_Simulator
 
 
             spritebatch.Begin();
-            if(IsInGrid && IsWire[mo_worldposx, mo_worldposy] != 0)
-                spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, 4].ToString(), new Vector2(500, 100), Color.Red);
+            spritebatch.DrawString(Game1.basefont, "Layer: " + currentlayer.ToString(), new Vector2(500, 100), Color.Red);
+            if(IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+                spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer].ToString(), new Vector2(500, 130), Color.Red);
 
         }
     }
