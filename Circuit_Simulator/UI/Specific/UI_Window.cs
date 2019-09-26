@@ -15,6 +15,9 @@ namespace Circuit_Simulator.UI
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
         string Title;
+        Point minsize;
+        Point oldsize;
+        Point oldrightborderpos;
         static Texture2D tex;
         public static int headheight = 20;
         public int resize_type;
@@ -22,8 +25,9 @@ namespace Circuit_Simulator.UI
         bool IsGrab;
         Point Grabpos;
 
-        public UI_Window(Point pos, Point size, string Title) : base(pos, size)
+        public UI_Window(Point pos, Point size, string Title, Point minsize) : base(pos, size)
         {
+            this.minsize = minsize;
             this.Title = Title;
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
@@ -69,10 +73,10 @@ namespace Circuit_Simulator.UI
                 pos.Y = Game1.Screenheight - headheight;
             absolutpos = pos;
 
-            Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y - 5), new Point(size.X, 10));
-            if (Resize_bottom_box.Contains(Game1.mo_states.New.Position))
+            Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y), new Point(size.X, 10));
+            if (Resize_bottom_box.Contains(Game1.mo_states.New.Position) && !IsResize)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNS;
                 if(Game1.mo_states.IsLeftButtonToggleOn())
                 {
                     IsResize = true;
@@ -80,10 +84,10 @@ namespace Circuit_Simulator.UI
                 }
                    
             }
-            Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X - 5, headheight), new Point(10, size.Y - headheight));
-            if (Resize_right_box.Contains(Game1.mo_states.New.Position))
+            Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X, headheight), new Point(10, size.Y - headheight));
+            if (Resize_right_box.Contains(Game1.mo_states.New.Position) && !IsResize)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
                 if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
                     IsResize = true;
@@ -91,12 +95,13 @@ namespace Circuit_Simulator.UI
                 }
 
             }
-            Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-5, headheight), new Point(10, size.Y - headheight));
-            if (Resize_left_box.Contains(Game1.mo_states.New.Position))
+            Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-10, headheight), new Point(10, size.Y - headheight));
+            if (Resize_left_box.Contains(Game1.mo_states.New.Position) && !IsResize)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
+                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
                 if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
+                    oldrightborderpos = new Point(pos.X + size.X, 0);
                     IsResize = true;
                     resize_type = 3;
                 }
@@ -104,7 +109,6 @@ namespace Circuit_Simulator.UI
             }
             if (IsResize)
             {
-                Resize();
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsResize = false;
@@ -112,33 +116,34 @@ namespace Circuit_Simulator.UI
                 switch (resize_type)
                 {
                     case 1: // Bottom Resize
-                        if (size.Y >= 20)
-                            size.Y += Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y;
-                        else
-                            size.Y = 20;
+                        size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
+                        if (size.Y <= headheight + minsize.Y)
+                            size.Y = headheight + minsize.Y;
                         break;
                     case 2: // Right Resize
-                        size.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        size.X = Game1.mo_states.New.Position.X - absolutpos.X;
+                        if (size.X <= headheight + minsize.X)
+                            size.X = headheight + minsize.X;
                         break;
                     case 3: // Left Resize
-                        size.X -= Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
-                        pos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
-                        absolutpos.X += Game1.mo_states.New.Position.X - Game1.mo_states.Old.Position.X;
+                        size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
+                        if (size.X <= headheight + minsize.X)
+                            size.X = headheight + minsize.X;
+                        pos.X = oldrightborderpos.X - size.X;
+                        absolutpos.X = oldrightborderpos.X - size.X;
                         break;
-
-
-
                 }
+                Resize();
             }
                 
-
-            base.UpdateSpecific();
+            if(!IsResize)
+                base.UpdateSpecific();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, ui_elements[0].size.Y + 4)), BorderColor); //Chartreuse Best Color
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
 
             base.DrawSpecific(spritebatch);
 

@@ -26,6 +26,7 @@ namespace Circuit_Simulator.UI.Specific
                 comp.IsDrag = false;
                 GetsDrawn = false;
                 GetsUpdated = false;
+                UI_Handler.ZaWarudo = null;
             }
         }
         protected override void DrawSpecific(SpriteBatch spritebatch)

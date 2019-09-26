@@ -67,6 +67,14 @@ namespace Circuit_Simulator
 
 	    public void Draw(SpriteBatch spritebatch)
         {
+            absolutpos = parent == null ? pos : pos + parent.absolutpos;
+            if (parent != null)
+            {
+                if (pos.X < 0)
+                    absolutpos.X += parent.size.X;
+                if (pos.Y < 0)
+                    absolutpos.Y += parent.size.Y;
+            }
             if (GetsDrawn)
             {
                 DrawSpecific(spritebatch);

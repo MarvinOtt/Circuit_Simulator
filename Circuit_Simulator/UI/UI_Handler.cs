@@ -17,7 +17,7 @@ namespace Circuit_Simulator
     public class UI_Handler
     {
 	    public ContentManager Content;
-
+        public static UI_Element ZaWarudo;  //JoJo Reference
 	    private Texture2D Button_tex;
         public static bool UI_Element_Pressed;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
@@ -103,7 +103,7 @@ namespace Circuit_Simulator
             QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
 
             //Componentbox
-            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox");
+            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox", new Point(30, 20));
 
             // Sample Components
             AND = new UI_Component("AND", componentconf);
@@ -163,15 +163,6 @@ namespace Circuit_Simulator
                         cur.IsActivated = false;
                 });
             }
-            // DragDraw
-            //ComponentBox.Catagories.DrawFunctions.Add(delegate ()
-            //{
-            //    ComponentBox.Catagories.ui_elements.ForEach(cat => cat.Components.ui_elements.ForEach(c =>
-            //    {
-            //        if (c.IsDrag)
-            //            spritebatch.DrawString(c.conf.font, c.name, Game1.mo_states.New.Position.ToVector2() + new Vector2(16, 0), c.conf.fontcol);
-            //    }));
-            //});
         }
 
         // Gets called when something of the Window or Graphics got changed
@@ -183,7 +174,13 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
             UI_Element_Pressed = false;
-            dragcomp.Update();
+            if (ZaWarudo != null)
+            {
+                ZaWarudo.Update();
+                return;
+            }
+
+            
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Update();
             ComponentBox.Update();
