@@ -8,16 +8,16 @@
 #endif
 
 matrix WorldViewProjection;
-//Texture2D tex;
-////int state;
-//
-//sampler2D tex_samp = sampler_state
-//{
-//	Texture = <tex>;
-//	MipFilter = POINT;
-//	MinFilter = POINT;
-//	MagFilter = POINT;
-//};
+Texture2D tex;
+//int state;
+
+sampler2D tex_samp = sampler_state
+{
+	Texture = <tex>;
+	MipFilter = POINT;
+	MinFilter = POINT;
+	MagFilter = POINT;
+};
 
 struct VertexShaderInput
 {
@@ -46,15 +46,17 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
-	if (input.layers > 0.5f)
-		return float4(1, 1, 1, 1);
-	else
+	//if (input.layers > 0.5f)
+	//	return float4(1, 1, 1, 1);
+	//else
+	//	return float4(0, 0, 0, 0);
+	if (input.layers < 0.5f)
 		return float4(0, 0, 0, 0);
 
-	/*uint tex_dat = tex2D(tex_samp, input.Position.xy) * 255.0f;
-	uint layers = input.layers;
-	uint res = tex_dat | layers;
-	return float4(1, 1, 1, res / 255.0f);*/
+	uint tex_dat = tex[uint2(input.Position.x, input.Position.y)].a * 255.0f;
+	uint layers_uint = input.layers;
+	uint res = tex_dat | layers_uint;
+	return float4(1, 1, 1, res / 255.0f);
 
 }
 

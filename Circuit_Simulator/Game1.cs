@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.Security.Permissions;
 //using Circuit_Simulator.UI;
 
 namespace Circuit_Simulator
@@ -62,6 +63,7 @@ namespace Circuit_Simulator
         }
     }
 
+
     public class Game1 : Game
     {
         public static GraphicsDeviceManager graphics;
@@ -101,8 +103,10 @@ namespace Circuit_Simulator
         // Gets called everytime the Windows Size gets changed
         void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-            graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
-            graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
+            if (Window.ClientBounds.Width != 0)
+                graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
+            if (Window.ClientBounds.Height != 0)
+                graphics.PreferredBackBufferHeight = Window.ClientBounds.Height;
             // Not Applying Graphics here because when resizing happens, ApplyChanges would be called too often which could cause a crash
             // When resizing happens, the Update Method is not going to be called so long until resizing is finished, and therefore Apply Changes gets only called once
             GraphicsNeedApplyChanges = true;
@@ -115,6 +119,19 @@ namespace Circuit_Simulator
         }
 
         void SetToPreserve(object sender, PreparingDeviceSettingsEventArgs eventargs) { eventargs.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents; }
+
+        private void MainForm_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            if (e.KeyCode == System.Windows.Forms.Keys.LWin)
+            {
+                if(form.WindowState == System.Windows.Forms.FormWindowState.Maximized)
+                    form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            }
+        }
+        void GetsMinimized(object sender, System.Windows.Forms.FormClosingEventArgs e)
+        {
+            System.Windows.Forms.CloseReason c = e.CloseReason;
+        }
 
         public Game1()
         {
@@ -145,7 +162,7 @@ namespace Circuit_Simulator
             form.MaximizeBox = true;
             form.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
             form.Resize += Window_ClientSizeChanged;
-
+            form.FormClosing += GetsMinimized;
             form.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             GraphicsChanged(null, EventArgs.Empty);
             base.Initialize();
@@ -176,32 +193,34 @@ namespace Circuit_Simulator
             //----------------//
             kb_states.New = Keyboard.GetState();
             mo_states.New = Mouse.GetState();
-
-            //--------------------------------------------//
-            // HANDLING EVERYTHING ABOUT GRAPHICS CHANGES //
-            //--------------------------------------------//
-            if (GraphicsNeedApplyChanges)
+            if (IsActive)
             {
-                graphics.ApplyChanges();
-                GraphicsNeedApplyChanges = false;
-                GraphicsChanged(null, EventArgs.Empty);
+                //--------------------------------------------//
+                // HANDLING EVERYTHING ABOUT GRAPHICS CHANGES //
+                //--------------------------------------------//
+                if (GraphicsNeedApplyChanges)
+                {
+                    graphics.ApplyChanges();
+                    GraphicsNeedApplyChanges = false;
+                    if(Screenwidth != 0 && Screenheight != 0)
+                        GraphicsChanged(null, EventArgs.Empty);
+                }
+
+                //-------------------------//
+                // HANDLING USER INTERFACE //
+                //-------------------------//
+                UI_handler.Update();
+
+                //----------------------//
+                // BEGIN OF MAIN UPDATE //
+                //----------------------//
+
+                simulator.Update();
+
+                //--------------------//
+                // END OF MAIN UPDATE //
+                //--------------------//
             }
-             
-            //-------------------------//
-            // HANDLING USER INTERFACE //
-            //-------------------------//
-            UI_handler.Update();
-
-            //----------------------//
-            // BEGIN OF MAIN UPDATE //
-            //----------------------//
-
-            simulator.Update();
-
-            //--------------------//
-            // END OF MAIN UPDATE //
-            //--------------------//
-
             kb_states.Old = kb_states.New;
             mo_states.Old = mo_states.New;
             base.Update(gameTime);
