@@ -91,6 +91,40 @@ namespace Circuit_Simulator
         }
     }
 
+    public class Component
+    {
+        int ID;
+        int dataID;
+
+        public Component()
+        {
+
+        }
+    }
+    public struct ComponentPixel
+    {
+        byte type;
+        Point pos;
+
+        public ComponentPixel(Point pos, byte type)
+        {
+            this.pos = pos;
+            this.type = type;
+        }
+    }
+    public class ComponentData
+    {
+        public List<ComponentPixel> data;
+        string name;
+        string catagory;
+
+        public ComponentData(string name, string catagory)
+        {
+            this.name = name;
+            data = new List<ComponentPixel>();
+        }
+    }
+
     public struct VertexPositionLine : IVertexType
     {
         public Vector3 Position;
@@ -125,16 +159,17 @@ namespace Circuit_Simulator
         Effect sim_effect, line_effect;
         RenderTarget2D main_target;
         RenderTarget2D logic_target, sec_target;
-        Texture2D outputtex;
         Network CalcNetwork;
+        List<ComponentData> Components_Data;
         
         public static Network[] networks;
         public static VertexPositionLine[][] lines2draw;
         public static int[] lines2draw_count;
+        public Matrix linedrawingmatrix;
         public static int highestNetworkID = 3;
         public static int[] emptyNetworkID;
         public static int emptyNetworkID_count;
-        public static byte[,] IsWire, CellType, CalcGridData, CalcGridStat, IsChange;
+        public static byte[,] IsWire, CalcGridData, CalcGridStat, IsChange;
         HashSet<int> FoundNetworks;
         int[] CalcOccurNetw;
         byte[] revshiftarray;
@@ -158,54 +193,53 @@ namespace Circuit_Simulator
         public Simulator()
         {
             Game1.GraphicsChanged += Window_Graphics_Changed;
+
+            // Loading Effects
             sim_effect = Game1.content.Load<Effect>("sim_effect");
             line_effect = Game1.content.Load<Effect>("line_effect");
-            main_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
-            outputtex = new Texture2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
+
+            // Initializing Render Targets
             sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
             FoundNetworks = new HashSet<int>();
             IsWire = new byte[SIZEX, SIZEY];
-            CellType = new byte[SIZEX, SIZEY];
             CalcGridData = new byte[SIZEX, SIZEY];
             CalcGridStat = new byte[SIZEX, SIZEY];
             IsChange = new byte[SIZEX, SIZEY];
             CalcOccurNetw = new int[10000];
             WireIDs = new int[SIZEX / 2, SIZEY / 2, LAYER_NUM];
-            networks = new Network[10000000];
-            emptyNetworkID = new int[10000000];
+            networks = new Network[20000000];
+            emptyNetworkID = new int[20000000];
             revshiftarray = new byte[256];
             for (int i = 0; i < 8; ++i)
-            {
                 for(int j = 0; j < (1 << i); ++j)
                     revshiftarray[(1 << i) + j] = (byte)i;
-            }
+            // Initializing Array for the Line Drawing
             lines2draw_count = new int[LAYER_NUM + 1];
             lines2draw = new VertexPositionLine[LAYER_NUM + 1][];
             for (int i = 0; i < LAYER_NUM + 1; ++i)
                 lines2draw[i] = new VertexPositionLine[200000];
-            basicEffect = new BasicEffect(Game1.graphics.GraphicsDevice);
-            basicEffect.VertexColorEnabled = true;
-            basicEffect.World = Matrix.CreateScale(1.0f / 1.0f);
-            basicEffect.View = Matrix.CreateTranslation(Vector3.Zero);
-            basicEffect.Projection = Matrix.CreateOrthographicOffCenter
-            (0, SIZEX,     // left, right
-                SIZEY, 0,    // bottom, top
-                0, 1);
+            linedrawingmatrix = Matrix.CreateOrthographicOffCenter(0, SIZEX, SIZEY, 0, 0, 1);
 
-            sim_effect.Parameters["Screenwidth"].SetValue(Game1.Screenwidth);
-            sim_effect.Parameters["Screenheight"].SetValue(Game1.Screenheight);
-            sim_effect.Parameters["worldsizex"].SetValue(SIZEX);
-            sim_effect.Parameters["worldsizey"].SetValue(SIZEY);
+            // Basic Components Data
+            Components_Data = new List<ComponentData>();
+            Components_Data.Add(new ComponentData("AND", "Gates"));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(0, -1), 1));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(0, 0), 1));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(0, 1), 1));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(1, -1), 1));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(1, 0), 1));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(1, 1), 1));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(-1, -1), 2));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(2, 0), 2));
+            Components_Data[0].data.Add(new ComponentPixel(new Point(-1, 1), 2));
         }
 
         public void Window_Graphics_Changed(object sender, EventArgs e)
         {
             main_target?.Dispose();
             main_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
-            outputtex?.Dispose();
-            outputtex = new Texture2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
 
             sim_effect.Parameters["Screenwidth"].SetValue(Game1.Screenwidth);
             sim_effect.Parameters["Screenheight"].SetValue(Game1.Screenheight);
@@ -581,13 +615,13 @@ namespace Circuit_Simulator
                 {
 
                     Game1.graphics.GraphicsDevice.SetRenderTarget(sec_target);
-                    line_effect.Parameters["WorldViewProjection"].SetValue(basicEffect.World * basicEffect.View * basicEffect.Projection);
+                    line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
                     line_effect.Parameters["tex"].SetValue(logic_target);
                     line_effect.CurrentTechnique.Passes[0].Apply();
                     Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
 
                     Game1.graphics.GraphicsDevice.SetRenderTarget(logic_target);
-                    line_effect.Parameters["WorldViewProjection"].SetValue(basicEffect.World * basicEffect.View * basicEffect.Projection);
+                    line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
                     line_effect.Parameters["tex"].SetValue(sec_target);
                     line_effect.CurrentTechnique.Passes[0].Apply();
                     Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
@@ -608,7 +642,7 @@ namespace Circuit_Simulator
             //sim_effect.Parameters["logictex_LV"].SetValue(logic_targets[7]);
             sim_effect.Parameters["logictex"].SetValue(logic_target);
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, sim_effect, Matrix.Identity);
-            spritebatch.Draw(outputtex, Vector2.Zero, Color.White);
+            spritebatch.Draw(main_target, Vector2.Zero, Color.White);
             spritebatch.End();
 
 

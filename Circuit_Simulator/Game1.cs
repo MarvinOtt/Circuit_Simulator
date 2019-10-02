@@ -182,7 +182,7 @@ namespace Circuit_Simulator
             UI_handler.Initialize(spriteBatch);
 
             simulator = new Simulator();
-
+            GraphicsChanged(null, EventArgs.Empty);
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
