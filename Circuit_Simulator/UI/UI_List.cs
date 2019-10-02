@@ -11,15 +11,21 @@ namespace Circuit_Simulator.UI
     public class UI_List<T> : UI_MultiElement<T> where T : UI_Element
     {
         bool DrawBackground;
+        bool IsScroll;
         Color BackgroundCol;
-        public UI_List(Point pos) : base(pos)
-        {
+        public Point ScrollPosOrigin, ScrollSize;
 
+        public UI_List(Point pos, bool IsScroll) : base(pos)
+        {
+            this.IsScroll = IsScroll;
+            CanBeSizeRelated = !IsScroll;
         }
-        public UI_List(Point pos, Color backgroundcol) : base(pos)
+        public UI_List(Point pos, Color backgroundcol, bool IsScroll) : base(pos)
         {
             DrawBackground = true;
+            this.IsScroll = IsScroll;
             BackgroundCol = backgroundcol;
+            CanBeSizeRelated = !IsScroll;
         }
 
         public override void Add_UI_Elements(params T[] elements)
@@ -32,6 +38,13 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateSpecific()
         {
+            if(IsScroll && new Rectangle(ScrollPosOrigin, ScrollSize).Contains(Game1.mo_states.New.Position))
+            {
+                if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
+                    pos.Y = pos.Y - 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
+                if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
+                    pos.Y = pos.Y - 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
+            }
             Point currentpos = Point.Zero;
             for (int i = 0; i < ui_elements.Count; ++i)
             {

@@ -20,6 +20,7 @@ namespace Circuit_Simulator.UI
         Point oldrightborderpos;
         static Texture2D tex;
         public static int headheight = 20;
+        public static int bezelsize = 10;
         public int resize_type;
         public bool IsResize;
         bool IsGrab;
@@ -109,6 +110,7 @@ namespace Circuit_Simulator.UI
             }
             if (IsResize)
             {
+                UI_Handler.UI_Active = true;
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsResize = false;
@@ -137,6 +139,7 @@ namespace Circuit_Simulator.UI
             }
                 
             if(!IsResize)
+
                 base.UpdateSpecific();
         }
 

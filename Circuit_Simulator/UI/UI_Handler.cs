@@ -19,7 +19,7 @@ namespace Circuit_Simulator
 	    public ContentManager Content;
         public static UI_Element ZaWarudo;  //JoJo Reference
 	    private Texture2D Button_tex;
-        public static bool UI_Element_Pressed;
+        public static bool UI_Element_Pressed, UI_Active;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
         static int buttonheight = 25;
         static int buttonwidth = 67;
@@ -41,6 +41,7 @@ namespace Circuit_Simulator
         UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops;
         UI_Component AND, OR, XOR, NAND, NOR, XNOR;
         UI_Component FF_RS, FF_D, FF_JK, FF_T;
+        UI_Component SISO, SIPO, PISO, PIPO;
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -106,6 +107,8 @@ namespace Circuit_Simulator
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox", new Point(30, 20));
 
             // Sample Components
+
+            // Gates
             AND = new UI_Component("AND", componentconf);
             OR = new UI_Component("OR", componentconf);
             XOR = new UI_Component("XOR", componentconf);
@@ -113,21 +116,30 @@ namespace Circuit_Simulator
             NOR = new UI_Component("NOR", componentconf);
             XNOR = new UI_Component("XNOR", componentconf);
 
+            // Flip Flops
             FF_RS = new UI_Component("RS", componentconf);
             FF_JK = new UI_Component("JK", componentconf);
             FF_D = new UI_Component("Data", componentconf);
             FF_T = new UI_Component("Toggle", componentconf);
+
+            // Shift Registers
+            SISO = new UI_Component("SISO", componentconf);
+            SIPO = new UI_Component("SIPO", componentconf);
+            PISO = new UI_Component("PISO", componentconf);
+            PIPO = new UI_Component("PIPO", componentconf);
 
 
 
             //Catagories
             Cat_Gates = new UI_Comp_Cat("Gates", cat_conf);
             Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", cat_conf);
+            Cat_ShiftRegisters = new UI_Comp_Cat("Shift Registers", cat_conf);
 
             Cat_Gates.AddComponents(AND, NAND, OR, NOR, XOR, XNOR);
             Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
+            Cat_ShiftRegisters.AddComponents(SISO, SIPO, PISO, PIPO);
 
-            ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops);
+            ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
             InitializeUISettings(spriteBatch);
         }
@@ -174,6 +186,7 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
             UI_Element_Pressed = false;
+            UI_Active = false;
             if (ZaWarudo != null)
             {
                 ZaWarudo.Update();

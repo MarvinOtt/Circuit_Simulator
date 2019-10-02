@@ -489,73 +489,77 @@ namespace Circuit_Simulator
             screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
             IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
-            #region INPUT
-            if (Game1.kb_states.New.IsKeyDown(Keys.W))
-                worldpos.Y += 10;
-            if (Game1.kb_states.New.IsKeyDown(Keys.S))
-                worldpos.Y -= 10;
-            if (Game1.kb_states.New.IsKeyDown(Keys.A))
-                worldpos.X += 10;
-            if (Game1.kb_states.New.IsKeyDown(Keys.D))
-                worldpos.X -= 10;
-            if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
-                currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
-            if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
-                currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
-
-            if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
+            if (!UI_Handler.UI_Active)
             {
-                if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
+
+                #region INPUT
+                if (Game1.kb_states.New.IsKeyDown(Keys.W))
+                    worldpos.Y += 10;
+                if (Game1.kb_states.New.IsKeyDown(Keys.S))
+                    worldpos.Y -= 10;
+                if (Game1.kb_states.New.IsKeyDown(Keys.A))
+                    worldpos.X += 10;
+                if (Game1.kb_states.New.IsKeyDown(Keys.D))
+                    worldpos.X -= 10;
+                if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
+                    currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
+                if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
+                    currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
+
+                if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
                 {
-                    worldzoom -= 1;
-                    Point diff = Game1.mo_states.New.Position - worldpos;
-                    worldpos += new Point(diff.X / 2, diff.Y / 2);
+                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
+                    {
+                        worldzoom -= 1;
+                        Point diff = Game1.mo_states.New.Position - worldpos;
+                        worldpos += new Point(diff.X / 2, diff.Y / 2);
+                    }
+                    else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && worldzoom < 8) // Zooming In
+                    {
+                        worldzoom += 1;
+                        Point diff = Game1.mo_states.New.Position - worldpos;
+                        worldpos -= diff;
+                    }
                 }
-                else if(Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && worldzoom < 8) // Zooming In
+                #endregion
+
+                // Deleting Wires
+                if (IsInGrid && Game1.mo_states.New.RightButton == ButtonState.Pressed && Game1.kb_states.New.IsKeyDown(Keys.LeftAlt))
                 {
-                    worldzoom += 1;
-                    Point diff = Game1.mo_states.New.Position - worldpos;
-                    worldpos -= diff;
+                    byte[,] data = new byte[10, 10];
+                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 10, 10), data);
                 }
-            }
-            #endregion
+                else if (IsInGrid && Game1.mo_states.New.RightButton == ButtonState.Pressed)
+                {
+                    byte[,] data = new byte[1, 1];
+                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+                }
 
-            // Deleting Wires
-            if (IsInGrid && Game1.mo_states.New.RightButton == ButtonState.Pressed && Game1.kb_states.New.IsKeyDown(Keys.LeftAlt))
-            {
-                byte[,] data = new byte[10, 10];
-                PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 10, 10), data);
-            }
-            else if(IsInGrid && Game1.mo_states.New.RightButton == ButtonState.Pressed)
-            {
-                byte[,] data = new byte[1, 1];
-                PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
-            }
+                // Placing Wires
+                if (IsInGrid && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+                {
+                    IsWire[mo_worldposx, mo_worldposy] |= (byte)(1 << currentlayer);
+                    CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(1 << currentlayer));
+                    Network.Delete(FoundNetworks);
+                    FoundNetworks.Clear();
 
-            // Placing Wires
-            if (IsInGrid && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
-            {
-                IsWire[mo_worldposx, mo_worldposy] |= (byte)(1 << currentlayer);
-                CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(1 << currentlayer));
-                Network.Delete(FoundNetworks);
-                FoundNetworks.Clear();
+                }
 
+                // Placing Via
+                if (IsInGrid && Game1.mo_states.IsMiddleButtonToggleOn())
+                {
+                    IsWire[mo_worldposx, mo_worldposy] = 255;
+                    CalculateNetworkAt(mo_worldposx, mo_worldposy, 255);
+                    Network.Delete(FoundNetworks);
+                    FoundNetworks.Clear();
+                }
+
+                sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
+                sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
+                sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
+                sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
+                sim_effect.Parameters["currentlayer"].SetValue(currentlayer);
             }
-
-            // Placing Via
-            if (IsInGrid && Game1.mo_states.IsMiddleButtonToggleOn())
-            {
-                IsWire[mo_worldposx, mo_worldposy] = 255;
-                CalculateNetworkAt(mo_worldposx, mo_worldposy, 255);
-                Network.Delete(FoundNetworks);
-                FoundNetworks.Clear();
-            }
-
-            sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
-            sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
-            sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
-            sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
-            sim_effect.Parameters["currentlayer"].SetValue(currentlayer);
         }
 
         public void Draw(SpriteBatch spritebatch)
