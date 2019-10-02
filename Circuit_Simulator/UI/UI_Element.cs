@@ -12,7 +12,7 @@ namespace Circuit_Simulator
     {
 	    public Point pos, size;
 	    public Point absolutpos;
-        public bool GetsDrawn = true, GetsUpdated = true;
+        public bool GetsDrawn = true, GetsUpdated = true, CanBeSizeRelated = true;
         public UI_Element parent;
         public UI_Element child;
         public List<Action> UpdateFunctions;
@@ -39,7 +39,7 @@ namespace Circuit_Simulator
 	    {
             
 		    absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            if(parent != null)
+            if(parent != null && CanBeSizeRelated)
             {
                 if (pos.X < 0)
                     absolutpos.X += parent.size.X;
@@ -53,6 +53,8 @@ namespace Circuit_Simulator
                 child?.Update();
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
+                    UI_Handler.UI_Active = true;
             }
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)
 		    {
@@ -68,7 +70,7 @@ namespace Circuit_Simulator
 	    public void Draw(SpriteBatch spritebatch)
         {
             absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            if (parent != null)
+            if (parent != null && CanBeSizeRelated)
             {
                 if (pos.X < 0)
                     absolutpos.X += parent.size.X;

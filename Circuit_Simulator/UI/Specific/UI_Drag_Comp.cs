@@ -21,6 +21,7 @@ namespace Circuit_Simulator.UI.Specific
         protected override void UpdateSpecific()
         {
             pos = Game1.mo_states.New.Position;
+            UI_Handler.UI_Active = true;
             if (Game1.mo_states.IsLeftButtonToggleOff())
             {
                 comp.IsDrag = false;

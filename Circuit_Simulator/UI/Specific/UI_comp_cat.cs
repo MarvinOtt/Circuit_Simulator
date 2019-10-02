@@ -21,7 +21,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             this.title = title;
             this.conf = conf;
-            Components = new UI_List<UI_Component>(new Point(0, UI_Component.height));
+            Components = new UI_List<UI_Component>(new Point(0, UI_Component.height), false);
             Add_UI_Elements(Components);
             Vector2 titlesize = conf.font.MeasureString(title);
             title_pos = new Vector2(4, (int)(size.Y / 2 - titlesize.Y / 2));
@@ -46,14 +46,19 @@ namespace Circuit_Simulator.UI.Specific
                 size.Y = UI_Component.height * (1 + Components.ui_elements.Count);
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, UI_Component.height));
 
-            if (hitbox.Contains(Game1.mo_states.New.Position))
+            if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
             {
-                IsHover = true;
-                if (Game1.mo_states.IsLeftButtonToggleOff())
+                if (hitbox.Contains(Game1.mo_states.New.Position))
                 {
-                    IsFold ^= true;
-                    Components.GetsUpdated = Components.GetsDrawn = !IsFold;
+                    IsHover = true;
+                    if (Game1.mo_states.IsLeftButtonToggleOff())
+                    {
+                        IsFold ^= true;
+                        Components.GetsUpdated = Components.GetsDrawn = !IsFold;
+                    }
                 }
+                else
+                    IsHover = false;
             }
             else
                 IsHover = false;
