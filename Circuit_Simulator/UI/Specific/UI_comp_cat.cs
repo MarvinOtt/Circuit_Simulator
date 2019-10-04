@@ -38,30 +38,39 @@ namespace Circuit_Simulator.UI.Specific
             Components.ui_elements.ForEach(x => x.size.X = Xsize);
         }
 
-        protected override void UpdateSpecific()
+        public override void ChangedUpdate2False()
         {
+            IsHover = false;
+            base.ChangedUpdate2False();
+        }
+
+        public override void UpdatePos()
+        {
+            base.UpdatePos();
             if (IsFold)
                 size.Y = UI_Component.height;
             else
                 size.Y = UI_Component.height * (1 + Components.ui_elements.Count);
+        }
+
+        protected override void UpdateSpecific()
+        {
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, UI_Component.height));
 
-            if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
+            //if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
+            //{
+            if (hitbox.Contains(Game1.mo_states.New.Position))
             {
-                if (hitbox.Contains(Game1.mo_states.New.Position))
+                IsHover = true;
+                if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
-                    IsHover = true;
-                    if (Game1.mo_states.IsLeftButtonToggleOff())
-                    {
-                        IsFold ^= true;
-                        Components.GetsUpdated = Components.GetsDrawn = !IsFold;
-                    }
+                    IsFold ^= true;
+                    Components.GetsUpdated = Components.GetsDrawn = !IsFold;
                 }
-                else
-                    IsHover = false;
             }
             else
                 IsHover = false;
+            //}
 
             base.UpdateSpecific();
         }

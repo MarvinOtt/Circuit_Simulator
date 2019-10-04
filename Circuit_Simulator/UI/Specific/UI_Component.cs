@@ -27,31 +27,34 @@ namespace Circuit_Simulator.UI.Specific
             text_pos = new Vector2(20, (int)(size.Y / 2 - textsize.Y / 2));
         }
 
+        public override void ChangedUpdate2False()
+        {
+            IsHover = false;
+            base.ChangedUpdate2False();
+        }
+
         protected override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
 
-            if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
+            //if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
+            //{
+            if (hitbox.Contains(Game1.mo_states.New.Position))
             {
-                if (hitbox.Contains(Game1.mo_states.New.Position))
+                if (Game1.mo_states.IsLeftButtonToggleOn())
                 {
-                    if (Game1.mo_states.IsLeftButtonToggleOn())
-                    {
-                        IsDrag = true;
-                        UI_Handler.dragcomp.GetsUpdated = true;
-                        UI_Handler.dragcomp.GetsDrawn = true;
-                        UI_Handler.dragcomp.comp = this;
-                        UI_Handler.ZaWarudo = UI_Handler.dragcomp;
-                        System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
-                    }
-
-                    IsHover = true;
+                    IsDrag = true;
+                    UI_Handler.dragcomp.GetsUpdated = true;
+                    UI_Handler.dragcomp.GetsDrawn = true;
+                    UI_Handler.dragcomp.comp = this;
+                    UI_Handler.ZaWarudo = UI_Handler.dragcomp;
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
                 }
-                else
-                    IsHover = false;
+                IsHover = true;
             }
             else
                 IsHover = false;
+            //}
             if (IsDrag && Game1.mo_states.IsLeftButtonToggleOff())
                 IsDrag = false;
         }

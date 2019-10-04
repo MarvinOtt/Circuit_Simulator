@@ -50,8 +50,9 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateSpecific()
         {
-            if(((TexButton)ui_elements[0]).IsActivated)
+            if (((TexButton)ui_elements[0]).IsActivated)
                 GetsUpdated = GetsDrawn = false;
+
             // Handling Draging of Window
             Rectangle Grabbox = new Rectangle(absolutpos, new Point(size.X - ui_elements[0].size.X - 4, ui_elements[0].size.Y + 4));
             if (Grabbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
@@ -142,10 +143,9 @@ namespace Circuit_Simulator.UI
                 }
                 Resize();
             }
-                
-            if(!IsResize)
-
+            else
                 base.UpdateSpecific();
+
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

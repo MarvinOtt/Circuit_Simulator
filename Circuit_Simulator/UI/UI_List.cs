@@ -11,21 +11,18 @@ namespace Circuit_Simulator.UI
     public class UI_List<T> : UI_MultiElement<T> where T : UI_Element
     {
         bool DrawBackground;
-        bool IsScroll;
         Color BackgroundCol;
         public Point ScrollPosOrigin, ScrollSize;
 
-        public UI_List(Point pos, bool IsScroll) : base(pos)
+        public UI_List(Point pos, bool CanBeSizeRelated) : base(pos)
         {
-            this.IsScroll = IsScroll;
-            CanBeSizeRelated = !IsScroll;
+            this.CanBeSizeRelated = CanBeSizeRelated;
         }
-        public UI_List(Point pos, Color backgroundcol, bool IsScroll) : base(pos)
+        public UI_List(Point pos, Color backgroundcol, bool CanBeSizeRelated) : base(pos)
         {
             DrawBackground = true;
-            this.IsScroll = IsScroll;
             BackgroundCol = backgroundcol;
-            CanBeSizeRelated = !IsScroll;
+            this.CanBeSizeRelated = CanBeSizeRelated;
         }
 
         public override void Add_UI_Elements(params T[] elements)
@@ -36,21 +33,29 @@ namespace Circuit_Simulator.UI
             size.Y = ui_elements.Sum(x => x.size.Y);
         }
 
+        public override void UpdatePos()
+        {
+            base.UpdatePos();
+            Point currentpos = Point.Zero;
+            for (int i = 0; i < ui_elements.Count; ++i)
+            {
+                ui_elements[i].pos = currentpos;
+                ui_elements[i].UpdatePos();
+                currentpos.Y += ui_elements[i].size.Y;
+            }
+            size.Y = ui_elements.Max(x => x.pos.Y + x.size.Y);
+        }
+
+
         protected override void UpdateSpecific()
         {
-            if(IsScroll && new Rectangle(ScrollPosOrigin, ScrollSize).Contains(Game1.mo_states.New.Position))
-            {
-                if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
-                {
-                    pos.Y = pos.Y + 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
-                    pos.Y = MathHelper.Min(pos.Y, 50);
-                }
-                if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
-                {
-                    pos.Y = pos.Y + 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
-                    //pos.Y = MathHelper.Max(pos.Y, 50);
-                }
-            }
+            //if(IsScroll && new Rectangle(ScrollPosOrigin, ScrollSize).Contains(Game1.mo_states.New.Position))
+            //{
+            //    if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
+            //        pos.Y = pos.Y - 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
+            //    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
+            //        pos.Y = pos.Y - 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
+            //}
             Point currentpos = Point.Zero;
             for (int i = 0; i < ui_elements.Count; ++i)
             {

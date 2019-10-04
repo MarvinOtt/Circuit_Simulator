@@ -54,6 +54,7 @@
     <Compile Include="UI\Specific\UI_Component.cs" />
     <Compile Include="UI\Specific\UI_ComponentBox.cs" />
     <Compile Include="UI\Specific\UI_Comp_Cat.cs" />
+    <Compile Include="UI\UI_Scrollable.cs" />
     <Compile Include="UI\UI_TexButton.cs" />
     <Compile Include="UI\Specific\UI_Button_Menu.cs" />
     <Compile Include="UI\Specific\UI_QuickHBElement.cs" />

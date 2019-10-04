@@ -12,7 +12,19 @@ namespace Circuit_Simulator
     {
 	    public Point pos, size;
 	    public Point absolutpos;
-        public bool GetsDrawn = true, GetsUpdated = true, CanBeSizeRelated = true;
+        private bool _GetsDrawn = true, _GetsUpdated = true;
+        public bool GetsDrawn { get { return _GetsDrawn; } set { _GetsDrawn = value; } }
+        public bool GetsUpdated
+        {
+            get { return _GetsUpdated; }
+            set
+            {
+                _GetsUpdated = value;
+                if(!value)
+                    ChangedUpdate2False();
+            }
+        }
+        public bool CanBeSizeRelated = true;
         public UI_Element parent;
         public UI_Element child;
         public List<Action> UpdateFunctions;
@@ -35,22 +47,46 @@ namespace Circuit_Simulator
 		    DrawFunctions = new List<Action>();
         }
 
-	    public void Update()
-	    {
-            
-		    absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            if(parent != null && CanBeSizeRelated)
+        public virtual void ChangedUpdate2False()
+        {
+            child?.ChangedUpdate2False();
+            // Should be overridden
+        }
+
+        public virtual void AlwaysUpdate(bool aaa)
+        {
+            // Should be overridden
+        }
+
+        public virtual void UpdatePos()
+        {
+            absolutpos = parent == null ? pos : pos + parent.absolutpos;
+            if (parent != null && CanBeSizeRelated)
             {
                 if (pos.X < 0)
                     absolutpos.X += parent.size.X;
                 if (pos.Y < 0)
                     absolutpos.Y += parent.size.Y;
             }
-            if (GetsUpdated)
+        }
+
+        public virtual void Update()
+	    {
+            //absolutpos = parent == null ? pos : pos + parent.absolutpos;
+            //if (parent != null && CanBeSizeRelated)
+            //{
+            //    if (pos.X < 0)
+            //        absolutpos.X += parent.size.X;
+            //    if (pos.Y < 0)
+            //        absolutpos.Y += parent.size.Y;
+            //}
+            UpdatePos();
+            if (_GetsUpdated)
             {
                 if(!UI_Handler.UI_Element_Pressed)
                     UpdateSpecific();
                 child?.Update();
+                //AlwaysUpdate(aaa && _GetsUpdated);
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
@@ -60,7 +96,7 @@ namespace Circuit_Simulator
 		    {
 			    UpdateFunctions[i]();
 		    }
-	    }
+        }
 
         protected virtual void UpdateSpecific()
         {
@@ -77,7 +113,7 @@ namespace Circuit_Simulator
                 if (pos.Y < 0)
                     absolutpos.Y += parent.size.Y;
             }
-            if (GetsDrawn)
+            if (_GetsDrawn)
             {
                 DrawSpecific(spritebatch);
                 child?.Draw(spritebatch);
