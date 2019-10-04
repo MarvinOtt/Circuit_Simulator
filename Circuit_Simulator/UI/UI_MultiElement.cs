@@ -38,13 +38,40 @@ namespace Circuit_Simulator
             ui_elements.AddRange(elements);
 	    }
 
-	    protected override void UpdateSpecific()
+        public override void ChangedUpdate2False()
+        {
+            for (int i = 0; i < ui_elements.Count; ++i)
+            {
+                ui_elements[i].ChangedUpdate2False();
+            }
+
+            base.ChangedUpdate2False();
+        }
+
+        public override void AlwaysUpdate(bool aaa)
+        {
+            for (int i = 0; i < ui_elements.Count; ++i)
+            {
+                ui_elements[i].Update();
+            }
+        }
+
+        public override void UpdatePos()
+        {
+            base.UpdatePos();
+            for (int i = 0; i < ui_elements.Count; ++i)
+            {
+                ui_elements[i].UpdatePos();
+            }
+        }
+
+        protected override void UpdateSpecific()
 	    {
-		    for (int i = 0; i < ui_elements.Count; ++i)
-		    {
-				ui_elements[i].Update();
-		    }
-	    }
+            for (int i = 0; i < ui_elements.Count; ++i)
+            {
+                ui_elements[i].Update();
+            }
+        }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
 	    {
