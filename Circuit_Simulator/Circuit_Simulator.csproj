@@ -49,6 +49,7 @@
     <Compile Include="Simulator.cs" />
     <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
     <Compile Include="UI\UI_Button.cs" />
+    <Compile Include="UI\UI_Dropdown_Button.cs" />
     <Compile Include="UI\UI_Configs.cs" />
     <Compile Include="UI\Specific\UI_Component.cs" />
     <Compile Include="UI\Specific\UI_ComponentBox.cs" />

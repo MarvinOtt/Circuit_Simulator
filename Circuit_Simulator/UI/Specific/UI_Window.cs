@@ -14,7 +14,9 @@ namespace Circuit_Simulator.UI
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
+        public Button_Conf conf;
         string Title;
+        Vector2 Title_pos;
         Point minsize;
         Point oldsize;
         Point oldrightborderpos;
@@ -26,10 +28,13 @@ namespace Circuit_Simulator.UI
         bool IsGrab;
         Point Grabpos;
 
-        public UI_Window(Point pos, Point size, string Title, Point minsize) : base(pos, size)
+        public UI_Window(Point pos, Point size, string Title, Point minsize, Button_Conf conf) : base(pos, size)
         {
             this.minsize = minsize;
             this.Title = Title;
+            this.conf = conf;
+            Vector2 title_dim = conf.font.MeasureString(Title);
+            Title_pos = new Vector2(5, headheight / 2 - title_dim.Y / 2);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
             Add_UI_Elements(new TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, new TexButton_Conf(2))); //X Button
@@ -147,10 +152,12 @@ namespace Circuit_Simulator.UI
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
+            spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.fontcol);
 
             base.DrawSpecific(spritebatch);
 
             spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
+
         }
     }
 }

@@ -42,6 +42,7 @@ namespace Circuit_Simulator
         UI_Component AND, OR, XOR, NAND, NOR, XNOR;
         UI_Component FF_RS, FF_D, FF_JK, FF_T;
         UI_Component SISO, SIPO, PISO, PIPO;
+        UI_List<UI_Dropdown_Button> wire_ddbl;
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -102,9 +103,20 @@ namespace Circuit_Simulator
             QuickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
             QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, quickbarconf_1));
             QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, quickbarconf_2));
 
+            wire_ddbl = new UI_List<UI_Dropdown_Button>(new Point(0, sqarebuttonwidth), false);
+            QuickHotbar.ui_elements[5].child = wire_ddbl;
+            wire_ddbl.parent = QuickHotbar.ui_elements[5];
+            for(int i = 0; i<7; i++)
+            {
+                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+6) + i+6, 0) ,Button_tex));
+            }
             //Componentbox
-            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "ComponentBox", new Point(30, 20));
+            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf);
 
             // Sample Components
 
