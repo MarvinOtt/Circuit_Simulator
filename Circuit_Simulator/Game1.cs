@@ -70,7 +70,7 @@ namespace Circuit_Simulator
         public static ContentManager content;
         public static System.Windows.Forms.Form form;
         public static event EventHandler GraphicsChanged;
-        Simulator simulator;
+        public static Simulator simulator;
         SpriteBatch spriteBatch;
         public static SpriteFont basefont;
         

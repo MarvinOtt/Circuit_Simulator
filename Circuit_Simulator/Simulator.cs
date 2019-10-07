@@ -103,8 +103,8 @@ namespace Circuit_Simulator
     }
     public struct ComponentPixel
     {
-        byte type;
-        Point pos;
+        public byte type;
+        public Point pos;
 
         public ComponentPixel(Point pos, byte type)
         {
@@ -155,10 +155,12 @@ namespace Circuit_Simulator
         public const int SIZEY = 10240;
         public const int LAYER_NUM = 7;
 
+
         BasicEffect basicEffect;
         Effect sim_effect, line_effect;
         RenderTarget2D main_target;
         RenderTarget2D logic_target, sec_target;
+        Texture2D componenttex;
         Network CalcNetwork;
         List<ComponentData> Components_Data;
         
@@ -178,6 +180,7 @@ namespace Circuit_Simulator
 
         Point worldpos;
         int worldzoom = 0;
+        public bool IsCompDrag;
 
         int sim_speed = 1;
 
@@ -201,6 +204,7 @@ namespace Circuit_Simulator
             // Initializing Render Targets
             sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            componenttex = new Texture2D(Game1.graphics.GraphicsDevice, 41, 41, false, SurfaceFormat.Alpha8);
 
             FoundNetworks = new HashSet<int>();
             IsWire = new byte[SIZEX, SIZEY];
@@ -518,14 +522,39 @@ namespace Circuit_Simulator
             FoundNetworks.Clear();
         }
 
+        public void InizializeComponentDrag(int ID)
+        {
+            if(UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+            {
+                byte[] data = new byte[41 * 41];
+                List<ComponentPixel> datapixel = Components_Data[ID].data;
+                for(int i = 0; i < datapixel.Count; ++i)
+                {
+                    data[(datapixel[i].pos.Y + 20) * 41 + (datapixel[i].pos.X + 20)] = datapixel[i].type;
+                }
+
+                componenttex.SetData(data);
+                sim_effect.Parameters["currenttype"].SetValue(1);
+                sim_effect.Parameters["comptex"].SetValue(componenttex);
+            }
+        }
+
+        public void ComponentDrop(int ID)
+        {
+            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+            {
+
+            }
+            sim_effect.Parameters["currenttype"].SetValue(0);
+        }
+
         public void Update()
         {
             screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
             IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
-            if (!UI_Handler.UI_Active)
+            if(UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
-
                 #region INPUT
                 if (Game1.kb_states.New.IsKeyDown(Keys.W))
                     worldpos.Y += 10;
@@ -556,6 +585,10 @@ namespace Circuit_Simulator
                     }
                 }
                 #endregion
+            }
+
+            if (UI_Handler.UI_Active_State == 0)
+            {
 
                 // Deleting Wires
                 if (IsInGrid && Game1.mo_states.New.RightButton == ButtonState.Pressed && Game1.kb_states.New.IsKeyDown(Keys.LeftAlt))
@@ -588,6 +621,9 @@ namespace Circuit_Simulator
                     FoundNetworks.Clear();
                 }
 
+            }
+            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+            {
                 sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
                 sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
                 sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);

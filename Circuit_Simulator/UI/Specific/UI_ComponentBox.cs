@@ -37,9 +37,10 @@ namespace Circuit_Simulator.UI.Specific
 
         protected override void UpdateSpecific()
         {
-            Catagories.size = new Point(size.X - bezelsize * 2, size.Y - 50 - bezelsize);
 
             base.UpdateSpecific();
+            Catagories.size = new Point(size.X - bezelsize * 2, size.Y - 50 - bezelsize);
+
             //Catagories.ScrollPosOrigin = absolutpos + new Point(bezelsize, 50);
             //Catagories.ScrollSize = new Point(size.X - bezelsize * 2, size.Y - 50 - bezelsize);
             //cathitbox = new Rectangle(absolutpos + new Point(bezelsize, 50), new Point(size.X - bezelsize * 2, size.Y - 50 - bezelsize));

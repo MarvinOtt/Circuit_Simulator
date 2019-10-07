@@ -116,7 +116,7 @@ namespace Circuit_Simulator.UI
             }
             if (IsResize)
             {
-                UI_Handler.UI_Active = true;
+                UI_Handler.UI_Active_State = 1;
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsResize = false;

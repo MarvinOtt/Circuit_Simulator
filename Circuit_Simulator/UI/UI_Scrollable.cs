@@ -29,8 +29,20 @@ namespace Circuit_Simulator.UI
                 ui_elements.ForEach(x => x.GetsUpdated = true);
             else
                 ui_elements.ForEach(x => x.GetsUpdated = false);
+            int minpos = ui_elements.Min(x => x.pos.Y);
+            int maxpos = ui_elements.Max(x => x.pos.Y + x.size.Y);
+            int ysize = maxpos - minpos;
+            if (ysize <= size.Y && minpos != 0)
+                ui_elements.ForEach(x => x.pos.Y -= minpos);
+            else if(ysize > size.Y)
+            {
+                if(minpos < 0 && maxpos < size.Y)
+                    ui_elements.ForEach(x => x.pos.Y += (size.Y - maxpos));
+                if (minpos > 0 && maxpos > size.Y)
+                    ui_elements.ForEach(x => x.pos.Y -= (minpos));
+            }
 
-            if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
+            if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && ysize > size.Y)
             {
                 if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
                 {

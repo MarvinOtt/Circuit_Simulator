@@ -16,10 +16,14 @@ namespace Circuit_Simulator
 {
     public class UI_Handler
     {
-	    public ContentManager Content;
+        public const int UI_Active_Main = 1;
+        public const int UI_Active_CompDrag = 2;
+
+        public ContentManager Content;
         public static UI_Element ZaWarudo;  //JoJo Reference
 	    private Texture2D Button_tex;
-        public static bool UI_Element_Pressed, UI_Active;
+        public static bool UI_Element_Pressed;
+        public static int UI_Active_State;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
         static int buttonheight = 25;
         static int buttonwidth = 67;
@@ -198,7 +202,7 @@ namespace Circuit_Simulator
 	    public void Update()
 	    {
             UI_Element_Pressed = false;
-            UI_Active = false;
+            UI_Active_State = 0;
             if (ZaWarudo != null)
             {
                 ZaWarudo.Update();

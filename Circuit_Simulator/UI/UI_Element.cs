@@ -90,7 +90,7 @@ namespace Circuit_Simulator
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
-                    UI_Handler.UI_Active = true;
+                    UI_Handler.UI_Active_State = 1;
             }
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)
 		    {

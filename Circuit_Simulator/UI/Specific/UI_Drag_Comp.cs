@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Circuit_Simulator.UI.Specific
 {
@@ -21,13 +22,15 @@ namespace Circuit_Simulator.UI.Specific
         protected override void UpdateSpecific()
         {
             pos = Game1.mo_states.New.Position;
-            UI_Handler.UI_Active = true;
-            if (Game1.mo_states.IsLeftButtonToggleOff())
+            UI_Handler.UI_Active_State = 2;
+            if (Game1.mo_states.New.LeftButton == ButtonState.Released)
             {
                 comp.IsDrag = false;
                 GetsDrawn = false;
                 GetsUpdated = false;
                 UI_Handler.ZaWarudo = null;
+                Game1.simulator.IsCompDrag = false;
+                Game1.simulator.ComponentDrop(comp.ID);
             }
         }
         protected override void DrawSpecific(SpriteBatch spritebatch)

@@ -8,11 +8,12 @@
 #endif
 
 texture2D logictex;
+texture2D comptex;
 
 int currentlayer;
 float zoom;
 float2 coos;
-int currentselectiontype;
+int currenttype;
 int copiedwidth, copiedheight, copiedposx, copiedposy; // Copying
 //int Selection_StartX, Selection_EndX, Selection_StartY, Selection_EndY; // Selecting
 int Screenwidth, Screenheight, worldsizex, worldsizey, mousepos_X, mousepos_Y;
@@ -27,6 +28,11 @@ static float4 layercols[8] =
 	float4(0, 1, 1, 1),
 	float4(1, 0.5f, 0, 1),
 	float4(0.2f, 0, 0.8f, 1)
+};
+static float4 compcols[2] =
+{
+	float4(0.5f, 0.5f, 0.5f, 1),
+	float4(1, 1, 0, 1)
 };
 
 sampler2D SpriteTextureSampler = sampler_state
@@ -45,7 +51,7 @@ float4 getcoloratpos(float x, float y)
 {
 	uint ux = (uint)x;
 	uint uy = (uint)y;
-	float4 OUT = float4(0, 0, 0, 1);
+	float4 OUT = float4(0, 0, 0, 0);
 	//float type_V = logictex_LV[uint2(ux, uy)].a;
 	//if (type_V > 0.5f)
 	//	OUT = float4(1, 1, 1, 1);
@@ -92,61 +98,22 @@ float4 getcoloratpos(float x, float y)
 	else
 		OUT = float4(1, 1, 1, 1);
 
-
-	//uint value1 = ((uint)(type + 0.5f)) % 17;
-	//uint value2 = ((uint)(type + 0.5f)) / 17;
-	//if (value1 == 0 && value2 == 0) {/*Do Nothing*/ }
-	////else if (value1 == 0 && value2 != 0)
-	//	//OUT = float4(0.125f, 0.125f, 0.125f, 1.0f);
-	//else if (type != 0)
-	//	OUT = float4(type * 0.001f, 0, 0, 1);
-	//else if (value1 > 0 && value1 < 5)
-	//	OUT = float4(1, 1, 1, 1);
-	//else if (value1 == 5)
-	//	OUT = float4(0.24f, 0.47f, 0, 1);
-	//else if (value1 == 6)
-	//	OUT = float4(0.2f, 0.4f, 0.82f, 1);
-	//else if (value1 == 7)
-	//	OUT = float4(1.0f, 1.0f, 0, 1);
-	//else if (value1 == 8)
-	//	OUT = float4(0.294f, 0.196f, 0, 1);
-	//else if (value1 == 9)
-	//	OUT = float4(0.392f, 0.0f, 0.49f, 1);
-	//else if (value1 == 10 || value1 == 11)
-	//	OUT = float4(0.8f, 0, 0, 1);
-	//else if (value1 == 12 || value1 == 13)
-	//	OUT = float4(0.196f, 0, 0, 1);
-
-	/*if (currentselectiontype == 2)
+	if (currenttype == 1)
 	{
-		if (ux >= copiedposx && uy >= copiedposy && ux < copiedposx + copiedwidth && uy < copiedposy + copiedheight)
+		uint posx = ux - mousepos_X + 20;
+		uint posy = uy - mousepos_Y + 20;
+		if (posx >= 0 && posx < 42 && posy >= 0 && posy < 42)
 		{
-			float type2 = CopyTexture[uint2(ux - copiedposx, uy - copiedposy)].a * 255.0f;
-			uint value1 = ((uint)(type2 + 0.5f)) % 17;
-			uint value2 = ((uint)(type2 + 0.5f)) / 17;
-			if (value1 == 0 && value2 == 0)
-				OUT = float4(0, 0, 0, 1);
-			else if (value1 == 0 && value2 != 0)
-				OUT = float4(0.125f, 0.125f, 0.125f, 1.0f);
-			else if (value1 > 0 && value1 < 5)
-				OUT = float4(1, 1, 1, 1);
-			else if (value1 == 5)
-				OUT = float4(0.24f, 0.47f, 0, 1);
-			else if (value1 == 6)
-				OUT = float4(0.2f, 0.4f, 0.82f, 1);
-			else if (value1 == 7)
-				OUT = float4(1.0f, 1.0f, 0, 1);
-			else if (value1 == 8)
-				OUT = float4(0.294f, 0.196f, 0, 1);
-			else if (value1 == 9)
-				OUT = float4(0.392f, 0.0f, 0.49f, 1);
-			else if (value1 == 10 || value1 == 11)
-				OUT = float4(0.8f, 0, 0, 1);
-			else if (value1 == 12 || value1 == 13)
-				OUT = float4(0.196f, 0, 0, 1);
-			OUT = OUT * 0.85f + float4(1, 0, 0, 1) * 0.15f;
+			uint type2 = (uint)(comptex[uint2(posx, posy)].a * 255.0f + 0.5f);
+			if (type2 != 0)
+			{
+				if (OUT.a > 0.5f)
+					OUT = float4(1, 0, 0, 1);
+				else
+					OUT = compcols[type2 - 1];
+			}
 		}
-	}*/
+	}
 
 	if (zoom > 1)
 	{

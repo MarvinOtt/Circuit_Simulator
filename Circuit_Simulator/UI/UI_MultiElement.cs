@@ -40,12 +40,11 @@ namespace Circuit_Simulator
 
         public override void ChangedUpdate2False()
         {
+            base.ChangedUpdate2False();
             for (int i = 0; i < ui_elements.Count; ++i)
             {
                 ui_elements[i].ChangedUpdate2False();
             }
-
-            base.ChangedUpdate2False();
         }
 
         public override void AlwaysUpdate(bool aaa)
