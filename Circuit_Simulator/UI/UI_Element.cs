@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace Circuit_Simulator
 {
@@ -87,7 +88,7 @@ namespace Circuit_Simulator
                     UpdateSpecific();
                 child?.Update();
                 //AlwaysUpdate(aaa && _GetsUpdated);
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
                     UI_Handler.UI_Active_State = 1;

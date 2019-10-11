@@ -10,7 +10,7 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator
 {
-    public class TexButton : UI_Element
+    public class UI_TexButton : UI_Element
     {
 	    public Texture2D tex;
 	    public Point tex_pos;
@@ -20,7 +20,7 @@ namespace Circuit_Simulator
 
 
 
-        public TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, TexButton_Conf conf) : base(pos, size)
+        public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, TexButton_Conf conf) : base(pos, size)
         {
             this.conf = conf;
             this.tex = tex;

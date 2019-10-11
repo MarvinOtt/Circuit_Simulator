@@ -47,6 +47,7 @@ namespace Circuit_Simulator.UI
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.Black);
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.Syscolors[(IsHovered ? 1 : 0) + (IsActivated ? 2 : 0)]);
             spritebatch.DrawString(conf.font, text, absolutpos.ToVector2() + text_pos, conf.fontcol);
         }
