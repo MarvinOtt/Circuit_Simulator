@@ -131,14 +131,14 @@ namespace Circuit_Simulator
 
         BasicEffect basicEffect;
         Effect sim_effect, line_effect;
-        RenderTarget2D main_target;
+        RenderTarget2D main_target, final_target;
         RenderTarget2D logic_target, sec_target;
         Network CalcNetwork;
         
         public static Network[] networks;
         public static VertexPositionLine[][] lines2draw;
         public static int[] lines2draw_count;
-        public Matrix linedrawingmatrix;
+        public static Matrix linedrawingmatrix;
         public static int highestNetworkID = 3;
         public static int[] emptyNetworkID;
         public static int emptyNetworkID_count;
@@ -499,7 +499,7 @@ namespace Circuit_Simulator
 
         public bool IsValidPlacementCoo(Point pos)
         {
-            return IsInGrid && Sim_Component.CompType[pos.X, pos.Y] == 0;
+            return IsInGrid && Sim_Component.CompType[pos.X, pos.Y] == 0 && !IsSimulating;
         }
 
         public void SetSimulationState(bool IsSimulating)
@@ -570,6 +570,14 @@ namespace Circuit_Simulator
                 if (!IsSimulating && IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0 && Game1.kb_states.IsKeyToggleDown(Keys.L))
                 {
                     networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state ^= 1;
+                }
+
+                if(IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                    int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
+                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                    Sim_Component.components[compID].Clicked();
                 }
 
                 // Placing Wires
@@ -648,8 +656,9 @@ namespace Circuit_Simulator
                     lines2draw_count[i] = 0;
                 }
             }
-
+            sim_comp.DrawOverlays(spritebatch);
             sim_comp.Draw(spritebatch);
+            
 
             //sim_effect.Parameters["logictex_L1"].SetValue(logic_targets[0]);
             //sim_effect.Parameters["logictex_L2"].SetValue(logic_targets[1]);

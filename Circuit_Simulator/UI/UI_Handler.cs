@@ -141,6 +141,7 @@ namespace Circuit_Simulator
             // Gates
             AND = new UI_Component("AND", componentconf);
             OR = new UI_Component("OR", componentconf);
+            OR.ID = 1;
             XOR = new UI_Component("XOR", componentconf);
             NAND = new UI_Component("NAND", componentconf);
             NOR = new UI_Component("NOR", componentconf);
