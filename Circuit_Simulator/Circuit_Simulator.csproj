@@ -59,7 +59,7 @@
     <Compile Include="UI\Specific\UI_ComponentBox.cs" />
     <Compile Include="UI\Specific\UI_Comp_Cat.cs" />
     <Compile Include="UI\UI_InfoBox.cs" />
-    <Compile Include="UI\Specific\UI_InfoComponent.cs" />
+    <Compile Include="UI\Specific\UI_ComponentInfoBox.cs" />
     <Compile Include="UI\UI_Scrollable.cs" />
     <Compile Include="UI\UI_TexButton.cs" />
     <Compile Include="UI\Specific\UI_Button_Menu.cs" />

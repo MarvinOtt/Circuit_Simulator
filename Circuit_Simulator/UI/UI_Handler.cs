@@ -39,7 +39,7 @@ namespace Circuit_Simulator
         public static TexButton_Conf TexButton_baseconf = new TexButton_Conf(1);
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
-        public UI_InfoBox info;
+        public UI_WireInfoBox info;
         private UI_QuickHBElement QuickHotbar;
         UI_MultiElement<UI_Element>[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
@@ -172,9 +172,8 @@ namespace Circuit_Simulator
 
             ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
-            //Info Box
-            info = new UI_InfoBox(new Point(500, 500), new Point(300, 300));
-
+            //Wire Info Box
+            info = new UI_WireInfoBox(new Point(500, 500), new Point(300, 300), componentconf);
 
 
             InitializeUISettings(spriteBatch);
