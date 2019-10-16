@@ -48,8 +48,8 @@ namespace Circuit_Simulator.UI.Specific
                     UI_Handler.dragcomp.GetsDrawn = true;
                     UI_Handler.dragcomp.comp = this;
                     UI_Handler.ZaWarudo = UI_Handler.dragcomp;
-                    Game1.simulator.InizializeComponentDrag(ID);
-                    Game1.simulator.IsCompDrag = true;
+                    Game1.simulator.sim_comp.InizializeComponentDrag(ID);
+                    Game1.simulator.sim_comp.IsCompDrag = true;
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
                 }
                 IsHover = true;

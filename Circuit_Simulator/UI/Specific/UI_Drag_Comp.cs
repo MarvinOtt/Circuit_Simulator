@@ -29,8 +29,8 @@ namespace Circuit_Simulator.UI.Specific
                 GetsDrawn = false;
                 GetsUpdated = false;
                 UI_Handler.ZaWarudo = null;
-                Game1.simulator.IsCompDrag = false;
-                Game1.simulator.ComponentDrop(comp.ID);
+                Game1.simulator.sim_comp.IsCompDrag = false;
+                Game1.simulator.sim_comp.ComponentDrop(comp.ID);
             }
         }
         protected override void DrawSpecific(SpriteBatch spritebatch)

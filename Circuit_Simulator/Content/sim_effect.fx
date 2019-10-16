@@ -8,6 +8,7 @@
 #endif
 
 texture2D logictex;
+texture2D placementtex;
 texture2D comptex;
 
 int currentlayer;
@@ -98,19 +99,34 @@ float4 getcoloratpos(float x, float y)
 	else
 		OUT = float4(1, 1, 1, 1);
 
+	float comptype = comptex[uint2(ux, uy)].a * 255.0f;
+	uint comptype_int = (uint)(comptype + 0.5f);
+	if (comptype_int != 0)
+	{
+		if(comptype_int == 1)
+			OUT = compcols[0];
+		else
+			OUT = compcols[1];
+	}
+
 	if (currenttype == 1)
 	{
 		uint posx = ux - mousepos_X + 20;
 		uint posy = uy - mousepos_Y + 20;
 		if (posx >= 0 && posx < 42 && posy >= 0 && posy < 42)
 		{
-			uint type2 = (uint)(comptex[uint2(posx, posy)].a * 255.0f + 0.5f);
+			uint type2 = (uint)(placementtex[uint2(posx, posy)].a * 255.0f + 0.5f);
 			if (type2 != 0)
 			{
 				if (OUT.a > 0.5f)
 					OUT = float4(1, 0, 0, 1);
 				else
-					OUT = compcols[type2 - 1];
+				{
+					if (type2 == 1)
+						OUT = compcols[0];
+					else
+						OUT = compcols[1];
+				}
 			}
 		}
 	}

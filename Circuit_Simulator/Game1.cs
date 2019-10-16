@@ -94,7 +94,6 @@ namespace Circuit_Simulator
 
         #endregion
 
-        public static bool IsSimulating;
         public static Texture2D pixel;
 
         public static int Screenwidth;
@@ -235,6 +234,8 @@ namespace Circuit_Simulator
             simulator.Draw(spriteBatch);
 
             UI_handler.Draw(spriteBatch);
+
+            
 
             //spriteBatch.DrawString(basefont, Screenwidth.ToString(), new Vector2(100, 100), Color.Red);
             //spriteBatch.DrawString(basefont, Screenheight.ToString(), new Vector2(100, 130), Color.Red);
