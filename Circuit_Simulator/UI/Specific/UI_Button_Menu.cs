@@ -10,11 +10,11 @@ namespace Circuit_Simulator.UI
 {
     public class Button_Menu : UI_Element
     {
-        public bool IsHovered, IsActivated;
+        public bool IsHovered, IsActivated, IsToggle;
         private static SpriteFont font;
         string Title;
         float Title_height;
-
+        public int behav;
         public Button_Menu(Point pos, Point size, string Title) : base(pos, size)
         {
             if (font == null)
@@ -25,18 +25,24 @@ namespace Circuit_Simulator.UI
                 size.X = 8 + (int)title_dim.X + 8;
             this.Title = Title;
             this.size = size;
+            this.behav = 1;
         }
 
         protected override void UpdateSpecific()
         {
             size.X = parent.size.X;
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            IsActivated = false;
+            if(behav == 1)
+                IsActivated = false;
+            IsToggle = false;
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
                 IsHovered = true;
                 if (Game1.mo_states.IsLeftButtonToggleOff())
+                {
                     IsActivated ^= true;
+                    IsToggle = true;
+                }
             }
             else
                 IsHovered = false;
@@ -46,6 +52,8 @@ namespace Circuit_Simulator.UI
         {
             if (IsHovered && !IsActivated)
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.main_Hover_Col);
+            if(IsActivated)
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.ActivColor);
 
             spritebatch.DrawString(font, Title, new Vector2(absolutpos.X + 8, absolutpos.Y + size.Y / 2 - Title_height / 2), Color.White);
         }

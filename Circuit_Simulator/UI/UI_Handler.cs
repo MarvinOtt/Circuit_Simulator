@@ -28,13 +28,14 @@ namespace Circuit_Simulator
         static int buttonheight = 25;
         static int buttonwidth = 67;
         static int sqarebuttonwidth = 25;
-        public static Color main_BG_Col = new Color(new Vector3(0.075f));
-        public static Color main_Hover_Col = new Color(new Vector3(0.175f));
+        public static Color main_BG_Col = new Color(new Vector3(0.15f));
+        public static Color main_Hover_Col = Color.White * 0.1f;
         public static Color BackgroundColor = new Color(new Vector3(0.15f));
         public static Color HoverColor = new Color(new Vector3(0.3f));
-        public static Color ActivColor = Color.Black;
+        public static Color ActivColor = Color.White * 0.2f;
         public static Color ActivHoverColor = Color.Black;
         public static Color BorderColor = new Color(new Vector3(0.45f));
+        public static Color[] layer_colors;
         public static TexButton_Conf TexButton_baseconf = new TexButton_Conf(1);
 
         private UI_MultiElement<UI_Element> Toolbar;
@@ -83,16 +84,18 @@ namespace Circuit_Simulator
             for(int i = 0; i < FileButton_Names.Length; ++i)
                 ButtonMenu_File.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), FileButton_Names[i]));
 
-            ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Point(0, 25));
-            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Test" };
-            for (int i = 0; i < ViewButton_Names.Length; ++i)
-                ButtonMenu_View.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i]));
-
-            ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Point(0, 25));
+            ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Point(0, 25));
             string[] ConfigButton_Names = new string[] { "Test", "Test", "Test" };
             for (int i = 0; i < ConfigButton_Names.Length; ++i)
                 ButtonMenu_Config.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ConfigButton_Names[i]));
 
+            ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Point(0, 25));
+            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Test" };
+            for (int i = 0; i < ViewButton_Names.Length; ++i)
+            {
+                ButtonMenu_View.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i]));
+                ((Button_Menu)ButtonMenu_View.ui_elements[i]).behav = 2;
+            }
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Point(0, 25));
             string[] ToolsButton_Names = new string[] { "Test", "Test", "Test" };
             for (int i = 0; i < ToolsButton_Names.Length; ++i)
@@ -105,20 +108,31 @@ namespace Circuit_Simulator
 
             //QuickHotbar
             QuickHotbar = new UI_QuickHBElement(new Point(0, Toolbar.size.Y));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, quickbarconf_1));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, quickbarconf_2));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, quickbarconf_2));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, quickbarconf_2));
-            QuickHotbar.Add_UI_Element(new TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, quickbarconf_1));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, quickbarconf_2));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, quickbarconf_2));
 
+            Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
+            layer_colors = new Color[Simulator.LAYER_NUM];
+            for(int i = 0; i < Simulator.LAYER_NUM; i++)
+            {
+                layer_colors[i] = all_layer_colors[i];
+            }
             wire_ddbl = new UI_List<UI_Dropdown_Button>(new Point(0, sqarebuttonwidth), false);
             QuickHotbar.ui_elements[5].child = wire_ddbl;
             wire_ddbl.parent = QuickHotbar.ui_elements[5];
-            for(int i = 0; i<7; i++)
+            wire_ddbl.GetsUpdated = wire_ddbl.GetsDrawn = false;
+            
+            for(int i = 0; i<Simulator.LAYER_NUM; i++)
             {
-                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+6) + i+6, 0) ,Button_tex));
+                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+6) + i+6, 0), layer_colors[i], Button_tex));
             }
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 6) + Simulator.LAYER_NUM + 6, 0), Color.White, Button_tex));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 6) + Simulator.LAYER_NUM + 1 + 6, 0), Color.White, Button_tex));
+
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf);
 
@@ -172,13 +186,17 @@ namespace Circuit_Simulator
             });
 
             // Config for opening ComponentBox
-            ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate () {
-                if (((Button_Menu)ButtonMenu_View.ui_elements[0]).IsActivated)
-                    ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = true;
+            ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate () 
+            {
+                Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[0];
+                if (current.IsToggle)
+                    ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = current.IsActivated;
+                else
+                    current.IsActivated = ComponentBox.GetsUpdated;
             });
 
             //Configs for Main Toolbar Buttons
-            toolbar_menus = new UI_MultiElement<UI_Element>[] { ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help };
+            toolbar_menus = new UI_MultiElement<UI_Element>[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help };
             for (int i = 0; i < 5; ++i)
             {
                 int ii = i;
@@ -193,6 +211,17 @@ namespace Circuit_Simulator
                         cur.IsActivated = false;
                 });
             }
+
+            // Wire MaskButton
+            QuickHotbar.ui_elements[5].UpdateFunctions.Add(delegate ()
+            {
+                UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[5];
+                if(current.IsActivated)
+                {
+                    current.child.GetsUpdated ^= true;
+                    current.child.GetsDrawn ^= true;
+                }
+            });
         }
 
         // Gets called when something of the Window or Graphics got changed
