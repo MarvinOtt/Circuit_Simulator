@@ -37,9 +37,9 @@ namespace Circuit_Simulator
         public static Color BorderColor = new Color(new Vector3(0.45f));
         public static Color[] layer_colors;
         public static TexButton_Conf TexButton_baseconf = new TexButton_Conf(1);
-
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
+        public UI_InfoBox info;
         private UI_QuickHBElement QuickHotbar;
         UI_MultiElement<UI_Element>[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
@@ -171,6 +171,11 @@ namespace Circuit_Simulator
 
             ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
+            //Info Box
+            info = new UI_InfoBox(new Point(500, 500), new Point(300, 300));
+
+
+
             InitializeUISettings(spriteBatch);
         }
 
@@ -241,9 +246,11 @@ namespace Circuit_Simulator
             
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Update();
+            info.Update();
             ComponentBox.Update();
             QuickHotbar.Update();
             Toolbar.Update();
+
             
         }
 
@@ -252,6 +259,7 @@ namespace Circuit_Simulator
             Toolbar.Draw(spritebatch);
             QuickHotbar.Draw(spritebatch);
             ComponentBox.Draw(spritebatch);
+            info.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
             dragcomp.Draw(spritebatch);
