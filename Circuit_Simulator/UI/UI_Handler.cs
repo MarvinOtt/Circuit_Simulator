@@ -180,8 +180,8 @@ namespace Circuit_Simulator
             // Play Button Config
             QuickHotbar.ui_elements[0].UpdateFunctions.Add(delegate ()
             {
-                if(((TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
-                    Game1.simulator.SetSimulationState(((TexButton)QuickHotbar.ui_elements[0]).IsActivated);
+                if(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
+                    Game1.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
                 //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
 
