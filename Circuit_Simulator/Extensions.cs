@@ -11,6 +11,7 @@ namespace Circuit_Simulator
 {
     public static class Extensions
     {
+        // Keyboard
         public static bool AreKeysDown(this KeyboardState kbs, params Keys[] keys)
         {
             for (int i = 0; i < keys.Length; ++i)
@@ -30,7 +31,7 @@ namespace Circuit_Simulator
             return true;
         }
 
-        //Spritebatch
+        // Spritebatch
         public static void DrawFilledRectangle(this SpriteBatch sb, Rectangle rec, Color col)
         {
             sb.Draw(Game1.pixel, rec, col);
@@ -77,12 +78,33 @@ namespace Circuit_Simulator
             //Game1.spriteBatch.Draw(Game1.pixel, pos, new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y), col, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0);
         }
 
-        //LINQ
+        // LINQ
         public static void ForEach<T>(this IEnumerable<T> list, Action<T> block)
         {
             foreach (var item in list)
             {
                 block(item);
+            }
+        }
+
+        // Textures
+        private static byte[] pixelbyte = new byte[1];
+        public static void SetPixel(this Texture2D tex, byte data, Point pos)
+        {
+            pixelbyte[0] = data;
+            int mulpos = pos.Y * tex.Width + pos.X;
+            tex.SetData(0, new Rectangle(pos, new Point(1)), pixelbyte, 0, 1);
+        }
+
+        // Arrays
+        public static void GetArea<T>(this T[,] arr, T[,] dest, Rectangle source)
+        {
+            for(int x = 0; x < source.Width; ++x)
+            {
+                for (int y = 0; y < source.Height; ++y)
+                {
+                    dest[x, y] = arr[source.X + x, source.Y + y];
+                }
             }
         }
     }

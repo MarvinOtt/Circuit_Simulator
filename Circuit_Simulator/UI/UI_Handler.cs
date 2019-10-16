@@ -183,9 +183,11 @@ namespace Circuit_Simulator
         public void InitializeUISettings(SpriteBatch spritebatch)
         {
             // Play Button Config
-            Toolbar.ui_elements[4].UpdateFunctions.Add(delegate ()
+            QuickHotbar.ui_elements[0].UpdateFunctions.Add(delegate ()
             {
-                Game1.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
+                if(((TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
+                    Game1.simulator.SetSimulationState(((TexButton)QuickHotbar.ui_elements[0]).IsActivated);
+                //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
 
             // Config for opening ComponentBox
