@@ -16,7 +16,8 @@ void DLL_EXPORT DLL_SimOneStep(unsigned char* WireStates, int* CompInfos, int* C
 	{
 		// Test (AND Gate)
 		int* curcompinfo = CompInfos + CompID[i];
-		WireStates[curcompinfo[3]] = WireStates[curcompinfo[1]] & WireStates[curcompinfo[2]];
+		if(curcompinfo[0] == 0)
+			WireStates[curcompinfo[3]] = WireStates[curcompinfo[1]] & WireStates[curcompinfo[2]];
 
 
 	}

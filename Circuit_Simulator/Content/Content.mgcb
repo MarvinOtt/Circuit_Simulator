@@ -38,6 +38,12 @@
 /processorParam:DebugMode=Auto
 /build:line_effect.fx
 
+#begin overlay_effect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:overlay_effect.fx
+
 #begin sim_effect.fx
 /importer:EffectImporter
 /processor:EffectProcessor

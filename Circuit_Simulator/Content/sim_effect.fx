@@ -30,9 +30,11 @@ static float4 layercols[8] =
 	float4(1, 0.5f, 0, 1),
 	float4(0.2f, 0, 0.8f, 1)
 };
-static float4 compcols[2] =
+static float4 compcols[4] =
 {
 	float4(0.5f, 0.5f, 0.5f, 1),
+	float4(0.25f, 0.25f, 0.25f, 1),
+	float4(0.8f, 0.8f, 0.8f, 1),
 	float4(1, 1, 0, 1)
 };
 
@@ -103,10 +105,10 @@ float4 getcoloratpos(float x, float y)
 	uint comptype_int = (uint)(comptype + 0.5f);
 	if (comptype_int != 0)
 	{
-		if(comptype_int == 1)
-			OUT = compcols[0];
+		if(comptype_int <= 3)
+			OUT = compcols[comptype_int - 1];
 		else
-			OUT = compcols[1];
+			OUT = compcols[3];
 	}
 
 	if (currenttype == 1)
@@ -122,10 +124,10 @@ float4 getcoloratpos(float x, float y)
 					OUT = float4(1, 0, 0, 1);
 				else
 				{
-					if (type2 == 1)
-						OUT = compcols[0];
+					if (type2 <= 3)
+						OUT = compcols[type2 - 1];
 					else
-						OUT = compcols[1];
+						OUT = compcols[3];
 				}
 			}
 		}

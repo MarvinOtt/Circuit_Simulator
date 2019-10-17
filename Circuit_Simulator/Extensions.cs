@@ -88,12 +88,12 @@ namespace Circuit_Simulator
         }
 
         // Textures
-        private static byte[] pixelbyte = new byte[1];
+        private static byte[] pixelbyte = new byte[4];
         public static void SetPixel(this Texture2D tex, byte data, Point pos)
         {
-            pixelbyte[0] = data;
+            pixelbyte[3] = data;
             int mulpos = pos.Y * tex.Width + pos.X;
-            tex.SetData(0, new Rectangle(pos, new Point(1)), pixelbyte, 0, 1);
+            tex.SetData(0, new Rectangle(pos, new Point(1)), pixelbyte, 0, 4);
         }
 
         // Arrays
