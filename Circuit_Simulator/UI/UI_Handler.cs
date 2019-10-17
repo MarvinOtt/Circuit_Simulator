@@ -43,10 +43,11 @@ namespace Circuit_Simulator
         private UI_QuickHBElement QuickHotbar;
         UI_MultiElement<UI_Element>[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
-        UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops;
+        UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops, Cat_Input;
         UI_Component AND, OR, XOR, NAND, NOR, XNOR;
         UI_Component FF_RS, FF_D, FF_JK, FF_T;
         UI_Component SISO, SIPO, PISO, PIPO;
+        UI_Component SWITCH;
         UI_List<UI_Dropdown_Button> wire_ddbl;
         public UI_Handler(ContentManager Content)
 	    {
@@ -141,7 +142,6 @@ namespace Circuit_Simulator
             // Gates
             AND = new UI_Component("AND", componentconf);
             OR = new UI_Component("OR", componentconf);
-            OR.ID = 1;
             XOR = new UI_Component("XOR", componentconf);
             NAND = new UI_Component("NAND", componentconf);
             NOR = new UI_Component("NOR", componentconf);
@@ -159,18 +159,23 @@ namespace Circuit_Simulator
             PISO = new UI_Component("PISO", componentconf);
             PIPO = new UI_Component("PIPO", componentconf);
 
+            // Input
+            SWITCH = new UI_Component("Switch", componentconf);
+            SWITCH.ID = 1;
 
 
             //Catagories
             Cat_Gates = new UI_Comp_Cat("Gates", cat_conf);
             Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", cat_conf);
             Cat_ShiftRegisters = new UI_Comp_Cat("Shift Registers", cat_conf);
+            Cat_Input = new UI_Comp_Cat("Input", cat_conf);
 
             Cat_Gates.AddComponents(AND, NAND, OR, NOR, XOR, XNOR);
             Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
             Cat_ShiftRegisters.AddComponents(SISO, SIPO, PISO, PIPO);
+            Cat_Input.AddComponents(SWITCH);
 
-            ComponentBox.Add_Categories(Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
+            ComponentBox.Add_Categories(Cat_Input, Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
             //Wire Info Box
             info = new UI_WireInfoBox(new Point(500, 500), new Point(300, 300), componentconf);
