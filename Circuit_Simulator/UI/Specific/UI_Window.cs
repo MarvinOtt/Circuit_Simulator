@@ -52,7 +52,8 @@ namespace Circuit_Simulator.UI
         {
             if (((UI_TexButton)ui_elements[0]).IsActivated)
                 GetsUpdated = GetsDrawn = false;
-
+            if (size.Y >= Game1.Screenheight)
+                size.Y = Game1.Screenheight;
             // Handling Draging of Window
             Rectangle Grabbox = new Rectangle(absolutpos, new Point(size.X - ui_elements[0].size.X - 4, ui_elements[0].size.Y + 4));
             if (Grabbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
