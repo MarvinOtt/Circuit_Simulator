@@ -274,6 +274,22 @@ namespace Circuit_Simulator
                     Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
                 //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
+
+            QuickHotbar.ui_elements[2].UpdateFunctions.Add(delegate ()
+            {
+                if (((UI_TexButton)QuickHotbar.ui_elements[2]).IsActivated)
+                {
+                    FileHandler.Save();
+                }
+            });
+
+            QuickHotbar.ui_elements[3].UpdateFunctions.Add(delegate ()
+            {
+                if (((UI_TexButton)QuickHotbar.ui_elements[3]).IsActivated)
+                {
+                    FileHandler.Open();
+                }
+            });
         }
 
         // Gets called when something of the Window or Graphics got changed

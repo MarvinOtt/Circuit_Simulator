@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -21,140 +23,238 @@ namespace Circuit_Simulator
 
         public static void Save()
         {
+            if (SaveFile == null)
+                SaveAs();
+            else
+                SaveToPath(SaveFile);
+        }
 
+        public static void SaveToPath(string path)
+        {
+            try
+            {
+                FileStream stream = new FileStream(path, FileMode.Create);
+                List<byte> bytestosave = new List<byte>();
+                int compcount = 0;
+                int wirecount = 0;
+
+                #region Save Wires
+                wirecount = Simulator.networks.Count(x => x != null);
+                stream.Write(BitConverter.GetBytes(wirecount), 0, 4);
+
+                for (int i = 0; i < Simulator.networks.Length; ++i)
+                {
+                    if (Simulator.networks[i] != null)
+                    {
+                        List<Line> lines = Simulator.networks[i].lines;
+                        stream.Write(BitConverter.GetBytes(lines.Count), 0, 4);
+
+                        for (int j = 0; j < lines.Count; ++j)
+                        {
+                            stream.Write(new byte[1] { lines[j].layers }, 0, 1);
+                            stream.Write(BitConverter.GetBytes(lines[j].start.X), 0, 4);
+                            stream.Write(BitConverter.GetBytes(lines[j].start.Y), 0, 4);
+                            stream.Write(BitConverter.GetBytes(lines[j].end.X), 0, 4);
+                            stream.Write(BitConverter.GetBytes(lines[j].end.Y), 0, 4);
+                            stream.Write(BitConverter.GetBytes(lines[j].dir.X), 0, 4);
+                            stream.Write(BitConverter.GetBytes(lines[j].dir.Y), 0, 4);
+                            stream.Write(BitConverter.GetBytes(lines[j].length), 0, 4);
+
+                        }
+
+                    }
+                }
+                #endregion
+
+                #region Save Components
+                compcount = Sim_Component.components.Count(x => x != null);
+                stream.Write(BitConverter.GetBytes(compcount), 0, 4);
+
+
+                for (int i = 0; i < Sim_Component.components.Length; ++i)
+                {
+                    if (Sim_Component.components[i] != null)
+                    {
+                        stream.Write(BitConverter.GetBytes(Sim_Component.components[i].dataID), 0, 4);
+                        stream.Write(BitConverter.GetBytes(Sim_Component.components[i].pos.X), 0, 4);
+                        stream.Write(BitConverter.GetBytes(Sim_Component.components[i].pos.Y), 0, 4);
+                        stream.Write(BitConverter.GetBytes(Sim_Component.components[i].rotation), 0, 4);
+                    }
+                }
+                #endregion
+                
+
+                stream.Close();
+                stream.Dispose();
+                Console.WriteLine("Saving suceeded. Filename: {0}", path);
+
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("Saving failed: {0}", exp);
+                System.Windows.Forms.MessageBox.Show("Saving failed", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         public static void SaveAs()
         {
-            //if (!Simulator.IsSimulating)//KB_currentstate.IsKeyDown(Keys.LeftControl) && KB_currentstate.IsKeyDown(Keys.LeftShift) && KB_currentstate.IsKeyDown(Keys.S) && KB_oldstate.IsKeyUp(Keys.S))
-            //{
-            //    using (OpenFileDialog dialog = new OpenFileDialog())
-            //    {
-            //        try
-            //        {
-            //            string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
-            //            System.IO.Directory.CreateDirectory(savepath);
-            //            dialog.InitialDirectory = savepath;
-            //        }
-            //        catch (Exception exp)
-            //        {
-            //            Console.WriteLine("Error while trying to create Save folder: {0}", exp);
-            //        }
-            //        dialog.Multiselect = false;
-            //        dialog.CheckPathExists = false;
-            //        dialog.CheckFileExists = false;
-            //        dialog.Title = "Select or Create File to Save";
-            //        dialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
-            //        dialog.FilterIndex = 1;
-            //        dialog.RestoreDirectory = true;
+            if (!Simulator.IsSimulating)//KB_currentstate.IsKeyDown(Keys.LeftControl) && KB_currentstate.IsKeyDown(Keys.LeftShift) && KB_currentstate.IsKeyDown(Keys.S) && KB_oldstate.IsKeyUp(Keys.S))
+            {
+                using (SaveFileDialog dialog = new SaveFileDialog())
+                {
+                    try
+                    {
+                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
+                        System.IO.Directory.CreateDirectory(savepath);
+                        dialog.InitialDirectory = savepath;
+                    }
+                    catch (Exception exp)
+                    {
+                        Console.WriteLine("Error while trying to create Save folder: {0}", exp);
+                    }
+                    dialog.CheckPathExists = false;
+                    dialog.CheckFileExists = false;
+                    dialog.Title = "SaveAs";
+                    dialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
+                    dialog.FilterIndex = 1;
+                    dialog.RestoreDirectory = true;
+                    
 
-            //        if (dialog.ShowDialog() == DialogResult.OK)
-            //        {
-            //            string filename = dialog.FileName;
-            //            try
-            //            {
-            //                FileStream stream = new FileStream(filename, FileMode.Create);
-            //                List<byte> bytestosave = new List<byte>();
-            //                uint counter = 0;
-                            
-            //                // Saves Number of chunks
-            //                stream.Write(BitConverter.GetBytes(size_mul16x), 0, 4);
-            //                stream.Write(BitConverter.GetBytes(size_mul16y), 0, 4);
-            //                stream.Write(BitConverter.GetBytes(counter), 0, 4);
-            //                stream.Write(bytestosave.ToArray(), 0, bytestosave.Count);
-            //                stream.Close();
-            //                stream.Dispose();
-            //                Console.WriteLine("Saving suceeded. Filename: {0}", filename);
-
-            //            }
-            //            catch (Exception exp)
-            //            {
-            //                Console.WriteLine("Saving failed: {0}", exp);
-            //                System.Windows.Forms.MessageBox.Show("Saving failed", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //            }
-            //        }
-            //    }
-            //}
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filename = dialog.FileName;
+                        SaveFile = filename;
+                        SaveToPath(filename);
+                    }
+                }
+            }
         }
 
         public static void Open()
         {
-            //if (!Simulator.IsSimulating)// KB_currentstate.IsKeyDown(Keys.LeftControl) && KB_currentstate.IsKeyDown(Keys.LeftShift) && KB_currentstate.IsKeyDown(Keys.O) && KB_oldstate.IsKeyUp(Keys.O))
-            //{
-            //    using (OpenFileDialog dialog = new OpenFileDialog())
-            //    {
-            //        try
-            //        {
-            //            string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
-            //            System.IO.Directory.CreateDirectory(savepath);
-            //            dialog.InitialDirectory = savepath;
-            //        }
-            //        catch (Exception exp)
-            //        {
-            //            Console.WriteLine("Error while trying to create Save folder: {0}", exp);
-            //        }
+            if (!Simulator.IsSimulating)// KB_currentstate.IsKeyDown(Keys.LeftControl) && KB_currentstate.IsKeyDown(Keys.LeftShift) && KB_currentstate.IsKeyDown(Keys.O) && KB_oldstate.IsKeyUp(Keys.O))
+            {
+                using (OpenFileDialog dialog = new OpenFileDialog())
+                {
+                    try
+                    {
+                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
+                        System.IO.Directory.CreateDirectory(savepath);
+                        dialog.InitialDirectory = savepath;
+                    }
+                    catch (Exception exp)
+                    {
+                        Console.WriteLine("Error while trying to create Save folder: {0}", exp);
+                    }
 
-            //        dialog.Multiselect = false;
-            //        dialog.CheckFileExists = true;
-            //        dialog.CheckPathExists = true;
-            //        dialog.Title = "Select File to Open";
-            //        dialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
-            //        dialog.FilterIndex = 1;
-            //        dialog.RestoreDirectory = true;
+                    dialog.Multiselect = false;
+                    dialog.CheckFileExists = true;
+                    dialog.CheckPathExists = true;
+                    dialog.Title = "Select File to Open";
+                    dialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
+                    dialog.FilterIndex = 1;
+                    dialog.RestoreDirectory = true;
 
-            //        if (dialog.ShowDialog() == DialogResult.OK)
-            //        {
-            //            string filename = dialog.FileName;
-            //            try
-            //            {
-            //                FileStream stream = new FileStream(filename, FileMode.Open);
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filename = dialog.FileName;
+                        try
+                        {
+                            FileStream stream = new FileStream(filename, FileMode.Open);
 
-            //                byte[] intbuffer = new byte[4];
+                            Array.Clear(Sim_Component.components, 0, Sim_Component.components.Length);
+                            Array.Clear(Simulator.networks, 0, Simulator.networks.Length);
+                            Array.Clear(Simulator.IsWire, 0, Simulator.IsWire.Length);
+                            Array.Clear(Simulator.WireIDs, 0, Simulator.WireIDs.Length);
+                            Array.Clear(Simulator.emptyNetworkID, 0, Simulator.emptyNetworkID.Length);
+                            Sim_Component.CompMayneedoverlay.Clear();
+                            Simulator.emptyNetworkID_count = 0;
+                            Array.Clear(Sim_Component.emptyComponentID, 0, Sim_Component.emptyComponentID.Length);
+                            Sim_Component.emptyComponentID_count = 0;
 
-            //                stream.Read(intbuffer, 0, 4);
-            //                size_mul16x = BitConverter.ToInt32(intbuffer, 0);
-            //                stream.Read(intbuffer, 0, 4);
-            //                size_mul16y = BitConverter.ToInt32(intbuffer, 0);
-            //                sizex = size_mul16x * 16;
-            //                sizey = size_mul16y * 16;
+                            Simulator.sec_target.Dispose();
+                            Simulator.logic_target.Dispose();
 
-            //                stream.Read(intbuffer, 0, 4);
-            //                int count = BitConverter.ToInt32(intbuffer, 0);
+                            Simulator.sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                            Simulator.logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
-            //                byte[] chunkdata = new byte[16 * 16];
-            //                for (int i = 0; i < count; ++i)
-            //                {
-            //                    // Reading X and Y pos of chunks to load
-            //                    stream.Read(intbuffer, 0, 4);
-            //                    int xpos = BitConverter.ToInt32(intbuffer, 0);
-            //                    stream.Read(intbuffer, 0, 4);
-            //                    int ypos = BitConverter.ToInt32(intbuffer, 0);
+                            byte[] intbuffer = new byte[4];
 
-            //                    // Reading chunk data
-            //                    stream.Read(chunkdata, 0, 16 * 16);
-            //                    for (int x = 0; x < 16; ++x)
-            //                    {
-            //                        for (int y = 0; y < 16; ++y)
-            //                        {
-            //                            Set_CellValues((byte)(chunkdata[x + y * 16] % 17), (byte)(chunkdata[x + y * 16] / 17), xpos * 16 + x, ypos * 16 + y);
-            //                        }
-            //                    }
+ 
+                            
+                            #region LoadWires 
+                            stream.Read(intbuffer, 0, 4);
+                            int wirecount = BitConverter.ToInt32(intbuffer, 0);
+                            Simulator.highestNetworkID = wirecount;
+                            for (int i = 1; i < wirecount + 1; ++i)
+                            {
+                                Network networkbuffer = new Network(i);
+                                Simulator.networks[i] = networkbuffer;
+                                stream.Read(intbuffer, 0, 4);
+                                int linecount = BitConverter.ToInt32(intbuffer, 0);
+                                for (int j = 0; j < linecount; ++j)
+                                {
+                                    stream.Read(intbuffer, 0, 1);
+                                    byte layers = intbuffer[0];
+                                    stream.Read(intbuffer, 0, 4);
+                                    int startx = BitConverter.ToInt32(intbuffer, 0);
+                                    stream.Read(intbuffer, 0, 4);
+                                    int starty = BitConverter.ToInt32(intbuffer, 0);
+                                    stream.Read(intbuffer, 0, 4);
+                                    int endx = BitConverter.ToInt32(intbuffer, 0);
+                                    stream.Read(intbuffer, 0, 4);
+                                    int endy = BitConverter.ToInt32(intbuffer, 0);
+                                    stream.Read(intbuffer, 0, 4);
+                                    int dirx = BitConverter.ToInt32(intbuffer, 0);
+                                    stream.Read(intbuffer, 0, 4);
+                                    int diry = BitConverter.ToInt32(intbuffer, 0);
+                                    stream.Read(intbuffer, 0, 4);
+                                    int length = BitConverter.ToInt32(intbuffer, 0);
 
-            //                }
 
-            //                stream.Close();
-            //                stream.Dispose();
-            //                Console.WriteLine("Loading suceeded. Filename: {0}", filename);
+                                    Line linebuffer = new Line(new Point(startx, starty), new Point(endx, endy), new Point(dirx, diry), length, layers);
+                                    Simulator.networks[i].lines.Add(linebuffer);
+                                 
+                                }
+                                networkbuffer.PlaceNetwork();
+                                
+                            }
+                            #endregion
+                            #region LoadComp
+                            stream.Read(intbuffer, 0, 4);
+                            int compcount = BitConverter.ToInt32(intbuffer, 0);
+                            Sim_Component.nextComponentID = compcount + 1;
+                            for (int i = 1; i < compcount + 1; ++i)
+                            {
 
-            //            }
-            //            catch (Exception exp)
-            //            {
-            //                Console.WriteLine("Loading failed: {0}", exp);
-            //                System.Windows.Forms.MessageBox.Show("Loading failed: " + exp, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //            }
-            //        }
-            //    }
-            //}
+                                stream.Read(intbuffer, 0, 4);
+                                Component buffercomp = new Component(BitConverter.ToInt32(intbuffer, 0), i);
+                                stream.Read(intbuffer, 0, 4);
+                                int posX = BitConverter.ToInt32(intbuffer, 0);
+                                stream.Read(intbuffer, 0, 4);
+                                int posY = BitConverter.ToInt32(intbuffer, 0);
+                                stream.Read(intbuffer, 0, 4);
+                                int rotation = BitConverter.ToInt32(intbuffer, 0);
+                                buffercomp.Place(new Point(posX, posY), rotation);
+                                Sim_Component.components[i] = buffercomp;
+                            }
+                            #endregion
+
+                            stream.Close();
+                            stream.Dispose();
+
+
+                            Console.WriteLine("Loading suceeded. Filename: {0}", filename);
+
+                        }
+                        catch (Exception exp)
+                        {
+                            Console.WriteLine("Loading failed: {0}", exp);
+                            System.Windows.Forms.MessageBox.Show("Loading failed: " + exp, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                }
+            }
         }
     }
 }

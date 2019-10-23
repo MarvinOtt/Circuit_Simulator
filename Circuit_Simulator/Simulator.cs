@@ -70,6 +70,27 @@ namespace Circuit_Simulator
             }
         }
 
+        public void PlaceNetwork()
+        {
+            for(int i = 0; i < lines.Count; ++i)
+            {
+                Point curpos = lines[i].start;
+                for(int j = 0; j < lines[i].length; ++j)
+                {
+                    byte linelayers = lines[i].layers;
+                    Simulator.IsWire[curpos.X, curpos.Y] |= linelayers;
+
+                    for (int b = 0; b < 7; ++b)
+                        if (((linelayers >> b) & 1) != 0)
+                            Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, b] = ID;
+
+                    curpos += lines[i].dir;
+                }
+            }
+
+            Draw();
+        }
+
         public void Draw()
         {
             for (int i = 0; i < lines.Count; ++i)
@@ -137,7 +158,7 @@ namespace Circuit_Simulator
         BasicEffect basicEffect;
         Effect sim_effect, line_effect;
         RenderTarget2D main_target, final_target;
-        RenderTarget2D logic_target, sec_target;
+        public static RenderTarget2D logic_target, sec_target;
         Network CalcNetwork;
         
         public static Network[] networks;
