@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Circuit_Simulator.UI
 {
-    class UI_Dropdown_Button : UI_Element
+    public class UI_Dropdown_Button : UI_Element
     {
         Color BackgroundColor;
         Color BorderColor;

@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
         public static int height = 20;
         public string name;
         public int ID;
-        public bool IsDrag, IsHover;
+        public bool IsHover;
         public Button_Conf conf;
         Vector2 text_pos;
 
@@ -41,24 +41,20 @@ namespace Circuit_Simulator.UI.Specific
             //{
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
-                if (Game1.mo_states.IsLeftButtonToggleOn())
+                if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
-                    IsDrag = true;
                     UI_Handler.dragcomp.GetsUpdated = true;
                     UI_Handler.dragcomp.GetsDrawn = true;
                     UI_Handler.dragcomp.comp = this;
                     UI_Handler.ZaWarudo = UI_Handler.dragcomp;
+                    UI_Handler.UI_Active_State = UI_Handler.UI_Active_CompDrag;
                     Game1.simulator.sim_comp.InizializeComponentDrag(ID);
-                    Game1.simulator.sim_comp.IsCompDrag = true;
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
                 }
                 IsHover = true;
             }
             else
                 IsHover = false;
-            //}
-            if (IsDrag && Game1.mo_states.IsLeftButtonToggleOff())
-                IsDrag = false;
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

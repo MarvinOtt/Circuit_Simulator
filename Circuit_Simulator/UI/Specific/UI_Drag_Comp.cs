@@ -23,15 +23,24 @@ namespace Circuit_Simulator.UI.Specific
         {
             pos = Game1.mo_states.New.Position;
             UI_Handler.UI_Active_State = 2;
-            if (Game1.mo_states.New.LeftButton == ButtonState.Released)
+            if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
             {
-                comp.IsDrag = false;
-                GetsDrawn = false;
-                GetsUpdated = false;
-                UI_Handler.ZaWarudo = null;
-                Game1.simulator.sim_comp.IsCompDrag = false;
-                Game1.simulator.sim_comp.ComponentDrop(comp.ID);
+                //comp.IsDrag = false;
+                //GetsDrawn = false;
+                //GetsUpdated = false;
+                //UI_Handler.ZaWarudo = null;
+                //Game1.simulator.sim_comp.IsCompDrag = false;
+                //Game1.simulator.sim_comp.ComponentDrop(comp.ID);
+                Sim_Component.DropComponent = true;
             }
+            //if(Game1.kb_states.IsKeyToggleDown(Keys.Escape) || Game1.mo_states.New.RightButton == ButtonState.Pressed)
+            //{
+            //    GetsDrawn = false;
+            //    GetsUpdated = false;
+            //    UI_Handler.ZaWarudo = null;
+            //    //Game1.simulator.sim_comp.IsCompDrag = false;
+            //    Game1.simulator.sim_comp.DeactivateDrop();
+            //}
         }
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {

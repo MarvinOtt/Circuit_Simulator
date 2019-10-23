@@ -117,6 +117,11 @@ namespace Circuit_Simulator
 
     public class Simulator
     {
+        public const int TOOL_SELECT = 0;
+        public const int TOOL_COMPONENT = 1;
+        public const int TOOL_WIRE = 2;
+        //public const int TOOL_SELECT = 2;
+
         public const int SIZEX = 10240;
         public const int SIZEY = 10240;
         public const int LAYER_NUM = 7;
@@ -153,6 +158,7 @@ namespace Circuit_Simulator
         int worldzoom = 0;
 
         int sim_speed = 1;
+        public static int toolmode = TOOL_WIRE, oldtoolmode = 0;
         public static bool IsSimulating;
 
         #region INPUT
@@ -509,6 +515,29 @@ namespace Circuit_Simulator
                 sim_inf_dll.GenerateSimulationData();
         }
 
+        public byte getUILayers()
+        {
+            byte OUT = 0;
+            for(int i = 0; i < LAYER_NUM; ++i)
+            {
+                OUT |= (byte)(Convert.ToByte(UI_Handler.wire_ddbl.ui_elements[i].IsActivated) << i);
+            }
+            if (UI_Handler.wire_ddbl.ui_elements[7].IsActivated)
+                return 255;
+            return OUT;
+        }
+
+        public void ChangeToolmode(int newtoolmode)
+        {
+            if (toolmode == TOOL_COMPONENT)
+            { }
+            else if (toolmode == TOOL_WIRE)
+            { }
+
+            oldtoolmode = toolmode;
+            toolmode = newtoolmode;
+        }
+
         public void Update()
         {
             int r = Test(4, 8);
@@ -552,7 +581,11 @@ namespace Circuit_Simulator
                 #endregion
             }
 
-            if (UI_Handler.UI_Active_State == 0)
+            // Handling Tool Modes
+            //if(Game1.kb_states.IsKeyToggleDown(Keys.D1))
+                
+
+            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE)
             {
 
                 // Deleting Wires
@@ -564,7 +597,11 @@ namespace Circuit_Simulator
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.RightButton == ButtonState.Pressed)
                 {
                     byte[,] data = new byte[1, 1];
-                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+                    byte wiredata = IsWire[mo_worldposx, mo_worldposy];
+                    data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+                    data[0, 0] &= (byte)~getUILayers();
+                    if (!(wiredata == 255 && data[0, 0] != 0))
+                        PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
                 }
 
                 if (!IsSimulating && IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0 && Game1.kb_states.IsKeyToggleDown(Keys.L))
@@ -572,19 +609,12 @@ namespace Circuit_Simulator
                     networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state ^= 1;
                 }
 
-                if(IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
-                {
-                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                    int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
-                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                    Sim_Component.components[compID].Clicked();
-                }
-
                 // Placing Wires
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
                 {
-                    IsWire[mo_worldposx, mo_worldposy] |= (byte)(1 << currentlayer);
-                    CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(1 << currentlayer));
+
+                    IsWire[mo_worldposx, mo_worldposy] |= getUILayers();
+                    CalculateNetworkAt(mo_worldposx, mo_worldposy, getUILayers());
                     Network.Delete(FoundNetworks);
                     FoundNetworks.Clear();
 
@@ -599,7 +629,26 @@ namespace Circuit_Simulator
                     FoundNetworks.Clear();
                 }
 
+                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                    int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
+                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                    Sim_Component.components[compID].Clicked();
+                }
+
             }
+            else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT)
+            {
+                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsRightButtonToggleOff())
+                {
+                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                    int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
+                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                    Sim_Component.components[compID].Delete();
+                }
+            }
+
             if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
                 sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
@@ -621,20 +670,6 @@ namespace Circuit_Simulator
         public void Draw(SpriteBatch spritebatch)
         {
             spritebatch.End();
-            //for(int i = 0; i < LAYER_NUM + 1; ++i)
-            //{
-            //    if (lines2draw_count[i] > 0)
-            //    {
-            //        Game1.graphics.GraphicsDevice.SetRenderTarget(logic_targets[i]);
-
-            //        line_effect.Parameters["WorldViewProjection"].SetValue(basicEffect.World * basicEffect.View * basicEffect.Projection);
-            //        line_effect.CurrentTechnique.Passes[0].Apply();
-            //        Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
-
-            //        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
-            //        lines2draw_count[i] = 0;
-            //    }
-            //}
             for (int i = 0; i < LAYER_NUM + 1; ++i)
             {
                 if (lines2draw_count[i] > 0)
@@ -683,7 +718,7 @@ namespace Circuit_Simulator
             { 
                 int state = 0;
                 if (IsSimulating)
-                    state = Sim_INF_DLL.WireStates[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]];
+                    state = Sim_INF_DLL.GetState(WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]);
                 else
                     state = networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state;
                 spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 160), Color.Red);

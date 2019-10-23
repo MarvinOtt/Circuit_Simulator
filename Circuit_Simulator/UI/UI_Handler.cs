@@ -22,7 +22,7 @@ namespace Circuit_Simulator
         public ContentManager Content;
         public static UI_Element ZaWarudo;  //JoJo Reference
 	    private Texture2D Button_tex;
-        public static bool UI_Element_Pressed;
+        public static bool UI_Element_Pressed, UI_IsWindowHide;
         public static int UI_Active_State;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
         static int buttonheight = 25;
@@ -40,15 +40,15 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public UI_WireInfoBox info;
-        private UI_QuickHBElement QuickHotbar;
-        UI_MultiElement<UI_Element>[] toolbar_menus;
+        public static UI_QuickHBElement QuickHotbar;
+        UI_Element[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
         UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops, Cat_Input;
         UI_Component AND, OR, XOR, NAND, NOR, XNOR;
         UI_Component FF_RS, FF_D, FF_JK, FF_T;
         UI_Component SISO, SIPO, PISO, PIPO;
         UI_Component SWITCH;
-        UI_List<UI_Dropdown_Button> wire_ddbl;
+        public static UI_List<UI_Dropdown_Button> wire_ddbl;
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -114,7 +114,11 @@ namespace Circuit_Simulator
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, quickbarconf_2));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, quickbarconf_2));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, quickbarconf_2));
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, quickbarconf_2));
+            
+            //Temporary
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(150, 150), Button_tex, quickbarconf_2));
+
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, quickbarconf_1));
 
             Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
             layer_colors = new Color[Simulator.LAYER_NUM];
@@ -122,9 +126,9 @@ namespace Circuit_Simulator
             {
                 layer_colors[i] = all_layer_colors[i];
             }
-            wire_ddbl = new UI_List<UI_Dropdown_Button>(new Point(0, sqarebuttonwidth), false);
-            QuickHotbar.ui_elements[5].child = wire_ddbl;
-            wire_ddbl.parent = QuickHotbar.ui_elements[5];
+            wire_ddbl = new UI_List<UI_Dropdown_Button>(new Point(0, sqarebuttonwidth), false); 
+            QuickHotbar.ui_elements[6].child = wire_ddbl;
+            wire_ddbl.parent = QuickHotbar.ui_elements[6];
             wire_ddbl.GetsUpdated = wire_ddbl.GetsDrawn = false;
             
             for(int i = 0; i<Simulator.LAYER_NUM; i++)
@@ -184,7 +188,6 @@ namespace Circuit_Simulator
             InitializeUISettings(spriteBatch);
         }
 
-        //
         public void InitializeUISettings(SpriteBatch spritebatch)
         {
             // Play Button Config
@@ -206,7 +209,8 @@ namespace Circuit_Simulator
             });
 
             //Configs for Main Toolbar Buttons
-            toolbar_menus = new UI_MultiElement<UI_Element>[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help };
+            toolbar_menus = new UI_Element[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help};
+            //toolbar_childs = new IActivatable[] { (UI_Button)Toolbar.ui_elements[0], (UI_Button)Toolbar.ui_elements[1], (UI_Button)Toolbar.ui_elements[2], (UI_Button)Toolbar.ui_elements[3], (UI_Button)Toolbar.ui_elements[4], (UI_TexButton)QuickHotbar.ui_elements[6] };
             for (int i = 0; i < 5; ++i)
             {
                 int ii = i;
@@ -214,23 +218,53 @@ namespace Circuit_Simulator
                 {
                     UI_Button cur = (UI_Button)Toolbar.ui_elements[ii];
                     toolbar_menus[ii].GetsDrawn = toolbar_menus[ii].GetsUpdated = cur.IsActivated;
+
                     // Deactivate current active button when something else got pressed
-                    bool IsInOther = new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
+                    bool IsInOther =  new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
                     IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(Game1.mo_states.New.Position);
-                    if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOn() && !IsInOther)
+                    if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOff() && !IsInOther)
                         cur.IsActivated = false;
                 });
             }
+            //for (int i = 0; i < toolbar_menus.Length; ++i)
+            //{
+            //    int ii = i;
+            //    toolbar_menus[i].UpdateFunctions.Add(delegate ()
+            //    {
+            //        IActivatable cur = toolbar_childs[ii];
+            //        toolbar_menus[ii].GetsDrawn = toolbar_menus[ii].GetsUpdated = cur.IsActivated;
+            //        // Deactivate current active button when something else got pressed
+            //        bool IsInOther = false;// new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
+            //        IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(Game1.mo_states.New.Position);
+            //        if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOff() && !IsInOther)
+            //            cur.IsActivated = false;
+            //    });
+            //}
 
             // Wire MaskButton
+            QuickHotbar.ui_elements[6].UpdateFunctions.Add(delegate ()
+            {
+                UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
+                current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
+                //if (current.IsActivated)
+                //{
+                //    current.child.GetsUpdated ^= true;
+                //    current.child.GetsDrawn ^= true;
+                //}
+            });
+
             QuickHotbar.ui_elements[5].UpdateFunctions.Add(delegate ()
             {
-                UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[5];
-                if(current.IsActivated)
-                {
-                    current.child.GetsUpdated ^= true;
-                    current.child.GetsDrawn ^= true;
-                }
+                if (((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated)
+                    Game1.simulator.ChangeToolmode(Simulator.TOOL_WIRE);
+                //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
+            });
+
+            QuickHotbar.ui_elements[4].UpdateFunctions.Add(delegate ()
+            {
+                if (((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated)
+                    Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
+                //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
         }
 
@@ -246,17 +280,18 @@ namespace Circuit_Simulator
             UI_Active_State = 0;
             if (ZaWarudo != null)
             {
-                ZaWarudo.Update();
-                return;
+                ZaWarudo.UpdateMain();
+                //return;
             }
 
             
             for (int i = 0; i < toolbar_menus.Length; ++i)
-                toolbar_menus[i].Update();
-            info.Update();
-            ComponentBox.Update();
-            QuickHotbar.Update();
-            Toolbar.Update();
+                toolbar_menus[i].UpdateMain();
+            wire_ddbl.UpdateMain();
+            info.UpdateMain();
+            ComponentBox.UpdateMain();
+            QuickHotbar.UpdateMain();
+            Toolbar.UpdateMain();
 
             
         }
@@ -267,8 +302,10 @@ namespace Circuit_Simulator
             QuickHotbar.Draw(spritebatch);
             ComponentBox.Draw(spritebatch);
             info.Draw(spritebatch);
+            wire_ddbl.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
+
             dragcomp.Draw(spritebatch);
         }
     }

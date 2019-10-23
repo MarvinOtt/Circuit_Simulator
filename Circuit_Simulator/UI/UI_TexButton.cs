@@ -17,9 +17,6 @@ namespace Circuit_Simulator
         TexButton_Conf conf;
 	    public bool IsHovered, IsActivated, GotActivated;
 
-
-
-
         public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, TexButton_Conf conf) : base(pos, size)
         {
             this.conf = conf;
