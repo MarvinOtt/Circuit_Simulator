@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,15 @@ namespace Circuit_Simulator
 {
     public class Component
     {
-        int ID;
+        public int ID;
         public int dataID;
         public Point pos;
+        public int rotation;
         public int[] pinNetworkIDs;
         public int[] internalstates;
 
-        public Component(Point pos, int dataID, int ID)
+        public Component(int dataID, int ID)
         {
-            this.pos = pos;
             this.dataID = dataID;
             this.ID = ID;
             if (Sim_Component.Components_Data[dataID].IsOverlay)
@@ -35,6 +36,107 @@ namespace Circuit_Simulator
                 Sim_Component.Components_Data[dataID].ClickAction(this);
             }
         }
+
+        public static bool IsValidPlacement(int dataID, Point pos)
+        {
+            //Check if component can be placed
+            List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[Sim_Component.Components_Data[dataID].currentrotation];
+            bool IsPlacementValid = true;
+            if (Simulator.IsSimulating)
+                IsPlacementValid = false;
+            for (int i = 0; i < datapixel.Count; ++i)
+            {
+                Point currentcoo = pos + datapixel[i].pos;
+                if (currentcoo.X >= Simulator.MINCOO && currentcoo.Y >= Simulator.MINCOO && currentcoo.X < Simulator.MAXCOO && currentcoo.Y < Simulator.MAXCOO)
+                {
+                    if (Simulator.IsWire[currentcoo.X, currentcoo.Y] != 0 || Sim_Component.CompType[currentcoo.X, currentcoo.Y] != 0)
+                        IsPlacementValid = false;
+                }
+                else
+                    IsPlacementValid = false;
+            }
+            return IsPlacementValid;
+        }
+
+        public void Place(Point pos, int newrotation)
+        {
+            this.pos = pos;
+            this.rotation = newrotation;
+            List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[newrotation];
+            //Sim_Component.components[Sim_Component.nextComponentID++] = new Component(pos, ID, Sim_Component.nextComponentID - 1);
+            Rectangle area = Sim_Component.Components_Data[dataID].bounds[newrotation];
+            area.Location += pos;
+            byte[,] data2place = new byte[area.Size.X, area.Size.Y];
+            Simulator.IsWire.GetArea(data2place, area);
+            for (int i = 0; i < datapixel.Count; ++i)
+            {
+                Point currentcoo = pos + datapixel[i].pos;
+                Sim_Component.CompType[currentcoo.X, currentcoo.Y] = datapixel[i].type;
+                Sim_Component.CompTex.SetPixel(datapixel[i].type, currentcoo);
+                if (datapixel[i].type > Sim_Component.PINOFFSET)
+                {
+                    Point datapos = datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
+                    data2place[datapos.X, datapos.Y] = 255;
+
+                }
+                Point gridpos = new Point(currentcoo.X / 32, currentcoo.Y / 32);
+                if (Sim_Component.CompGrid[gridpos.X, gridpos.Y] == null)
+                {
+                    Sim_Component.CompGrid[gridpos.X, gridpos.Y] = new int[200];
+                    Sim_Component.CompGrid[gridpos.X, gridpos.Y][0] = ID;
+                    Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = 0;
+                }
+                else
+                {
+                    int[] curNetworks = Sim_Component.CompGrid[gridpos.X, gridpos.Y];
+                    int Index = Array.IndexOf(curNetworks, ID);
+                    if (Index < 0)
+                    {
+                        int j = 0;
+                        for (; ; ++j)
+                        {
+                            if (curNetworks[j] == 0)
+                            {
+                                curNetworks[j] = ID;
+                                break;
+                            }
+                        }
+                        Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = (byte)j;
+                    }
+                    else
+                        Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = (byte)Index;
+                }
+            }
+            Game1.simulator.PlaceArea(area, data2place);
+        }
+
+        public void Delete()
+        {
+            List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[rotation];
+            Rectangle area = Sim_Component.Components_Data[dataID].bounds[rotation];
+            area.Location += pos;
+            byte[,] data2place = new byte[area.Size.X, area.Size.Y];
+            Simulator.IsWire.GetArea(data2place, area);
+
+            for (int i = 0; i < datapixel.Count; ++i)
+            {
+                Point currentcoo = pos + datapixel[i].pos;
+                Sim_Component.CompTex.SetPixel(0, currentcoo);
+                Sim_Component.CompType[currentcoo.X, currentcoo.Y] = 0;
+                Point gridpos = new Point(currentcoo.X / 32, currentcoo.Y / 32);
+                Sim_Component.CompGrid[gridpos.X, gridpos.Y][Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y]] = 0;
+                Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = 0;
+                if (datapixel[i].type > Sim_Component.PINOFFSET)
+                {
+                    Point datapos = datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[rotation].Location;
+                    data2place[datapos.X, datapos.Y] = 0;
+                }
+            }
+            Game1.simulator.PlaceArea(area, data2place);
+
+            Sim_Component.emptyComponentID[Sim_Component.emptyComponentID_count++] = ID;
+            Sim_Component.components[ID] = null;
+        }
     }
     public struct ComponentPixel
     {
@@ -49,10 +151,11 @@ namespace Circuit_Simulator
     }
     public class ComponentData
     {
-        public List<ComponentPixel> data;
+        public List<ComponentPixel>[] data;
         string name;
         string catagory;
-        public Rectangle bounds;
+        public Rectangle[] bounds;
+        public int currentrotation;
         public int pin_num, OverlayStateID, internalstate_length;
         public bool IsOverlay;
         public bool CanBeClicked;
@@ -66,18 +169,30 @@ namespace Circuit_Simulator
             this.IsOverlay = IsOverlay;
             if (IsOverlay)
                 overlaylines = new List<VertexPositionLine>();
-            data = new List<ComponentPixel>();
+            data = new List<ComponentPixel>[4];
+            bounds = new Rectangle[4];
+            for (int i = 0; i < 4; ++i)
+                data[i] = new List<ComponentPixel>();
+        }
+
+        public void CalculateBounds(int rotation)
+        {
+            bounds[rotation].X = data[rotation].Min(x => x.pos.X);
+            bounds[rotation].Y = data[rotation].Min(x => x.pos.Y);
+            bounds[rotation].Width = data[rotation].Max(x => (x.pos.X - bounds[rotation].X) + 1);
+            bounds[rotation].Height = data[rotation].Max(x => (x.pos.Y - bounds[rotation].Y) + 1);
         }
 
         public void addData(ComponentPixel dat)
         {
             if (dat.type > Sim_Component.PINOFFSET)
                 pin_num++;
-            data.Add(dat);
-            bounds.X = data.Min(x => x.pos.X);
-            bounds.Y = data.Min(x => x.pos.X);
-            bounds.Width = data.Max(x => (x.pos.X - bounds.X) + 1);
-            bounds.Height = data.Max(x => (x.pos.Y - bounds.Y) + 1);
+            data[0].Add(dat);
+            data[1].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
+            data[2].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
+            data[3].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
+            for (int i = 0; i < 4; ++i)
+                CalculateBounds(i);
         }
 
         public void addOverlayLine(VertexPositionLine line)
@@ -93,11 +208,13 @@ namespace Circuit_Simulator
         Simulator sim;
         Effect sim_effect;
         Texture2D placementtex;
-        RenderTarget2D CompTex;
+        public static RenderTarget2D CompTex;
         public bool IsCompDrag;
 
         public static List<ComponentData> Components_Data;
         public static Component[] components;
+        public static int[] emptyComponentID;
+        public static int emptyComponentID_count;
         public static List<int> CompMayneedoverlay;
         public static int nextComponentID = 1;
         public static byte[,] CompType;
@@ -106,6 +223,7 @@ namespace Circuit_Simulator
         public static Point[] pins2check;
         public static int pins2check_length;
         public static VertexPositionLine[] overlaylines;
+        public static bool DropComponent;
         Effect overlay_effect;
 
         public Sim_Component(Simulator sim, Effect sim_effect)
@@ -118,9 +236,10 @@ namespace Circuit_Simulator
             CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
             CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
-            components = new Component[100000];
-            pins2check = new Point[100000];
+            components = new Component[1000000];
+            pins2check = new Point[40000];
             overlaylines = new VertexPositionLine[1000000];
+            emptyComponentID = new int[1000000];
             CompMayneedoverlay = new List<int>();
 
             // Basic Components Data
@@ -158,7 +277,7 @@ namespace Circuit_Simulator
                 for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
                 {
                     Simulator.networks[comp.pinNetworkIDs[i]].state = state;
-                    Sim_INF_DLL.WireStates[comp.pinNetworkIDs[i]] = state;
+                    Sim_INF_DLL.SetState(comp.pinNetworkIDs[i], state);
                 }
             };
             Components_Data[1].OverlayStateID = 0;
@@ -166,104 +285,82 @@ namespace Circuit_Simulator
 
         public void InizializeComponentDrag(int ID)
         {
-            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+            if (true)//UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
+                UI_Handler.UI_IsWindowHide = true;
+                ((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[6]).IsActivated = false;
+                UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
+                //UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
+                Game1.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
+                IsCompDrag = true;
                 byte[] data = new byte[41 * 41];
-                List<ComponentPixel> datapixel = Components_Data[ID].data;
+                List<ComponentPixel> datapixel = Components_Data[ID].data[Components_Data[ID].currentrotation];
                 for (int i = 0; i < datapixel.Count; ++i)
                 {
                     data[(datapixel[i].pos.Y + 20) * 41 + (datapixel[i].pos.X + 20)] = datapixel[i].type;
                 }
 
                 placementtex.SetData(data);
-                sim_effect.Parameters["currenttype"].SetValue(1);
+                //sim_effect.Parameters["currenttype"].SetValue(1);
                 sim_effect.Parameters["placementtex"].SetValue(placementtex);
             }
         }
 
         public void IsDrag()
         {
+            if (UI_Handler.UI_Active_State == UI_Handler.UI_Active_CompDrag)
+            {
+                sim_effect.Parameters["currenttype"].SetValue(1);
 
+                // Rotating Component clock-wise
+                if (Game1.kb_states.IsKeyToggleDown(Keys.R))
+                {
+                    Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = (Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation + 1) % 4;
+                    InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
+                }
+            }
+            else
+                sim_effect.Parameters["currenttype"].SetValue(0);
+
+            if (Game1.kb_states.IsKeyToggleDown(Keys.Escape) || Game1.mo_states.IsRightButtonToggleOff())
+            {
+                UI_Handler.dragcomp.GetsDrawn = false;
+                UI_Handler.dragcomp.GetsUpdated = false;
+                UI_Handler.ZaWarudo = null;
+                DeactivateDrop();
+            }
         }
 
-        public void ComponentDrop(int ID)
+        public void ComponentDrop(int dataID)
         {
             Point pos = Point.Zero;
             Game1.simulator.screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
-            ComponentDropAtPos(ID, pos);
+            ComponentDropAtPos(dataID, pos);
         }
-        public void ComponentDropAtPos(int ID, Point pos)
+        public void ComponentDropAtPos(int dataID, Point pos)
         {
-            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+            if (UI_Handler.UI_Active_State == UI_Handler.UI_Active_CompDrag)
             {
-                //Check if component can be placed
-                List<ComponentPixel> datapixel = Components_Data[ID].data;
-                bool IsPlacementValid = true;
-                if (Simulator.IsSimulating)
-                    IsPlacementValid = false;
-                for (int i = 0; i < datapixel.Count; ++i)
+                if(Component.IsValidPlacement(dataID, pos))
                 {
-                    Point currentcoo = pos + datapixel[i].pos;
-                    if (currentcoo.X >= Simulator.MINCOO && currentcoo.Y >= Simulator.MINCOO && currentcoo.X < Simulator.MAXCOO && currentcoo.Y < Simulator.MAXCOO)
-                    {
-                        if (Simulator.IsWire[currentcoo.X, currentcoo.Y] != 0 || CompType[currentcoo.X, currentcoo.Y] != 0)
-                            IsPlacementValid = false;
-                    }
+                    Component newcomp;// = new Component(ID, nextComponentID);
+                    if(emptyComponentID_count > 0)
+                        newcomp = new Component(dataID, emptyComponentID[--emptyComponentID_count]);
                     else
-                        IsPlacementValid = false;
-                }
-                if(IsPlacementValid)
-                {
-                    // Generate new Component
-                    components[nextComponentID++] = new Component(pos, ID, nextComponentID - 1);
+                        newcomp = new Component(dataID, nextComponentID++);
+                    components[newcomp.ID] = newcomp;
+                    newcomp.Place(pos, Components_Data[dataID].currentrotation);
 
-                    Rectangle area = Components_Data[ID].bounds;
-                    area.Location += pos;
-                    byte[,] data2place = new byte[area.Size.X, area.Size.Y];
-                    Simulator.IsWire.GetArea(data2place, area);
-                    for (int i = 0; i < datapixel.Count; ++i)
-                    {
-                        Point currentcoo = pos + datapixel[i].pos;
-                        CompType[currentcoo.X, currentcoo.Y] = datapixel[i].type;
-                        CompTex.SetPixel(datapixel[i].type, currentcoo);
-                        if(datapixel[i].type > PINOFFSET)
-                        {
-                            Point datapos = datapixel[i].pos - Components_Data[ID].bounds.Location;
-                            data2place[datapos.X, datapos.Y] = 255;
-                            
-                        }
-                        Point gridpos = new Point(currentcoo.X / 32, currentcoo.Y / 32);
-                        if (CompGrid[gridpos.X, gridpos.Y] == null)
-                        {
-                            CompGrid[gridpos.X, gridpos.Y] = new int[200];
-                            CompGrid[gridpos.X, gridpos.Y][0] = nextComponentID - 1;
-                            CompNetwork[currentcoo.X, currentcoo.Y] = 0;
-                        }
-                        else
-                        {
-                            int[] curNetworks = CompGrid[gridpos.X, gridpos.Y];
-                            int Index = Array.IndexOf(curNetworks, nextComponentID - 1);
-                            if (Index < 0)
-                            {
-                                int j = 0;
-                                for (; ; ++j)
-                                {
-                                    if (curNetworks[j] == 0)
-                                    {
-                                        curNetworks[j] = nextComponentID - 1;
-                                        break;
-                                    }
-                                }
-                                CompNetwork[currentcoo.X, currentcoo.Y] = (byte)j;
-                            }
-                            else
-                                CompNetwork[currentcoo.X, currentcoo.Y] = (byte)Index;
-                        }
-                    }
-                    Game1.simulator.PlaceArea(area, data2place);
                 }
             }
+        }
+
+        public void DeactivateDrop()
+        {
+            UI_Handler.UI_IsWindowHide = false;
+            IsCompDrag = false;
             sim_effect.Parameters["currenttype"].SetValue(0);
+            Game1.simulator.ChangeToolmode(Simulator.oldtoolmode);
         }
 
         public int GetComponentID(Point pos)
@@ -279,8 +376,19 @@ namespace Circuit_Simulator
 
         public void Update()
         {
+            if(DropComponent)
+            {
+                DropComponent = false;
+                ComponentDrop(UI_Handler.dragcomp.comp.ID);
+                //InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
+            }
 
-            if(pins2check_length > 0)
+            if (IsCompDrag)
+            {
+                IsDrag();
+            }
+
+            if (pins2check_length > 0)
             {
                 for (int i = 0; i < pins2check_length; ++i)
                 {

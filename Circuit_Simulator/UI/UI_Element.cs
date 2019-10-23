@@ -25,7 +25,7 @@ namespace Circuit_Simulator
                     ChangedUpdate2False();
             }
         }
-        public bool CanBeSizeRelated = true;
+        public bool CanBeSizeRelated = true, IsTypeOfWindow, UpdateAndDrawChild;
         public UI_Element parent;
         public UI_Element child;
         public List<Action> UpdateFunctions;
@@ -69,6 +69,13 @@ namespace Circuit_Simulator
                 if (pos.Y < 0)
                     absolutpos.Y += parent.size.Y;
             }
+            child?.UpdatePos();
+        }
+
+        public void UpdateMain()
+        {
+            UpdatePos();
+            Update();
         }
 
         public virtual void Update()
@@ -81,14 +88,14 @@ namespace Circuit_Simulator
             //    if (pos.Y < 0)
             //        absolutpos.Y += parent.size.Y;
             //}
-            UpdatePos();
-            if (_GetsUpdated)
+            if (_GetsUpdated && !(IsTypeOfWindow && UI_Handler.UI_IsWindowHide))
             {
-                if(!UI_Handler.UI_Element_Pressed)
+                if((!UI_Handler.UI_Element_Pressed || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this))
                     UpdateSpecific();
-                child?.Update();
+                if(UpdateAndDrawChild)
+                    child?.Update();
                 //AlwaysUpdate(aaa && _GetsUpdated);
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && ((Game1.mo_states.Old.LeftButton == ButtonState.Pressed || Game1.mo_states.Old.RightButton == ButtonState.Pressed) || (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed)))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
                     UI_Handler.UI_Active_State = 1;
@@ -117,7 +124,8 @@ namespace Circuit_Simulator
             if (_GetsDrawn)
             {
                 DrawSpecific(spritebatch);
-                child?.Draw(spritebatch);
+                if(UpdateAndDrawChild)
+                    child?.Draw(spritebatch);
                 for (int i = 0; i < DrawFunctions.Count; ++i)
                 {
                     DrawFunctions[i]();

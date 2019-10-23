@@ -14,6 +14,7 @@ namespace Circuit_Simulator.UI
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
+        RenderTarget2D target;
         public Button_Conf conf;
         string Title;
         Vector2 Title_pos;
@@ -30,11 +31,13 @@ namespace Circuit_Simulator.UI
 
         public UI_Window(Point pos, Point size, string Title, Point minsize, Button_Conf conf) : base(pos, size)
         {
+            IsTypeOfWindow = true;
             this.minsize = minsize;
             this.Title = Title;
             this.conf = conf;
             Vector2 title_dim = conf.font.MeasureString(Title);
             Title_pos = new Vector2(5, headheight / 2 - title_dim.Y / 2);
+            target = new RenderTarget2D(Game1.graphics.GraphicsDevice, 1000, 1080, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
             Add_UI_Elements(new UI_TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, new TexButton_Conf(2))); //X Button
@@ -187,8 +190,27 @@ namespace Circuit_Simulator.UI
 
         }
 
+        public float pointRectDist(Point p, Rectangle rec)
+        {
+            var cx = Math.Max(Math.Min(p.X, rec.X + rec.Width), rec.X);
+            var cy = Math.Max(Math.Min(p.Y, rec.Y + rec.Height), rec.Y);
+            return (float)Math.Sqrt((p.X - cx) * (p.X - cx) + (p.Y - cy) * (p.Y - cy));
+        }
+
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
+            float trans = 1.0f;
+            if (UI_Handler.UI_IsWindowHide)
+            {
+                float closestdist = pointRectDist(Game1.mo_states.New.Position, new Rectangle(pos, size));
+                trans = MathHelper.Clamp(0.0f + closestdist * 0.0035f, 0.15f, 0.5f);
+            }
+            spritebatch.End();
+            absolutpos = Point.Zero;
+
+
+            Game1.graphics.GraphicsDevice.SetRenderTarget(target);
+            spritebatch.Begin();
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
             spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.fontcol);
@@ -196,6 +218,13 @@ namespace Circuit_Simulator.UI
             base.DrawSpecific(spritebatch);
 
             spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
+            spritebatch.End();
+
+            Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+
+
+            spritebatch.Begin();
+            spritebatch.Draw(target, new Rectangle(pos, size), new Rectangle(Point.Zero, size), Color.White * trans);
 
         }
     }

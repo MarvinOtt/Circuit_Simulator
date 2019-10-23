@@ -68,6 +68,7 @@ namespace Circuit_Simulator.UI
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.End();
+            RenderTargetBinding[] previoustargets = Game1.graphics.GraphicsDevice.GetRenderTargets();
             Game1.graphics.GraphicsDevice.SetRenderTarget(target);
             Game1.graphics.GraphicsDevice.Clear(new Color(new Vector3(0.1f)));
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Matrix.CreateTranslation(new Vector3(-absolutpos.X, -absolutpos.Y, 0)));
@@ -75,7 +76,7 @@ namespace Circuit_Simulator.UI
             base.DrawSpecific(spritebatch);
 
             spritebatch.End();
-            Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            Game1.graphics.GraphicsDevice.SetRenderTargets(previoustargets);
             spritebatch.Begin();
             spritebatch.Draw(target, absolutpos.ToVector2(), new Rectangle(Point.Zero, size), Color.White);
 
