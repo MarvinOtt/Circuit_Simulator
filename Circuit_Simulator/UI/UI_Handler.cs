@@ -204,6 +204,14 @@ namespace Circuit_Simulator
                 else
                     current.IsActivated = ComponentBox.GetsUpdated;
             });
+            ButtonMenu_View.ui_elements[1].UpdateFunctions.Add(delegate ()
+            {
+                Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[1];
+                if (current.IsToggle)
+                    QuickHotbar.GetsUpdated = QuickHotbar.GetsDrawn = current.IsActivated;
+                else
+                    current.IsActivated = QuickHotbar.GetsUpdated;
+            });
 
             //Configs for Main Toolbar Buttons
             toolbar_menus = new UI_MultiElement<UI_Element>[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help };
