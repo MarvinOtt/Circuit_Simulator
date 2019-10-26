@@ -156,8 +156,8 @@ namespace Circuit_Simulator
 
 
         BasicEffect basicEffect;
-        Effect sim_effect, line_effect;
-        RenderTarget2D main_target, final_target;
+        Effect sim_effect, line_effect, iswirerender_effect;
+        RenderTarget2D main_target, final_target, WireCalc_target;
         public static RenderTarget2D logic_target, sec_target;
         Network CalcNetwork;
         
@@ -169,14 +169,16 @@ namespace Circuit_Simulator
         public static int[] emptyNetworkID;
         public static int emptyNetworkID_count;
         public static byte[,] IsWire, CalcGridData, CalcGridStat, IsChange;
+        public static bool[,] IsWireRender;
+
         HashSet<int> FoundNetworks;
         int[] CalcOccurNetw;
         byte[] revshiftarray;
         int CalcOccurNetw_Pos;
         public static int[,,] WireIDs;
 
-        Point worldpos;
-        int worldzoom = 0;
+        public static Point worldpos;
+        public static int worldzoom = 0;
 
         int sim_speed = 1;
         public static int toolmode = TOOL_WIRE, oldtoolmode = 0;
@@ -198,10 +200,12 @@ namespace Circuit_Simulator
             // Loading Effects
             sim_effect = Game1.content.Load<Effect>("sim_effect");
             line_effect = Game1.content.Load<Effect>("line_effect");
+            iswirerender_effect = Game1.content.Load<Effect>("iswirerender_effect");
 
             // Initializing Render Targets
             sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             //Game1.graphics.GraphicsDevice.SetRenderTarget(sec_target);
             //Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
             //Game1.graphics.GraphicsDevice.SetRenderTarget(logic_target);
@@ -254,6 +258,18 @@ namespace Circuit_Simulator
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, worldzoom));
         }
 
+        public void SetIsWireRender(int posx, int posy)
+        {
+            bool IsRender = false;
+            if (IsWire[posx, posy] != 0)
+                IsRender = true;
+
+            if(IsRender != IsWireRender[posx, posy])
+            {
+                IsWireRender[posx, posy] = IsRender;
+                WireCalc_target.SetPixel(Convert.ToByte(IsRender), new Point(posx, posy));
+            }
+        }
 
         public void DoFFIfValid(int x, int y, byte curval)
         {
@@ -592,7 +608,7 @@ namespace Circuit_Simulator
                         Point diff = Game1.mo_states.New.Position - worldpos;
                         worldpos += new Point(diff.X / 2, diff.Y / 2);
                     }
-                    else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && worldzoom < 8) // Zooming In
+                    else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && worldzoom < 10) // Zooming In
                     {
                         worldzoom += 1;
                         Point diff = Game1.mo_states.New.Position - worldpos;
@@ -676,6 +692,8 @@ namespace Circuit_Simulator
                 sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
                 sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
                 sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
+                //sim_effect.Parameters["mindist"].SetValue(MathHelper.Clamp((float)(4.0f / Math.Pow(2, worldzoom)), 0.125f / 2, 0.125f));
+                sim_effect.Parameters["mindist"].SetValue(0.13f);
                 sim_effect.Parameters["currentlayer"].SetValue(currentlayer);
             }
 
@@ -708,11 +726,18 @@ namespace Circuit_Simulator
                     line_effect.CurrentTechnique.Passes[0].Apply();
                     Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
 
+                    Game1.graphics.GraphicsDevice.SetRenderTarget(WireCalc_target);
+                    iswirerender_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+                    iswirerender_effect.Parameters["tex"].SetValue(logic_target);
+                    iswirerender_effect.CurrentTechnique.Passes[0].Apply();
+                    Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+
                     Game1.graphics.GraphicsDevice.SetRenderTarget(null);
                     lines2draw_count[i] = 0;
+                    //WireCalc_target
                 }
             }
-            sim_comp.DrawOverlays(spritebatch);
+            sim_comp.DrawLineOverlays(spritebatch);
             sim_comp.Draw(spritebatch);
             
 
@@ -725,6 +750,8 @@ namespace Circuit_Simulator
             //sim_effect.Parameters["logictex_L7"].SetValue(logic_targets[6]);
             //sim_effect.Parameters["logictex_LV"].SetValue(logic_targets[7]);
             sim_effect.Parameters["logictex"].SetValue(logic_target);
+            sim_effect.Parameters["wirecalctex"].SetValue(WireCalc_target);
+            sim_effect.Parameters["isedgetex"].SetValue(Sim_Component.IsEdgeTex);
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, sim_effect, Matrix.Identity);
             spritebatch.Draw(main_target, Vector2.Zero, Color.White);
             spritebatch.End();
@@ -732,6 +759,9 @@ namespace Circuit_Simulator
 
 
             spritebatch.Begin();
+
+            sim_comp.DrawCompOverlays(spritebatch);
+
             spritebatch.DrawString(Game1.basefont, "Layer: " + currentlayer.ToString(), new Vector2(500, 100), Color.Red);
             if(IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
                 spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer].ToString(), new Vector2(500, 130), Color.Red);

@@ -32,6 +32,12 @@
 /processorParam:TextureFormat=Color
 /build:fullhdtest.png
 
+#begin iswirerender_effect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:iswirerender_effect.fx
+
 #begin line_effect.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -43,6 +49,18 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:overlay_effect.fx
+
+#begin Overlays/Overlay_AND.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Overlays/Overlay_AND.png
 
 #begin sim_effect.fx
 /importer:EffectImporter

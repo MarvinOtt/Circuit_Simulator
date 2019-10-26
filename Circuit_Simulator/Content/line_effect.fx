@@ -44,6 +44,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	return output;
 }
 
+
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
 	//if (input.layers > 0.5f)
@@ -57,6 +58,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	uint layers_uint = input.layers;
 	uint res = tex_dat | layers_uint;
 	return float4(1, 1, 1, res / 255.0f);
+	//OUT.OUT2 = float4(0, 0, 0, (res > 0.5f) ? 1.0f : 0.0f);
 
 }
 
