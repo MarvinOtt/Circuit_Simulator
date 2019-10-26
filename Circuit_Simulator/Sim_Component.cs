@@ -9,6 +9,35 @@ using System.Threading.Tasks;
 
 namespace Circuit_Simulator
 {
+    public struct FRectangle
+    {
+        public float X, Y, Width, Height;
+        public FRectangle(float X, float Y, float Width, float Height)
+        {
+            this.X = X;
+            this.Y = Y;
+            this.Width = Width;
+            this.Height = Height;
+        }
+        public FRectangle(Vector2 XY, Vector2 size)
+        {
+            this.X = XY.X;
+            this.Y = XY.Y;
+            this.Width = size.X;
+            this.Height = size.Y;
+        }
+
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle((int)X, (int)Y, (int)Width, (int)Height);
+        }
+
+        public static FRectangle operator * (FRectangle src, float mul)
+        {
+            return new FRectangle(src.X * mul, src.Y * mul, src.Width * mul, src.Height * mul);
+        }
+    }
+
     public class Component
     {
         public int ID;
@@ -73,6 +102,7 @@ namespace Circuit_Simulator
                 Point currentcoo = pos + datapixel[i].pos;
                 Sim_Component.CompType[currentcoo.X, currentcoo.Y] = datapixel[i].type;
                 Sim_Component.CompTex.SetPixel(datapixel[i].type, currentcoo);
+                Sim_Component.IsEdgeTex.SetPixel(datapixel[i].IsEdge, currentcoo);
                 if (datapixel[i].type > Sim_Component.PINOFFSET)
                 {
                     Point datapos = datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
@@ -118,6 +148,8 @@ namespace Circuit_Simulator
             byte[,] data2place = new byte[area.Size.X, area.Size.Y];
             Simulator.IsWire.GetArea(data2place, area);
 
+            if (Sim_Component.Components_Data[dataID].IsOverlay)
+                Sim_Component.CompMayneedoverlay.Remove(ID);
             for (int i = 0; i < datapixel.Count; ++i)
             {
                 Point currentcoo = pos + datapixel[i].pos;
@@ -142,11 +174,19 @@ namespace Circuit_Simulator
     {
         public byte type;
         public Point pos;
+        public byte IsEdge;
 
         public ComponentPixel(Point pos, byte type)
         {
             this.pos = pos;
             this.type = type;
+            IsEdge = 0;
+        }
+        public ComponentPixel(Point pos, byte type, byte IsEdge)
+        {
+            this.pos = pos;
+            this.type = type;
+            this.IsEdge = IsEdge;
         }
     }
     public class ComponentData
@@ -161,6 +201,8 @@ namespace Circuit_Simulator
         public bool CanBeClicked;
         public Action<Component> ClickAction;
         public List<VertexPositionLine> overlaylines;
+        public Texture2D overlaytex;
+        public FRectangle[] overlaytex_bounds;
 
         public ComponentData(string name, string catagory, bool IsOverlay, bool IsClickable)
         {
@@ -173,6 +215,7 @@ namespace Circuit_Simulator
             bounds = new Rectangle[4];
             for (int i = 0; i < 4; ++i)
                 data[i] = new List<ComponentPixel>();
+            overlaytex_bounds = new FRectangle[4];
         }
 
         public void CalculateBounds(int rotation)
@@ -195,6 +238,25 @@ namespace Circuit_Simulator
                 CalculateBounds(i);
         }
 
+        public void Finish()
+        {
+            for (int i = 0; i < 4; ++i)
+            {
+                for(int j = 0; j < data[i].Count; ++j)
+                {
+                    if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X - 1) && x.pos.Y == (data[i][j].pos.Y)))
+                        data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 0)));
+                    if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X) && x.pos.Y == (data[i][j].pos.Y - 1)))
+                        data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 1)));
+                    if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X + 1) && x.pos.Y == (data[i][j].pos.Y)))
+                        data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 2)));
+                    if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X) && x.pos.Y == (data[i][j].pos.Y + 1)))
+                        data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 3)));
+                }
+            }
+            int a = 3;
+        }
+
         public void addOverlayLine(VertexPositionLine line)
         {
             overlaylines.Add(line);
@@ -208,7 +270,7 @@ namespace Circuit_Simulator
         Simulator sim;
         Effect sim_effect;
         Texture2D placementtex;
-        public static RenderTarget2D CompTex;
+        public static RenderTarget2D CompTex, IsEdgeTex;
         public bool IsCompDrag;
 
         public static List<ComponentData> Components_Data;
@@ -234,6 +296,7 @@ namespace Circuit_Simulator
             placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 41, 41, false, SurfaceFormat.Alpha8);
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
             CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
             components = new Component[1000000];
@@ -254,6 +317,12 @@ namespace Circuit_Simulator
             Components_Data[0].addData(new ComponentPixel(new Point(-1, -1), 4));
             Components_Data[0].addData(new ComponentPixel(new Point(2, 0), 6));
             Components_Data[0].addData(new ComponentPixel(new Point(-1, 1), 5));
+            Components_Data[0].overlaytex = Game1.content.Load<Texture2D>("Overlays\\Overlay_AND");
+            Components_Data[0].overlaytex_bounds[0] = new FRectangle(-1.0f, -1.0f, 3.0f, 2.0f);
+            Components_Data[0].overlaytex_bounds[1] = new FRectangle(-1.5f, -0.5f, 3.0f, 2.0f);
+            Components_Data[0].overlaytex_bounds[2] = new FRectangle(-2.0f, -1.0f, 3.0f, 2.0f);
+            Components_Data[0].overlaytex_bounds[3] = new FRectangle(-1.5f, -1.5f, 3.0f, 2.0f);
+            Components_Data[0].Finish();
 
             Components_Data.Add(new ComponentData("Button", "Input", true, true));
             Components_Data[1].addData(new ComponentPixel(new Point(0, -1), 2));
@@ -281,6 +350,7 @@ namespace Circuit_Simulator
                 }
             };
             Components_Data[1].OverlayStateID = 0;
+            Components_Data[1].Finish();
         }
 
         public void InizializeComponentDrag(int ID)
@@ -407,7 +477,7 @@ namespace Circuit_Simulator
             sim_effect.Parameters["comptex"].SetValue(CompTex);
         }
 
-        public void DrawOverlays(SpriteBatch spritebatch)
+        public void DrawLineOverlays(SpriteBatch spritebatch)
         {
             int count = 0;
             for(int i = 0; i < CompMayneedoverlay.Count; ++i)
@@ -424,7 +494,7 @@ namespace Circuit_Simulator
                     count++;
                 }
             }
-
+            
             if(count > 0)
             {
                 Game1.graphics.GraphicsDevice.SetRenderTarget(CompTex);
@@ -435,6 +505,32 @@ namespace Circuit_Simulator
             }
 
 
+        }
+
+        public void DrawCompOverlays(SpriteBatch spritebatch)
+        {
+            if (Simulator.worldzoom > 2)
+            {
+                for (int i = 0; i < 1000; ++i)
+                {
+                    if (components[i] != null)
+                    {
+                        ComponentData compdata = Components_Data[components[i].dataID];
+                        if (compdata.overlaytex != null)
+                        {
+                            FRectangle destrec = compdata.overlaytex_bounds[components[i].rotation];
+                            float pow = (float)Math.Pow(2, Simulator.worldzoom);
+                            destrec.X += 0.5f;
+                            destrec.Y += 0.5f;
+                            destrec *= pow;
+                            Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * components[i].pos.ToVector2();
+                            destrec.X += screencoo.X;
+                            destrec.Y += screencoo.Y;
+                            spritebatch.Draw(compdata.overlaytex, destrec.ToRectangle(), Color.White);
+                        }
+                    }
+                }
+            }
         }
     }
 }
