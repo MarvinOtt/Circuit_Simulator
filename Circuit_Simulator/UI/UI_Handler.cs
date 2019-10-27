@@ -195,7 +195,6 @@ namespace Circuit_Simulator
             {
                 if(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
                     Game1.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
-                //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
 
             // Config for opening ComponentBox
@@ -218,7 +217,7 @@ namespace Circuit_Simulator
 
             //Configs for Main Toolbar Buttons
             toolbar_menus = new UI_Element[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help};
-            //toolbar_childs = new IActivatable[] { (UI_Button)Toolbar.ui_elements[0], (UI_Button)Toolbar.ui_elements[1], (UI_Button)Toolbar.ui_elements[2], (UI_Button)Toolbar.ui_elements[3], (UI_Button)Toolbar.ui_elements[4], (UI_TexButton)QuickHotbar.ui_elements[6] };
+           
             for (int i = 0; i < 5; ++i)
             {
                 int ii = i;
@@ -234,45 +233,25 @@ namespace Circuit_Simulator
                         cur.IsActivated = false;
                 });
             }
-            //for (int i = 0; i < toolbar_menus.Length; ++i)
-            //{
-            //    int ii = i;
-            //    toolbar_menus[i].UpdateFunctions.Add(delegate ()
-            //    {
-            //        IActivatable cur = toolbar_childs[ii];
-            //        toolbar_menus[ii].GetsDrawn = toolbar_menus[ii].GetsUpdated = cur.IsActivated;
-            //        // Deactivate current active button when something else got pressed
-            //        bool IsInOther = false;// new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
-            //        IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(Game1.mo_states.New.Position);
-            //        if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOff() && !IsInOther)
-            //            cur.IsActivated = false;
-            //    });
-            //}
+           
 
             // Wire MaskButton
             QuickHotbar.ui_elements[6].UpdateFunctions.Add(delegate ()
             {
                 UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
                 current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
-                //if (current.IsActivated)
-                //{
-                //    current.child.GetsUpdated ^= true;
-                //    current.child.GetsDrawn ^= true;
-                //}
             });
 
             QuickHotbar.ui_elements[5].UpdateFunctions.Add(delegate ()
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated)
                     Game1.simulator.ChangeToolmode(Simulator.TOOL_WIRE);
-                //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
 
             QuickHotbar.ui_elements[4].UpdateFunctions.Add(delegate ()
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated)
                     Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
-                //Simulator.IsSimulating = ((UI_Button)Toolbar.ui_elements[4]).IsActivated;
             });
 
             QuickHotbar.ui_elements[2].UpdateFunctions.Add(delegate ()

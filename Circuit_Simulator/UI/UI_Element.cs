@@ -80,14 +80,7 @@ namespace Circuit_Simulator
 
         public virtual void Update()
 	    {
-            //absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            //if (parent != null && CanBeSizeRelated)
-            //{
-            //    if (pos.X < 0)
-            //        absolutpos.X += parent.size.X;
-            //    if (pos.Y < 0)
-            //        absolutpos.Y += parent.size.Y;
-            //}
+
             if (_GetsUpdated && !(IsTypeOfWindow && UI_Handler.UI_IsWindowHide))
             {
                 if((!UI_Handler.UI_Element_Pressed || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this))

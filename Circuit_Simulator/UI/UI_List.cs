@@ -49,13 +49,7 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateSpecific()
         {
-            //if(IsScroll && new Rectangle(ScrollPosOrigin, ScrollSize).Contains(Game1.mo_states.New.Position))
-            //{
-            //    if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
-            //        pos.Y = pos.Y - 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
-            //    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
-            //        pos.Y = pos.Y - 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120;
-            //}
+      
             Point currentpos = Point.Zero;
             for (int i = 0; i < ui_elements.Count; ++i)
             {

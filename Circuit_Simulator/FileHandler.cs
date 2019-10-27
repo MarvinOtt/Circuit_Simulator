@@ -98,7 +98,7 @@ namespace Circuit_Simulator
 
         public static void SaveAs()
         {
-            if (!Simulator.IsSimulating)//KB_currentstate.IsKeyDown(Keys.LeftControl) && KB_currentstate.IsKeyDown(Keys.LeftShift) && KB_currentstate.IsKeyDown(Keys.S) && KB_oldstate.IsKeyUp(Keys.S))
+            if (!Simulator.IsSimulating)
             {
                 using (SaveFileDialog dialog = new SaveFileDialog())
                 {
@@ -115,7 +115,7 @@ namespace Circuit_Simulator
                     dialog.CheckPathExists = false;
                     dialog.CheckFileExists = false;
                     dialog.Title = "SaveAs";
-                    dialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
+                    dialog.Filter = "DCE files (*.dce)|*.dce|All files (*.*)|*.*";
                     dialog.FilterIndex = 1;
                     dialog.RestoreDirectory = true;
                     
@@ -132,7 +132,7 @@ namespace Circuit_Simulator
 
         public static void Open()
         {
-            if (!Simulator.IsSimulating)// KB_currentstate.IsKeyDown(Keys.LeftControl) && KB_currentstate.IsKeyDown(Keys.LeftShift) && KB_currentstate.IsKeyDown(Keys.O) && KB_oldstate.IsKeyUp(Keys.O))
+            if (!Simulator.IsSimulating)
             {
                 using (OpenFileDialog dialog = new OpenFileDialog())
                 {
@@ -151,7 +151,7 @@ namespace Circuit_Simulator
                     dialog.CheckFileExists = true;
                     dialog.CheckPathExists = true;
                     dialog.Title = "Select File to Open";
-                    dialog.Filter = "Binary files (*.bin)|*.bin|All files (*.*)|*.*";
+                    dialog.Filter = "DCE files (*.dce)|*.dce|All files (*.*)|*.*";
                     dialog.FilterIndex = 1;
                     dialog.RestoreDirectory = true;
 
