@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -89,6 +90,8 @@ namespace Circuit_Simulator
 
         public void Place(Point pos, int newrotation)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             this.pos = pos;
             this.rotation = newrotation;
             List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[newrotation];
@@ -138,6 +141,9 @@ namespace Circuit_Simulator
                 }
             }
             Game1.simulator.PlaceArea(area, data2place);
+            watch.Stop();
+            double milis = (1000.0 * watch.ElapsedTicks) / (double)Stopwatch.Frequency;
+            //Console.WriteLine(milis);
         }
 
         public void Delete()
@@ -343,11 +349,15 @@ namespace Circuit_Simulator
             {
                 comp.internalstates[0] ^= 1;
                 byte state = (byte)comp.internalstates[0];
-                for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
+
+                Sim_INF_DLL.SetIntState(comp.ID, 0);
+                if (!Simulator.IsSimulating)
                 {
-                    Simulator.networks[comp.pinNetworkIDs[i]].state = state;
-                    Sim_INF_DLL.SetState(comp.pinNetworkIDs[i], state);
+                    for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
+                        Simulator.networks[comp.pinNetworkIDs[i]].state = state;
                 }
+                else
+                    Sim_INF_DLL.SetIntState(comp.ID, 0);
             };
             Components_Data[1].OverlayStateID = 0;
             Components_Data[1].Finish();

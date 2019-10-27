@@ -15,13 +15,14 @@ namespace Circuit_Simulator
         public static int WireStates_count;
         public static int[] CompInfos;
         public static int[] CompID;
+        public static int[] IntStatesMap;
         public static int comp_num;
 
-        public static void SetState(int index, byte state)
+        public static void SetIntState(int compID, int stateID)
         {
-            WireStates[WireMap[index]] = WireStates2[WireMap[index]] = state;
+            CompInfos[IntStatesMap[compID]] = Sim_Component.components[compID].internalstates[stateID];
         }
-        public static byte GetState(int index)
+        public static byte GetWireState(int index)
         {
             return WireStates[WireMap[index]];
         }
@@ -33,6 +34,10 @@ namespace Circuit_Simulator
             WireStates2 = new byte[10000000];
             CompInfos = new int[25000000];
             CompID = new int[5000000];
+            IntStatesMap = new int[10000000];
+
+            InitSimulation(2);
+
         }
 
 
@@ -65,7 +70,14 @@ namespace Circuit_Simulator
                     {
                         CompInfos[infocount++] = WireMap[curcomp.pinNetworkIDs[j]];
                     }
-
+                    if(compdata.internalstate_length > 0)
+                    {
+                        IntStatesMap[i] = infocount;
+                        for(int j = 0; j < compdata.internalstate_length; ++j)
+                        {
+                            CompInfos[infocount++] = curcomp.internalstates[j];
+                        }
+                    }
                 }
             }
             comp_num = compcount;
@@ -76,8 +88,12 @@ namespace Circuit_Simulator
         [DllImport(DLL_Path + "Sim_DLL.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DLL_SimOneStep(byte[] WireStatesIN, byte[] WireStatesOUT, int[] CompInfos, int[] CompID, int comp_num, int net_num);
 
+        [DllImport(DLL_Path + "Sim_DLL.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void InitSimulation(int comp_num);
+
         public void SimulateOneStep()
         {
+
             DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
         }
     }

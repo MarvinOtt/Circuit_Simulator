@@ -254,6 +254,8 @@ float4 getcoloratpos(float x, float y)
 		else
 			OUT = float4(0, 0, 0, 0.1f);
 	}
+	else
+		OUT.a = 0.2f;
 	uint type2 = 0;
 	if (currenttype == 1)
 	{
@@ -493,10 +495,10 @@ float4 getcoloratpos(float x, float y)
 	//		OUT = float4(1, 1, 1, 1);
 	//}
 
-	if ((x >= mousepos_X && x <= mousepos_X + 1) || (y >= mousepos_Y && y <= mousepos_Y + 1))
+	/*if ((x >= mousepos_X && x <= mousepos_X + 1) || (y >= mousepos_Y && y <= mousepos_Y + 1))
 	{
 		OUT = OUT * 0.85f + float4(1, 1, 1, 1) * 0.15f;
-	}
+	}*/
 	return OUT;
 }
 

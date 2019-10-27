@@ -167,10 +167,15 @@ namespace Circuit_Simulator
                             Array.Clear(Simulator.IsWire, 0, Simulator.IsWire.Length);
                             Array.Clear(Simulator.WireIDs, 0, Simulator.WireIDs.Length);
                             Array.Clear(Simulator.emptyNetworkID, 0, Simulator.emptyNetworkID.Length);
-                            Sim_Component.CompMayneedoverlay.Clear();
                             Simulator.emptyNetworkID_count = 0;
                             Array.Clear(Sim_Component.emptyComponentID, 0, Sim_Component.emptyComponentID.Length);
                             Sim_Component.emptyComponentID_count = 0;
+                            Sim_Component.CompMayneedoverlay.Clear();
+                            Array.Clear(Sim_Component.CompType, 0, Sim_Component.CompType.Length);
+                            Array.Clear(Sim_Component.CompGrid, 0, Sim_Component.CompGrid.Length);
+                            Array.Clear(Sim_Component.CompNetwork, 0, Sim_Component.CompNetwork.Length);
+                            Array.Clear(Sim_Component.pins2check, 0, Sim_Component.pins2check.Length);
+                            Sim_Component.pins2check_length = 0;
 
                             Simulator.sec_target.Dispose();
                             Simulator.logic_target.Dispose();
@@ -184,6 +189,7 @@ namespace Circuit_Simulator
  
                             
                             #region LoadWires 
+
                             stream.Read(intbuffer, 0, 4);
                             int wirecount = BitConverter.ToInt32(intbuffer, 0);
                             Simulator.highestNetworkID = wirecount;
@@ -220,8 +226,12 @@ namespace Circuit_Simulator
                                 networkbuffer.PlaceNetwork();
                                 
                             }
+
                             #endregion
+
+
                             #region LoadComp
+
                             stream.Read(intbuffer, 0, 4);
                             int compcount = BitConverter.ToInt32(intbuffer, 0);
                             Sim_Component.nextComponentID = compcount + 1;
