@@ -18,9 +18,9 @@ namespace Circuit_Simulator.UI.Specific
         public Button_Conf conf;
         Vector2 text_pos;
 
-        public UI_Component(string name, Button_Conf conf) : base(Point.Zero, new Point(0, height))
+        public UI_Component(string name, Button_Conf conf, int ID) : base(Point.Zero, new Point(0, height))
         {
-            
+            this.ID = ID;
             this.name = name;
             this.conf = conf;
             Vector2 textsize = conf.font.MeasureString(name);

@@ -208,7 +208,8 @@ namespace Circuit_Simulator
         public Action<Component> ClickAction;
         public List<VertexPositionLine> overlaylines;
         public Texture2D overlaytex;
-        public FRectangle[] overlaytex_bounds;
+        public FRectangle[] overlay_bounds;
+        public Rectangle overlaytex_bounds;
 
         public ComponentData(string name, string catagory, bool IsOverlay, bool IsClickable)
         {
@@ -221,7 +222,7 @@ namespace Circuit_Simulator
             bounds = new Rectangle[4];
             for (int i = 0; i < 4; ++i)
                 data[i] = new List<ComponentPixel>();
-            overlaytex_bounds = new FRectangle[4];
+            overlay_bounds = new FRectangle[4];
         }
 
         public void CalculateBounds(int rotation)
@@ -312,45 +313,29 @@ namespace Circuit_Simulator
             CompMayneedoverlay = new List<int>();
 
             // Basic Components Data
-            Components_Data = new List<ComponentData>();
-            Components_Data.Add(new ComponentData("AND", "Gates", false, false));
-            Components_Data[0].addData(new ComponentPixel(new Point(0, -1), 1));
-            Components_Data[0].addData(new ComponentPixel(new Point(0, 0), 1));
-            Components_Data[0].addData(new ComponentPixel(new Point(0, 1), 1));
-            Components_Data[0].addData(new ComponentPixel(new Point(1, -1), 1));
-            Components_Data[0].addData(new ComponentPixel(new Point(1, 0), 1));
-            Components_Data[0].addData(new ComponentPixel(new Point(1, 1), 1));
-            Components_Data[0].addData(new ComponentPixel(new Point(-1, -1), 4));
-            Components_Data[0].addData(new ComponentPixel(new Point(2, 0), 6));
-            Components_Data[0].addData(new ComponentPixel(new Point(-1, 1), 5));
-            Components_Data[0].overlaytex = Game1.content.Load<Texture2D>("Overlays\\Overlay_AND");
-            Components_Data[0].overlaytex_bounds[0] = new FRectangle(-1.0f, -1.0f, 3.0f, 2.0f);
-            Components_Data[0].overlaytex_bounds[1] = new FRectangle(-1.5f, -0.5f, 3.0f, 2.0f);
-            Components_Data[0].overlaytex_bounds[2] = new FRectangle(-2.0f, -1.0f, 3.0f, 2.0f);
-            Components_Data[0].overlaytex_bounds[3] = new FRectangle(-1.5f, -1.5f, 3.0f, 2.0f);
-            Components_Data[0].Finish();
 
+            Components_Data = new List<ComponentData>();
             Components_Data.Add(new ComponentData("Button", "Input", true, true));
-            Components_Data[1].addData(new ComponentPixel(new Point(0, -1), 2));
-            Components_Data[1].addData(new ComponentPixel(new Point(0, 0), 2));
-            Components_Data[1].addData(new ComponentPixel(new Point(0, 1), 2));
-            Components_Data[1].addData(new ComponentPixel(new Point(-1, 0), 2));
-            Components_Data[1].addData(new ComponentPixel(new Point(1, 0), 2));
-            Components_Data[1].addData(new ComponentPixel(new Point(-1, -1), 4));
-            Components_Data[1].addData(new ComponentPixel(new Point(1, -1), 5));
-            Components_Data[1].addData(new ComponentPixel(new Point(1, 1), 6));
-            Components_Data[1].addData(new ComponentPixel(new Point(-1, 1), 7));
-            Components_Data[1].addOverlayLine(new VertexPositionLine(new Point(-1, 0), 200));
-            Components_Data[1].addOverlayLine(new VertexPositionLine(new Point(2, 0), 200));
-            Components_Data[1].addOverlayLine(new VertexPositionLine(new Point(0, -1), 200));
-            Components_Data[1].addOverlayLine(new VertexPositionLine(new Point(0, 2), 200));
-            Components_Data[1].internalstate_length = 1;
-            Components_Data[1].ClickAction += delegate (Component comp)
+            Components_Data[0].addData(new ComponentPixel(new Point(0, -1), 2));
+            Components_Data[0].addData(new ComponentPixel(new Point(0, 0), 2));
+            Components_Data[0].addData(new ComponentPixel(new Point(0, 1), 2));
+            Components_Data[0].addData(new ComponentPixel(new Point(-1, 0), 2));
+            Components_Data[0].addData(new ComponentPixel(new Point(1, 0), 2));
+            Components_Data[0].addData(new ComponentPixel(new Point(-1, -1), 4));
+            Components_Data[0].addData(new ComponentPixel(new Point(1, -1), 5));
+            Components_Data[0].addData(new ComponentPixel(new Point(1, 1), 6));
+            Components_Data[0].addData(new ComponentPixel(new Point(-1, 1), 7));
+            Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(-1, 0), 200));
+            Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(2, 0), 200));
+            Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(0, -1), 200));
+            Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(0, 2), 200));
+            Components_Data[0].internalstate_length = 1;
+            Components_Data[0].ClickAction += delegate (Component comp)
             {
                 comp.internalstates[0] ^= 1;
                 byte state = (byte)comp.internalstates[0];
 
-                Sim_INF_DLL.SetIntState(comp.ID, 0);
+                //Sim_INF_DLL.SetIntState(comp.ID, 0);
                 if (!Simulator.IsSimulating)
                 {
                     for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
@@ -359,8 +344,33 @@ namespace Circuit_Simulator
                 else
                     Sim_INF_DLL.SetIntState(comp.ID, 0);
             };
-            Components_Data[1].OverlayStateID = 0;
-            Components_Data[1].Finish();
+            Components_Data[0].OverlayStateID = 0;
+            Components_Data[0].Finish();
+            Point size = new Point(384, 256);
+            Rectangle[] bounds = new Rectangle[] { new Rectangle(Point.Zero, size), new Rectangle(new Point(384, 0), size), Rectangle.Empty, Rectangle.Empty, Rectangle.Empty, Rectangle.Empty };
+
+            for (int i = 1; i <= 6; ++i)
+            {
+                Components_Data.Add(new ComponentData("AND", "Gates", false, false));
+                Components_Data[i].addData(new ComponentPixel(new Point(0, -1), 1));
+                Components_Data[i].addData(new ComponentPixel(new Point(0, 0), 1));
+                Components_Data[i].addData(new ComponentPixel(new Point(0, 1), 1));
+                Components_Data[i].addData(new ComponentPixel(new Point(1, -1), 1));
+                Components_Data[i].addData(new ComponentPixel(new Point(1, 0), 1));
+                Components_Data[i].addData(new ComponentPixel(new Point(1, 1), 1));
+                Components_Data[i].addData(new ComponentPixel(new Point(-1, -1), 4));
+                Components_Data[i].addData(new ComponentPixel(new Point(2, 0), 6));
+                Components_Data[i].addData(new ComponentPixel(new Point(-1, 1), 5));
+                Components_Data[i].overlaytex = Game1.content.Load<Texture2D>("Overlays\\Overlay_AND");
+                Components_Data[i].overlaytex_bounds = bounds[i - 1];
+                Components_Data[i].overlay_bounds[0] = new FRectangle(-1.0f, -1.0f, 3.0f, 2.0f);
+                Components_Data[i].overlay_bounds[1] = new FRectangle(-1.5f, -0.5f, 3.0f, 2.0f);
+                Components_Data[i].overlay_bounds[2] = new FRectangle(-2.0f, -1.0f, 3.0f, 2.0f);
+                Components_Data[i].overlay_bounds[3] = new FRectangle(-1.5f, -1.5f, 3.0f, 2.0f);
+                Components_Data[i].Finish();
+            }
+            
+
         }
 
         public void InizializeComponentDrag(int ID)
@@ -528,7 +538,7 @@ namespace Circuit_Simulator
                         ComponentData compdata = Components_Data[components[i].dataID];
                         if (compdata.overlaytex != null)
                         {
-                            FRectangle destrec = compdata.overlaytex_bounds[components[i].rotation];
+                            FRectangle destrec = compdata.overlay_bounds[components[i].rotation];
                             float pow = (float)Math.Pow(2, Simulator.worldzoom);
                             destrec.X += 0.5f;
                             destrec.Y += 0.5f;
@@ -536,7 +546,7 @@ namespace Circuit_Simulator
                             Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * components[i].pos.ToVector2();
                             destrec.X += screencoo.X;
                             destrec.Y += screencoo.Y;
-                            spritebatch.Draw(compdata.overlaytex, destrec.ToRectangle(), Color.White);
+                            spritebatch.Draw(compdata.overlaytex, destrec.ToRectangle(), compdata.overlaytex_bounds, Color.White);
                         }
                     }
                 }

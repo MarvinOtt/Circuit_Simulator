@@ -142,30 +142,31 @@ namespace Circuit_Simulator
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf);
 
             // Sample Components
-
-            // Gates
-            AND = new UI_Component("AND", componentconf);
-            OR = new UI_Component("OR", componentconf);
-            XOR = new UI_Component("XOR", componentconf);
-            NAND = new UI_Component("NAND", componentconf);
-            NOR = new UI_Component("NOR", componentconf);
-            XNOR = new UI_Component("XNOR", componentconf);
-
-            // Flip Flops
-            FF_RS = new UI_Component("RS", componentconf);
-            FF_JK = new UI_Component("JK", componentconf);
-            FF_D = new UI_Component("Data", componentconf);
-            FF_T = new UI_Component("Toggle", componentconf);
-
-            // Shift Registers
-            SISO = new UI_Component("SISO", componentconf);
-            SIPO = new UI_Component("SIPO", componentconf);
-            PISO = new UI_Component("PISO", componentconf);
-            PIPO = new UI_Component("PIPO", componentconf);
+            int comp_ID = 0;
 
             // Input
-            SWITCH = new UI_Component("Switch", componentconf);
-            SWITCH.ID = 1;
+            SWITCH = new UI_Component("Switch", componentconf, comp_ID++);
+
+            // Gates
+            AND = new UI_Component("AND", componentconf, comp_ID++);
+            OR = new UI_Component("OR", componentconf, comp_ID++);
+            XOR = new UI_Component("XOR", componentconf, comp_ID++);
+            NAND = new UI_Component("NAND", componentconf, comp_ID++);
+            NOR = new UI_Component("NOR", componentconf, comp_ID++);
+            XNOR = new UI_Component("XNOR", componentconf, comp_ID++);
+
+            // Flip Flops
+            FF_RS = new UI_Component("RS", componentconf, comp_ID++);
+            FF_JK = new UI_Component("JK", componentconf, comp_ID++);
+            FF_D = new UI_Component("Data", componentconf, comp_ID++);
+            FF_T = new UI_Component("Toggle", componentconf, comp_ID++);
+
+            // Shift Registers
+            SISO = new UI_Component("SISO", componentconf, comp_ID++);
+            SIPO = new UI_Component("SIPO", componentconf, comp_ID++);
+            PISO = new UI_Component("PISO", componentconf, comp_ID++);
+            PIPO = new UI_Component("PIPO", componentconf, comp_ID++);
+
 
 
             //Catagories
@@ -174,7 +175,7 @@ namespace Circuit_Simulator
             Cat_ShiftRegisters = new UI_Comp_Cat("Shift Registers", cat_conf);
             Cat_Input = new UI_Comp_Cat("Input", cat_conf);
 
-            Cat_Gates.AddComponents(AND, NAND, OR, NOR, XOR, XNOR);
+            Cat_Gates.AddComponents(AND, OR, XOR, NAND, NOR, XNOR);
             Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
             Cat_ShiftRegisters.AddComponents(SISO, SIPO, PISO, PIPO);
             Cat_Input.AddComponents(SWITCH);

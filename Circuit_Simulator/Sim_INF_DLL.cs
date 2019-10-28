@@ -36,7 +36,7 @@ namespace Circuit_Simulator
             CompID = new int[5000000];
             IntStatesMap = new int[10000000];
 
-            InitSimulation(2);
+            InitSimulation(7);
 
         }
 

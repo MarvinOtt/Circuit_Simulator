@@ -7,6 +7,8 @@
 	#define PS_SHADERMODEL ps_5_0
 #endif
 
+#define PINOFF 3
+
 texture2D logictex, wirecalctex, isedgetex;
 texture2D placementtex;
 texture2D comptex;
@@ -185,24 +187,24 @@ float4 getcoloratpos(float x, float y)
 		float factor = edgewidth;
 		if ((x % 10.0f >= 10 - factor || x % 10.0f <= factor))// || (y % 10.0f >= 10 - factor || y % 10.0f <= factor))
 		{
-			if(IsEdgeX(x, y) < 2)
+			//if(IsEdgeX(x, y) < 2)
 				OUT = float4(0.2f, 0.2f, 0.2f, 0);
 		}
 		else if ((y % 10.0f >= 10 - factor || y % 10.0f <= factor))
 		{
-			if (IsEdgeY(x, y) < 2)
+			//if (IsEdgeY(x, y) < 2)
 				OUT = float4(0.2f, 0.2f, 0.2f, 0);
 		}
 		else if (zoom > 4)
 		{
 			if (x % 1 >= 1 - factor || x % 1 <= factor)
 			{
-				if (IsEdgeX(x, y) < 2)
+				//if (IsEdgeX(x, y) < 2)
 					OUT = float4(0.08f, 0.08f, 0.08f, 0);
 			}
 			if (y % 1 >= 1 - factor || y % 1 <= factor)
 			{
-				if (IsEdgeY(x, y) < 2)
+				//if (IsEdgeY(x, y) < 2)
 					OUT = float4(0.08f, 0.08f, 0.08f, 0);
 			}
 		}
@@ -223,39 +225,63 @@ float4 getcoloratpos(float x, float y)
 		uint comptype_p1m1 = (uint)(comptex[uint2(ux + 1, uy - 1)].a * 255.5f);
 		uint comptype_p1p1 = (uint)(comptex[uint2(ux + 1, uy + 1)].a * 255.5f);
 		uint comptype_m1p1 = (uint)(comptex[uint2(ux - 1, uy + 1)].a * 255.5f);
+		
 
 
-		bool IsValid = true;
-		if (!(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0)) && comptype_p10 && x % 1 > 1.0f - edgewidth)
-			IsValid = false;
-		if (!(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2)) && comptype_m10 && x % 1 < edgewidth)
-			IsValid = false;
-		if (!(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1)) && comptype_0p1 && y % 1 > 1.0f - edgewidth)
-			IsValid = false;
-		if (!(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3)) && comptype_0m1 && y % 1 < edgewidth)
-			IsValid = false;
+		uint IsValid = 2;
 
-		if (!(((uint)(isedgetex[uint2(ux - 1, uy - 1)].a * 255.5f)) & (12)) && comptype_m1m1 && x % 1 < edgewidth && y % 1 < edgewidth && !(comptype_int > 2 && comptype_m1m1 > 2))
-			IsValid = false;
-		if (!(((uint)(isedgetex[uint2(ux + 1, uy - 1)].a * 255.5f)) & (9)) && comptype_p1m1 && x % 1 > 1.0f - edgewidth && y % 1 < edgewidth && !(comptype_int > 2 && comptype_p1m1 > 2))
-			IsValid = false;
-		if (!(((uint)(isedgetex[uint2(ux + 1, uy + 1)].a * 255.5f)) & (3)) && comptype_p1p1 && x % 1 > 1.0f - edgewidth && 1 && y % 1 > 1.0f - edgewidth && !(comptype_int > 2 && comptype_p1p1 > 2))
-			IsValid = false;
-		if (!(((uint)(isedgetex[uint2(ux - 1, uy + 1)].a * 255.5f)) & (6)) && comptype_m1p1 && x % 1 < edgewidth && y % 1 > 1.0f - edgewidth && !(comptype_int > 2 && comptype_m1p1 > 2))
-			IsValid = false;
+		if (comptype_int > PINOFF)
+		{
+			edgewidth = 0.3f;
+			if (((comptype_p10 > PINOFF || !comptype_p10) || !(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0))) && x % 1 > 1.0f - edgewidth)
+			{IsValid = 1;}
+			if (((comptype_m10 > PINOFF || !comptype_m10) || !(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2))) && x % 1 < edgewidth)
+			{IsValid = 1;}
+			if (((comptype_0p1 > PINOFF || !comptype_0p1) || !(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1))) && y % 1 > 1.0f - edgewidth)
+			{IsValid = 1;}
+			if (((comptype_0m1 > PINOFF || !comptype_0m1) || !(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3))) && y % 1 < edgewidth)
+			{IsValid = 1;}
+		}
+
+		if (!(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0)) && comptype_p10 <= 2 && comptype_p10 && x % 1 > 1.0f - edgewidth)
+			IsValid = 0;
+		if (!(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2)) && comptype_m10 <= 2 && comptype_m10 && x % 1 < edgewidth)
+			IsValid = 0;
+		if (!(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1)) && comptype_0p1 <= 2 && comptype_0p1 && y % 1 > 1.0f - edgewidth)
+			IsValid = 0;
+		if (!(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3)) && comptype_0m1 <= 2 && comptype_0m1  && y % 1 < edgewidth)
+			IsValid = 0;
+
+		//if (!(((uint)(isedgetex[uint2(ux - 1, uy - 1)].a * 255.5f)) & (12)) && comptype_m1m1 <= 2 && comptype_m1m1  && x % 1 < edgewidth && y % 1 < edgewidth && !(comptype_int > 2 && comptype_m1m1 > 2))
+		//	IsValid = 0;
+		//if (!(((uint)(isedgetex[uint2(ux + 1, uy - 1)].a * 255.5f)) & (9)) && comptype_p1m1 <= 2 && comptype_p1m1 && x % 1 > 1.0f - edgewidth && y % 1 < edgewidth && !(comptype_int > 2 && comptype_p1m1 > 2))
+		//	IsValid = 0;
+		//if (!(((uint)(isedgetex[uint2(ux + 1, uy + 1)].a * 255.5f)) & (3)) && comptype_p1p1 <= 2 && comptype_p1p1 && x % 1 > 1.0f - edgewidth && 1 && y % 1 > 1.0f - edgewidth && !(comptype_int > 2 && comptype_p1p1 > 2))
+		//	IsValid = 0;
+		//if (!(((uint)(isedgetex[uint2(ux - 1, uy + 1)].a * 255.5f)) & (6)) && comptype_m1p1 <= 2 && comptype_m1p1 && x % 1 < edgewidth && y % 1 > 1.0f - edgewidth && !(comptype_int > 2 && comptype_m1p1 > 2))
+		//	IsValid = 0;
 
 		if (IsValid)
 		{
-			if (comptype_int <= 3)
-				OUT = compcols[comptype_int - 1];
+			if (IsValid == 1)
+			{
+			}
 			else
-				OUT = compcols[3];
+			{
+				if (comptype_int <= PINOFF)
+					OUT = compcols[comptype_int - 1];
+				else
+					OUT = compcols[3];
+			}
 		}
-		else
-			OUT = float4(0, 0, 0, 0.1f);
+		
 	}
 	else
 		OUT.a = 0.2f;
+
+
+
+
 	uint type2 = 0;
 	if (currenttype == 1)
 	{
@@ -365,7 +391,7 @@ float4 getcoloratpos(float x, float y)
 				if (state_m1m1 && !state_m10 && !state_0m1)
 					count++;
 
-				if ((count > 2 || !count) && IsCloseToLine(xymid, xymid, xy, min(mindist * 1.75f, 0.5f)))
+				if ((count > 2 || (!count && comptype_int == 0)) && IsCloseToLine(xymid, xymid, xy, min(mindist * 1.75f, 0.5f)))
 				{
 					OUT = layercols[i];
 				}
@@ -434,7 +460,7 @@ float4 getcoloratpos(float x, float y)
 			if (state_m1m1 && !state_m10 && !state_0m1)
 				count++;
 
-			if ((count > 2 || !count) && IsCloseToLine(xymid, xymid, xy, min(mindist * 1.75f, 0.5f)))
+			if ((count > 2 || (!count && comptype_int == 0)) && IsCloseToLine(xymid, xymid, xy, min(mindist * 1.75f, 0.5f)))
 			{
 				OUT = layercols[i];
 			}
