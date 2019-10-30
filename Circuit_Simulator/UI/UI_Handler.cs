@@ -40,6 +40,7 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public UI_WireInfoBox info;
+        public UI_ValueInput input;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
@@ -184,7 +185,8 @@ namespace Circuit_Simulator
 
             //Wire Info Box
             info = new UI_WireInfoBox(new Point(500, 500), new Point(300, 300), componentconf);
-
+            //input
+            input = new UI_ValueInput(new Point(300, 300), new Point(150, 40), componentconf);
 
             InitializeUISettings(spriteBatch);
         }
@@ -280,6 +282,7 @@ namespace Circuit_Simulator
 
 	    public void Update()
 	    {
+            
             UI_Element_Pressed = false;
             UI_Active_State = 0;
             if (ZaWarudo != null)
@@ -288,6 +291,7 @@ namespace Circuit_Simulator
                 //return;
             }
 
+            input.UpdateMain();
             
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].UpdateMain();
@@ -296,6 +300,7 @@ namespace Circuit_Simulator
             ComponentBox.UpdateMain();
             QuickHotbar.UpdateMain();
             Toolbar.UpdateMain();
+
 
             
         }
@@ -310,6 +315,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
 
+            input.Draw(spritebatch);
             dragcomp.Draw(spritebatch);
         }
     }

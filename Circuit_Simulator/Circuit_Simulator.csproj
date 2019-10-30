@@ -74,6 +74,7 @@
     <Compile Include="UI\UI_MultiElement.cs" />
     <Compile Include="UI\UI_TB_Dropdown.cs" />
     <Compile Include="UI\Specific\UI_Window.cs" />
+    <Compile Include="UI\UI_ValueInput.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">
