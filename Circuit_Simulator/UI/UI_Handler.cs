@@ -40,7 +40,7 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public UI_WireInfoBox info;
-        public UI_ValueInput input;
+        public UI_Window input;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         private UI_ComponentBox ComponentBox;
@@ -140,7 +140,7 @@ namespace Circuit_Simulator
             wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 6) + Simulator.LAYER_NUM + 1 + 6, 0), Color.White, Button_tex));
 
             //Componentbox
-            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf);
+            ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf, true);
 
             // Sample Components
             int comp_ID = 0;
@@ -185,9 +185,11 @@ namespace Circuit_Simulator
 
             //Wire Info Box
             info = new UI_WireInfoBox(new Point(500, 500), new Point(300, 300), componentconf);
-            //input
-            input = new UI_ValueInput(new Point(300, 300), new Point(150, 40), componentconf);
 
+            //input Box
+            input = new UI_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.10)), "Value", new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.1)), componentconf, false);
+            input.Add_UI_Elements(new UI_ValueInput(new Point(input.size.X / 2 - input.size.X / 4, 20 + input.size.Y / 2 - input.size.Y / 4), new Point(input.size.X / 2, input.size.Y / 2 -20 -1), componentconf, 1));
+            input.GetsDrawn = input.GetsUpdated = false;
             InitializeUISettings(spriteBatch);
         }
 

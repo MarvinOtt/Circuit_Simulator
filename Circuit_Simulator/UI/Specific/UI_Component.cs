@@ -37,8 +37,6 @@ namespace Circuit_Simulator.UI.Specific
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
 
-            //if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
-            //{
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
                 if (Game1.mo_states.IsLeftButtonToggleOff())

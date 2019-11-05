@@ -139,8 +139,8 @@ namespace Circuit_Simulator
             graphics = new GraphicsDeviceManager(this)
             {
                 GraphicsProfile = GraphicsProfile.HiDef,
-                PreferredBackBufferWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width - 100,
-                PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height - 100,
+                PreferredBackBufferWidth = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Width,
+                PreferredBackBufferHeight = System.Windows.Forms.Screen.PrimaryScreen.Bounds.Height,
                 IsFullScreen = false,
                 SynchronizeWithVerticalRetrace = true
                 
@@ -177,11 +177,12 @@ namespace Circuit_Simulator
             colors[0] = Color.White;
             pixel.SetData(colors);
 
-            UI_handler = new UI_Handler(Content);
-            UI_handler.Initialize(spriteBatch);
 
             simulator = new Simulator();
             GraphicsChanged(null, EventArgs.Empty);
+
+            UI_handler = new UI_Handler(Content);
+            UI_handler.Initialize(spriteBatch);
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>

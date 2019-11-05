@@ -19,25 +19,25 @@ namespace Circuit_Simulator.UI
         string Title;
         Vector2 Title_pos;
         Point minsize;
-        Point oldsize;
         Point oldrightborderpos;
         static Texture2D tex;
         public static int headheight = 20;
         public static int bezelsize = 10;
         public int resize_type;
-        //public bool IsResize;
+        public bool IsResizeable;
         bool IsGrab;
         Point Grabpos;
 
-        public UI_Window(Point pos, Point size, string Title, Point minsize, Button_Conf conf) : base(pos, size)
+        public UI_Window(Point pos, Point size, string Title, Point minsize, Button_Conf conf, bool IsResizeable) : base(pos, size)
         {
             IsTypeOfWindow = true;
+            this.IsResizeable = IsResizeable;
             this.minsize = minsize;
             this.Title = Title;
             this.conf = conf;
             Vector2 title_dim = conf.font.MeasureString(Title);
             Title_pos = new Vector2(5, headheight / 2 - title_dim.Y / 2);
-            target = new RenderTarget2D(Game1.graphics.GraphicsDevice, 1000, 1080, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
             Add_UI_Elements(new UI_TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, new TexButton_Conf(2))); //X Button
@@ -88,6 +88,8 @@ namespace Circuit_Simulator.UI
             int RSsize2 = RSsize * 2;
             bool IsResizeHover = false;
 
+            if(IsResizeable)
+            { 
             Rectangle Resize_Bottom_Right_box = new Rectangle(absolutpos + size - new Point(RSsize), new Point(RSsize2));
             if (Resize_Bottom_Right_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
             {
@@ -138,52 +140,53 @@ namespace Circuit_Simulator.UI
             if (resize_type != 0)
                 UI_Handler.UI_Element_Pressed = true;
 
-            if (resize_type != 0)
-            {
-                UI_Handler.UI_Active_State = 1;
-                if (Game1.mo_states.IsLeftButtonToggleOff())
+                if (resize_type != 0)
                 {
-                    resize_type = 0;
+                    UI_Handler.UI_Active_State = 1;
+                    if (Game1.mo_states.IsLeftButtonToggleOff())
+                    {
+                        resize_type = 0;
+                    }
+                    switch (resize_type)
+                    {
+                        case 1: // Bottom Resize
+                            size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
+                            if (size.Y <= headheight + minsize.Y)
+                                size.Y = headheight + minsize.Y;
+                            break;
+                        case 2: // Right Resize
+                            size.X = Game1.mo_states.New.Position.X - absolutpos.X;
+                            if (size.X <= headheight + minsize.X)
+                                size.X = headheight + minsize.X;
+                            break;
+                        case 3: // Left Resize
+                            size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
+                            if (size.X <= headheight + minsize.X)
+                                size.X = headheight + minsize.X;
+                            pos.X = oldrightborderpos.X - size.X;
+                            absolutpos.X = oldrightborderpos.X - size.X;
+                            break;
+                        case 4: // Bottom Right Resize
+                            size.X = Game1.mo_states.New.Position.X - absolutpos.X;
+                            size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
+                            if (size.X <= headheight + minsize.X)
+                                size.X = headheight + minsize.X;
+                            if (size.Y <= headheight + minsize.Y)
+                                size.Y = headheight + minsize.Y;
+                            break;
+                        case 5: // Bottom Left Resize
+                            size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
+                            size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
+                            if (size.X <= headheight + minsize.X)
+                                size.X = headheight + minsize.X;
+                            if (size.Y <= headheight + minsize.Y)
+                                size.Y = headheight + minsize.Y;
+                            pos.X = oldrightborderpos.X - size.X;
+                            absolutpos.X = oldrightborderpos.X - size.X;
+                            break;
+                    }
+                    Resize();
                 }
-                switch (resize_type)
-                {
-                    case 1: // Bottom Resize
-                        size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
-                        if (size.Y <= headheight + minsize.Y)
-                            size.Y = headheight + minsize.Y;
-                        break;
-                    case 2: // Right Resize
-                        size.X = Game1.mo_states.New.Position.X - absolutpos.X;
-                        if (size.X <= headheight + minsize.X)
-                            size.X = headheight + minsize.X;
-                        break;
-                    case 3: // Left Resize
-                        size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
-                        if (size.X <= headheight + minsize.X)
-                            size.X = headheight + minsize.X;
-                        pos.X = oldrightborderpos.X - size.X;
-                        absolutpos.X = oldrightborderpos.X - size.X;
-                        break;
-                    case 4: // Bottom Right Resize
-                        size.X = Game1.mo_states.New.Position.X - absolutpos.X;
-                        size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
-                        if (size.X <= headheight + minsize.X)
-                            size.X = headheight + minsize.X;
-                        if (size.Y <= headheight + minsize.Y)
-                            size.Y = headheight + minsize.Y;
-                        break;
-                    case 5: // Bottom Left Resize
-                        size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
-                        size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
-                        if (size.X <= headheight + minsize.X)
-                            size.X = headheight + minsize.X;
-                        if (size.Y <= headheight + minsize.Y)
-                            size.Y = headheight + minsize.Y;
-                        pos.X = oldrightborderpos.X - size.X;
-                        absolutpos.X = oldrightborderpos.X - size.X;
-                        break;
-                }
-                Resize();
             }
             else
                 base.UpdateSpecific();
