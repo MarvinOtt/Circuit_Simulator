@@ -750,11 +750,11 @@ namespace Circuit_Simulator
                 {
                     int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                     int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                    UI_Handler.comp_infobox.comptype = Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name;
-                    UI_Handler.comp_infobox.showInfo();
+                    UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
+                    UI_Handler.info.showInfo();
                 }
                 else
-                    UI_Handler.comp_infobox.hideInfo();
+                    UI_Handler.info.hideInfo();
 
             }
 

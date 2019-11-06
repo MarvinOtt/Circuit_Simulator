@@ -40,7 +40,7 @@ namespace Circuit_Simulator
         public static TexButton_Conf TexButton_baseconf = new TexButton_Conf(1);
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
-        public UI_InfoBox info;
+        public static UI_InfoBox info;
         public UI_Window input;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;

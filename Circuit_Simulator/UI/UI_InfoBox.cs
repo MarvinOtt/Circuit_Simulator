@@ -28,6 +28,11 @@ namespace Circuit_Simulator.UI
             size.Y = values.size.Y * 2 + 4;
         }
 
+        public void hideInfo()
+        {
+            GetsUpdated = GetsDrawn = false;
+        }
+
 
         protected override void UpdateSpecific()
         {
