@@ -91,11 +91,19 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="SIM_CODE\code.c" />
+    <Content Include="SIM_CODE\code.dll" />
+    <Content Include="SIM_CODE\maincode.c" />
+    <Content Include="SIM_CODE\maincode.dll" />
+    <Content Include="SIM_CODE\original.c" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="App.config" />
     <None Include="app.manifest" />
+    <None Include="LIBRARYS\Main_Library" />
+    <None Include="SIM_CODE\code.o" />
+    <None Include="SIM_CODE\maincode.o" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
