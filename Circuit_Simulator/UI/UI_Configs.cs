@@ -10,14 +10,14 @@ namespace Circuit_Simulator.UI
 {
     public static class UI_Configs
     {
-        public struct Button_Conf
+        public struct Generic_Conf
         {
             public Color[] Syscolors;
             public SpriteFont font;
             public Color fontcol;
             public byte behav;
 
-            public Button_Conf(Color fontcol, SpriteFont font, byte behav, params Color[] backroundColors)
+            public Generic_Conf(Color fontcol, SpriteFont font, byte behav, params Color[] backroundColors)
             {
                 this.fontcol = fontcol;
                 this.font = font;

@@ -11,12 +11,12 @@ namespace Circuit_Simulator.UI
 {
     public class UI_Button : UI_Element
     {
-        Button_Conf conf;
+        Generic_Conf conf;
         Vector2 text_pos;
         string text;
         public bool IsHovered, IsActivated, GotActivated;
 
-        public UI_Button(Point pos, Point size, string text, Button_Conf conf) : base(pos, size)
+        public UI_Button(Point pos, Point size, string text, Generic_Conf conf) : base(pos, size)
         {
             this.text = text;
             this.conf = conf;

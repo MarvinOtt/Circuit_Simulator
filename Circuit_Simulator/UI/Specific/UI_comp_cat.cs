@@ -12,12 +12,12 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_Comp_Cat : UI_MultiElement<UI_Element>
     {
         public string title;
-        public Button_Conf conf;
+        public Generic_Conf conf;
         public UI_List<UI_Component> Components;
         public bool IsFold, IsHover;
         Vector2 title_pos;
 
-        public UI_Comp_Cat(string title, Button_Conf conf ) : base(Point.Zero)
+        public UI_Comp_Cat(string title, Generic_Conf conf ) : base(Point.Zero)
         {
             this.title = title;
             this.conf = conf;

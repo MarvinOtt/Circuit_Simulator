@@ -12,7 +12,7 @@ namespace Circuit_Simulator.UI
 {
     public class UI_ValueInput : UI_Element
     {
-        public Button_Conf conf;
+        public Generic_Conf conf;
 
         string value = "";
         bool IsTyping;
@@ -20,7 +20,7 @@ namespace Circuit_Simulator.UI
         Rectangle hitbox;
         Keys[] newkeys;
         Keys[] oldkeys;
-        public UI_ValueInput(Point pos, Point size, Button_Conf conf, int inputtype) : base(pos, size)
+        public UI_ValueInput(Point pos, Point size, Generic_Conf conf, int inputtype) : base(pos, size)
         {
             this.conf = conf;
             this.inputtype = inputtype;

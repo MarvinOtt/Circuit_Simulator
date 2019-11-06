@@ -39,7 +39,7 @@ namespace Circuit_Simulator
         public static TexButton_Conf TexButton_baseconf = new TexButton_Conf(1);
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
-        public UI_WireInfoBox info;
+        public UI_InfoBox info;
         public UI_Window input;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
@@ -64,12 +64,12 @@ namespace Circuit_Simulator
             SpriteFont catfont = Content.Load<SpriteFont>("UI\\cat_font");
 
             // CONFIGS
-            Button_Conf cat_conf;
-            cat_conf = new Button_Conf(Color.White, catfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
-            Button_Conf toolbarbuttonconf;
-            toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, 1, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
-            Button_Conf componentconf;
-            componentconf = new Button_Conf(Color.White, componentfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
+            Generic_Conf cat_conf;
+            cat_conf = new Generic_Conf(Color.White, catfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
+            Generic_Conf toolbarbuttonconf;
+            toolbarbuttonconf = new Generic_Conf(Color.White, toolbarfont, 1, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
+            Generic_Conf componentconf;
+            componentconf = new Generic_Conf(Color.White, componentfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
 
             TexButton_Conf quickbarconf_1 = new TexButton_Conf(1, Color.White * 0.1f);
             TexButton_Conf quickbarconf_2 = new TexButton_Conf(2, Color.White * 0.1f);
@@ -114,12 +114,9 @@ namespace Circuit_Simulator
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, quickbarconf_2));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, quickbarconf_2));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, quickbarconf_2));
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, quickbarconf_2));
-            
-            //Temporary
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(150, 150), Button_tex, quickbarconf_2));
-
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, quickbarconf_1));         
             QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, quickbarconf_1));
+            QuickHotbar.Add_UI_Element(new UI_TexButton(Point.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 6 + 6, 0), Button_tex, quickbarconf_1));
 
             Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
             layer_colors = new Color[Simulator.LAYER_NUM];
@@ -134,10 +131,10 @@ namespace Circuit_Simulator
             
             for(int i = 0; i<Simulator.LAYER_NUM; i++)
             {
-                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+6) + i+6, 0), layer_colors[i], Button_tex));
+                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+7) + i+7, 0), layer_colors[i], Button_tex));
             }
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 6) + Simulator.LAYER_NUM + 6, 0), Color.White, Button_tex));
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 6) + Simulator.LAYER_NUM + 1 + 6, 0), Color.White, Button_tex));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 7) + Simulator.LAYER_NUM + 7, 0), Color.White, Button_tex));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Point(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 7) + Simulator.LAYER_NUM + 1 + 7, 0), Color.White, Button_tex));
 
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf, true);
@@ -184,7 +181,8 @@ namespace Circuit_Simulator
             ComponentBox.Add_Categories(Cat_Input, Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
             //Wire Info Box
-            info = new UI_WireInfoBox(new Point(500, 500), new Point(300, 300), componentconf);
+            info = new UI_InfoBox(new Point(500, 500), new Point(300, 300));
+            info.values.Add_UI_Elements(new UI_String(new Point(0, 0), new Point(0, 0), componentconf));
 
             //input Box
             input = new UI_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.10)), "Value", new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.1)), componentconf, false);
@@ -246,6 +244,14 @@ namespace Circuit_Simulator
                 UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
                 current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
             });
+            ((UI_TexButton)QuickHotbar.ui_elements[5]).GotActivated += delegate ()
+            {
+                ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = false;
+            };
+            ((UI_TexButton)QuickHotbar.ui_elements[4]).GotActivated += delegate ()
+            {
+                ((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = false;
+            };
 
             QuickHotbar.ui_elements[5].UpdateFunctions.Add(delegate ()
             {

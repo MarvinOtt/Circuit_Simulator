@@ -15,7 +15,7 @@ namespace Circuit_Simulator.UI
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
         RenderTarget2D target;
-        public Button_Conf conf;
+        public Generic_Conf conf;
         string Title;
         Vector2 Title_pos;
         Point minsize;
@@ -28,7 +28,7 @@ namespace Circuit_Simulator.UI
         bool IsGrab;
         Point Grabpos;
 
-        public UI_Window(Point pos, Point size, string Title, Point minsize, Button_Conf conf, bool IsResizeable) : base(pos, size)
+        public UI_Window(Point pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size)
         {
             IsTypeOfWindow = true;
             this.IsResizeable = IsResizeable;
@@ -70,7 +70,7 @@ namespace Circuit_Simulator.UI
                 IsGrab = false;
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Default;
             }
-            if(IsGrab)
+            if (IsGrab)
             {
                 pos = Game1.mo_states.New.Position - Grabpos;
             }
@@ -88,57 +88,57 @@ namespace Circuit_Simulator.UI
             int RSsize2 = RSsize * 2;
             bool IsResizeHover = false;
 
-            if(IsResizeable)
-            { 
-            Rectangle Resize_Bottom_Right_box = new Rectangle(absolutpos + size - new Point(RSsize), new Point(RSsize2));
-            if (Resize_Bottom_Right_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
+            if (IsResizeable)
             {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNWSE;
-                IsResizeHover = true;
-                if (Game1.mo_states.IsLeftButtonToggleOn())
-                    resize_type = 4;
-            }
-            Rectangle Resize_Bottom_Left_box = new Rectangle(absolutpos + new Point(-RSsize, size.Y - RSsize), new Point(RSsize2));
-            if (Resize_Bottom_Left_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNESW;
-                IsResizeHover = true;
-                if (Game1.mo_states.IsLeftButtonToggleOn())
+                Rectangle Resize_Bottom_Right_box = new Rectangle(absolutpos + size - new Point(RSsize), new Point(RSsize2));
+                if (Resize_Bottom_Right_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
                 {
-                    oldrightborderpos = new Point(pos.X + size.X, 0);
-                    resize_type = 5;
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNWSE;
+                    IsResizeHover = true;
+                    if (Game1.mo_states.IsLeftButtonToggleOn())
+                        resize_type = 4;
                 }
-            }
-            Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y - RSsize), new Point(size.X, RSsize2));
-            if (Resize_bottom_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNS;
-                IsResizeHover = true;
-                if (Game1.mo_states.IsLeftButtonToggleOn())
-                    resize_type = 1;  
-            }
-            Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X - RSsize, headheight), new Point(RSsize2, size.Y - headheight));
-            if (Resize_right_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
-                IsResizeHover = true;
-                if (Game1.mo_states.IsLeftButtonToggleOn())
-                    resize_type = 2;
-            }
-            Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-RSsize, headheight), new Point(RSsize2, size.Y - headheight));
-            if (Resize_left_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
-            {
-                System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
-                IsResizeHover = true;
-                if (Game1.mo_states.IsLeftButtonToggleOn())
+                Rectangle Resize_Bottom_Left_box = new Rectangle(absolutpos + new Point(-RSsize, size.Y - RSsize), new Point(RSsize2));
+                if (Resize_Bottom_Left_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
                 {
-                    oldrightborderpos = new Point(pos.X + size.X, 0);
-                    resize_type = 3;
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNESW;
+                    IsResizeHover = true;
+                    if (Game1.mo_states.IsLeftButtonToggleOn())
+                    {
+                        oldrightborderpos = new Point(pos.X + size.X, 0);
+                        resize_type = 5;
+                    }
                 }
-            }
+                Rectangle Resize_bottom_box = new Rectangle(absolutpos + new Point(0, size.Y - RSsize), new Point(size.X, RSsize2));
+                if (Resize_bottom_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
+                {
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeNS;
+                    IsResizeHover = true;
+                    if (Game1.mo_states.IsLeftButtonToggleOn())
+                        resize_type = 1;
+                }
+                Rectangle Resize_right_box = new Rectangle(absolutpos + new Point(size.X - RSsize, headheight), new Point(RSsize2, size.Y - headheight));
+                if (Resize_right_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
+                {
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
+                    IsResizeHover = true;
+                    if (Game1.mo_states.IsLeftButtonToggleOn())
+                        resize_type = 2;
+                }
+                Rectangle Resize_left_box = new Rectangle(absolutpos + new Point(-RSsize, headheight), new Point(RSsize2, size.Y - headheight));
+                if (Resize_left_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)
+                {
+                    System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.SizeWE;
+                    IsResizeHover = true;
+                    if (Game1.mo_states.IsLeftButtonToggleOn())
+                    {
+                        oldrightborderpos = new Point(pos.X + size.X, 0);
+                        resize_type = 3;
+                    }
+                }
 
-            if (resize_type != 0)
-                UI_Handler.UI_Element_Pressed = true;
+                if (resize_type != 0)
+                    UI_Handler.UI_Element_Pressed = true;
 
                 if (resize_type != 0)
                 {
@@ -188,7 +188,6 @@ namespace Circuit_Simulator.UI
                     Resize();
                 }
             }
-            else
                 base.UpdateSpecific();
 
         }

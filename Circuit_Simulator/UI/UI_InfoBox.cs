@@ -9,20 +9,26 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI
 {
-    public class UI_InfoBox : UI_MultiElement<UI_Element>
+    public class UI_InfoBox : UI_Box
     {
-        static Color BackgroundColor = new Color(new Vector3(0.15f));
-        static Color BorderColor = new Color(new Vector3(0.45f));
-        public Button_Conf conf;
-        public UI_InfoBox(Point pos, Point size, Button_Conf conf) : base(pos, size)
+        public UI_List<UI_String> values;
+
+        public UI_InfoBox(Point pos, Point size) : base(pos, size)
         {
-            this.conf = conf;
+            GetsUpdated = GetsDrawn = false;
+            values = new UI_List<UI_String>(pos, false);
+            ui_elements.Add(values);
         }
 
-        public virtual void showInfo()
+        public  void showInfo()
         {
-            GetsDrawn = GetsUpdated = true;
+           
+            pos = Game1.mo_states.New.Position + new Point(10, 10);
+            size.X = values.size.X + 4;
+            size.Y = values.size.Y * 2 + 4;
         }
+
+
         protected override void UpdateSpecific()
         {
             base.UpdateSpecific();
@@ -30,11 +36,7 @@ namespace Circuit_Simulator.UI
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-
             base.DrawSpecific(spritebatch);
-
-            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
 
         }
     }
