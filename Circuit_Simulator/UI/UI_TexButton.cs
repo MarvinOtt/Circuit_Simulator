@@ -15,7 +15,9 @@ namespace Circuit_Simulator
 	    public Texture2D tex;
 	    public Point tex_pos;
         TexButton_Conf conf;
-	    public bool IsHovered, IsActivated, GotActivated;
+	    public bool IsHovered, IsActivated;
+        public delegate void Button_Activated_Handler();
+        public event Button_Activated_Handler GotActivated = delegate { };
 
         public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, TexButton_Conf conf) : base(pos, size)
         {
@@ -27,7 +29,7 @@ namespace Circuit_Simulator
 	    protected override void UpdateSpecific()
 	    {
 			Rectangle hitbox = new Rectangle(absolutpos, size);
-            GotActivated = false;
+            //GotActivated = false;
 		    if (conf.behav == 2)
 			    IsActivated = false;
 		    if (hitbox.Contains(Game1.mo_states.New.Position))
@@ -37,7 +39,9 @@ namespace Circuit_Simulator
                 {
                     IsActivated ^= true;
                     if (IsActivated)
-                        GotActivated = true;
+                    {
+                        GotActivated();
+                    }
                 }
 		    }
 		    else
@@ -57,7 +61,10 @@ namespace Circuit_Simulator
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
                 }
                 else if (!IsHovered && IsActivated)                                                                             //Click
+                {
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2 + 2), size), Color.White);
+                }
                 else                                                                                                            //ClickHover
                 {
                     if (conf.IsHoverEnabled)

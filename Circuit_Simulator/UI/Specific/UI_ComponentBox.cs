@@ -15,7 +15,7 @@ namespace Circuit_Simulator.UI.Specific
         //private RenderTarget2D comp_box_target;
         public static Rectangle cathitbox;
 
-        public UI_ComponentBox(Point pos, Point size, string title, Point minsize, Button_Conf conf) : base(pos, size, title, minsize, conf)
+        public UI_ComponentBox(Point pos, Point size, string title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size, title, minsize, conf, IsResizeable)
         {
             Catagories = new UI_Scrollable<UI_List<UI_Comp_Cat>>(new Point(bezelsize, 50), Point.Zero);
             Catagories.Add_UI_Elements(new UI_List<UI_Comp_Cat>(Point.Zero, false));

@@ -15,10 +15,10 @@ namespace Circuit_Simulator.UI.Specific
         public string name;
         public int ID;
         public bool IsHover;
-        public Button_Conf conf;
+        public Generic_Conf conf;
         Vector2 text_pos;
 
-        public UI_Component(string name, Button_Conf conf, int ID) : base(Point.Zero, new Point(0, height))
+        public UI_Component(string name, Generic_Conf conf, int ID) : base(Point.Zero, new Point(0, height))
         {
             this.ID = ID;
             this.name = name;
@@ -37,8 +37,6 @@ namespace Circuit_Simulator.UI.Specific
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
 
-            //if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
-            //{
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
                 if (Game1.mo_states.IsLeftButtonToggleOff())
