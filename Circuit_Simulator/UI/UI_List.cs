@@ -44,6 +44,7 @@ namespace Circuit_Simulator.UI
                 currentpos.Y += ui_elements[i].size.Y;
             }
             size.Y = ui_elements.Max(x => x.pos.Y + x.size.Y);
+            size.X = ui_elements.Max(x => x.size.X);
         }
 
 
