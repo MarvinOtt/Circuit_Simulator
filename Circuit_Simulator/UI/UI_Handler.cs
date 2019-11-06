@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Circuit_Simulator.COMP;
 using Circuit_Simulator.UI;
 using Circuit_Simulator.UI.Specific;
 using Microsoft.Xna.Framework;
@@ -40,15 +41,20 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public UI_WireInfoBox info;
+        public static UI_ComponentInfoBox comp_infobox;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
-        private UI_ComponentBox ComponentBox;
-        UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops, Cat_Input;
+        public static UI_ComponentBox ComponentBox;
+        UI_Comp_Cat Cat_Gates, Cat_ShiftRegisters, Cat_Counters, Cat_Decoders, Cat_FlipFlops, Cat_Input, Cat_Output;
         UI_Component AND, OR, XOR, NAND, NOR, XNOR;
         UI_Component FF_RS, FF_D, FF_JK, FF_T;
         UI_Component SISO, SIPO, PISO, PIPO;
         UI_Component SWITCH;
+        UI_Component LED1x1, LED2x2;
         public static UI_List<UI_Dropdown_Button> wire_ddbl;
+        public static Button_Conf componentconf;
+        public static Button_Conf cat_conf;
+
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -63,11 +69,9 @@ namespace Circuit_Simulator
             SpriteFont catfont = Content.Load<SpriteFont>("UI\\cat_font");
 
             // CONFIGS
-            Button_Conf cat_conf;
             cat_conf = new Button_Conf(Color.White, catfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
             Button_Conf toolbarbuttonconf;
             toolbarbuttonconf = new Button_Conf(Color.White, toolbarfont, 1, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
-            Button_Conf componentconf;
             componentconf = new Button_Conf(Color.White, componentfont, 2, BackgroundColor, HoverColor, ActivColor, ActivHoverColor);
 
             TexButton_Conf quickbarconf_1 = new TexButton_Conf(1, Color.White * 0.1f);
@@ -141,52 +145,82 @@ namespace Circuit_Simulator
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf);
 
-            // Sample Components
-            int comp_ID = 0;
+            //// Sample Components
+            //int comp_ID = 0;
 
-            // Input
-            SWITCH = new UI_Component("Switch", componentconf, comp_ID++);
+            //// Input
+            //SWITCH = new UI_Component("Switch", componentconf, 1);
 
-            // Gates
-            AND = new UI_Component("AND", componentconf, comp_ID++);
-            OR = new UI_Component("OR", componentconf, comp_ID++);
-            XOR = new UI_Component("XOR", componentconf, comp_ID++);
-            NAND = new UI_Component("NAND", componentconf, comp_ID++);
-            NOR = new UI_Component("NOR", componentconf, comp_ID++);
-            XNOR = new UI_Component("XNOR", componentconf, comp_ID++);
+            //// Gates
+            //AND = new UI_Component("AND", componentconf, 0);
+            //OR = new UI_Component("OR", componentconf, comp_ID++);
+            //XOR = new UI_Component("XOR", componentconf, comp_ID++);
+            //NAND = new UI_Component("NAND", componentconf, comp_ID++);
+            //NOR = new UI_Component("NOR", componentconf, comp_ID++);
+            //XNOR = new UI_Component("XNOR", componentconf, comp_ID++);
 
-            // Flip Flops
-            FF_RS = new UI_Component("RS", componentconf, comp_ID++);
-            FF_JK = new UI_Component("JK", componentconf, comp_ID++);
-            FF_D = new UI_Component("Data", componentconf, comp_ID++);
-            FF_T = new UI_Component("Toggle", componentconf, comp_ID++);
+            //// OUTPUT
+            //LED2x2 = new UI_Component("Led 2x2", componentconf, comp_ID++);
 
-            // Shift Registers
-            SISO = new UI_Component("SISO", componentconf, comp_ID++);
-            SIPO = new UI_Component("SIPO", componentconf, comp_ID++);
-            PISO = new UI_Component("PISO", componentconf, comp_ID++);
-            PIPO = new UI_Component("PIPO", componentconf, comp_ID++);
+            //// Flip Flops
+            //FF_RS = new UI_Component("RS", componentconf, comp_ID++);
+            //FF_JK = new UI_Component("JK", componentconf, comp_ID++);
+            //FF_D = new UI_Component("Data", componentconf, comp_ID++);
+            //FF_T = new UI_Component("Toggle", componentconf, comp_ID++);
+
+            //// Shift Registers
+            //SISO = new UI_Component("SISO", componentconf, comp_ID++);
+            //SIPO = new UI_Component("SIPO", componentconf, comp_ID++);
+            //PISO = new UI_Component("PISO", componentconf, comp_ID++);
+            //PIPO = new UI_Component("PIPO", componentconf, comp_ID++);
 
 
 
-            //Catagories
-            Cat_Gates = new UI_Comp_Cat("Gates", cat_conf);
-            Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", cat_conf);
-            Cat_ShiftRegisters = new UI_Comp_Cat("Shift Registers", cat_conf);
-            Cat_Input = new UI_Comp_Cat("Input", cat_conf);
+            ////Catagories
+            //Cat_Gates = new UI_Comp_Cat("Gates", cat_conf);
+            //Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", cat_conf);
+            //Cat_ShiftRegisters = new UI_Comp_Cat("Shift Registers", cat_conf);
+            //Cat_Input = new UI_Comp_Cat("Input", cat_conf);
+            //Cat_Output = new UI_Comp_Cat("Output", cat_conf);
 
-            Cat_Gates.AddComponents(AND, OR, XOR, NAND, NOR, XNOR);
-            Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
-            Cat_ShiftRegisters.AddComponents(SISO, SIPO, PISO, PIPO);
-            Cat_Input.AddComponents(SWITCH);
+            //Cat_Gates.AddComponents(AND, OR, XOR, NAND, NOR, XNOR);
+            //Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
+            //Cat_ShiftRegisters.AddComponents(SISO, SIPO, PISO, PIPO);
+            //Cat_Input.AddComponents(SWITCH);
+            //Cat_Output.AddComponents(LED2x2);
 
-            ComponentBox.Add_Categories(Cat_Input, Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
+            //ComponentBox.Add_Categories(Cat_Input, Cat_Output, Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
-            //Wire Info Box
+            // Wire Info Box
             info = new UI_WireInfoBox(new Point(500, 500), new Point(300, 300), componentconf);
+
+            // Comp Info Box
+            comp_infobox = new UI_ComponentInfoBox(Point.Zero, Point.Zero, componentconf);
 
 
             InitializeUISettings(spriteBatch);
+        }
+
+        public static void InitComponents4CompBox()
+        {
+            HashSet<string> categorys = new HashSet<string>();
+            List<CompData> comps = Sim_Component.Components_Data;
+            for (int i = 0; i < comps.Count; ++i)
+            {
+                categorys.Add(comps[i].catagory);
+            }
+            UI_Comp_Cat[] comp_cats = new UI_Comp_Cat[categorys.Count];
+            for(int i = 0; i < comp_cats.Length; ++i)
+            {
+                comp_cats[i] = new UI_Comp_Cat(categorys.ElementAt(i), cat_conf);
+            }
+            List<string> categorys_list = categorys.ToList();
+            for(int i = 0; i < comps.Count; ++i)
+            {
+                comp_cats[categorys_list.IndexOf(comps[i].catagory)].AddComponents(new UI_Component(comps[i].name, componentconf, i));
+            }
+            ComponentBox.Catagories.ui_elements[0].ui_elements.Clear();
+            ComponentBox.Add_Categories(comp_cats);
         }
 
         public void InitializeUISettings(SpriteBatch spritebatch)
@@ -293,6 +327,7 @@ namespace Circuit_Simulator
                 toolbar_menus[i].UpdateMain();
             wire_ddbl.UpdateMain();
             info.UpdateMain();
+            comp_infobox.UpdateMain();
             ComponentBox.UpdateMain();
             QuickHotbar.UpdateMain();
             Toolbar.UpdateMain();
@@ -305,6 +340,7 @@ namespace Circuit_Simulator
             Toolbar.Draw(spritebatch);
             QuickHotbar.Draw(spritebatch);
             ComponentBox.Draw(spritebatch);
+            comp_infobox.Draw(spritebatch);
             info.Draw(spritebatch);
             wire_ddbl.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)

@@ -46,7 +46,7 @@ namespace Circuit_Simulator
                 {
                     if (Simulator.networks[i] != null)
                     {
-                        List<Line> lines = Simulator.networks[i].lines;
+                        List<Line_Netw> lines = Simulator.networks[i].lines;
                         stream.Write(BitConverter.GetBytes(lines.Count), 0, 4);
 
                         for (int j = 0; j < lines.Count; ++j)
@@ -176,6 +176,7 @@ namespace Circuit_Simulator
                             Array.Clear(Sim_Component.CompNetwork, 0, Sim_Component.CompNetwork.Length);
                             Array.Clear(Sim_Component.pins2check, 0, Sim_Component.pins2check.Length);
                             Sim_Component.pins2check_length = 0;
+                            Sim_INF_DLL.Comp2UpdateAfterSim_count = 0;
 
                             Simulator.sec_target.Dispose();
                             Simulator.logic_target.Dispose();
@@ -192,8 +193,8 @@ namespace Circuit_Simulator
 
                             stream.Read(intbuffer, 0, 4);
                             int wirecount = BitConverter.ToInt32(intbuffer, 0);
-                            Simulator.highestNetworkID = wirecount;
-                            for (int i = 1; i < wirecount + 1; ++i)
+                            Simulator.highestNetworkID = wirecount + 3;
+                            for (int i = 4; i < wirecount + 4; ++i)
                             {
                                 Network networkbuffer = new Network(i);
                                 Simulator.networks[i] = networkbuffer;
@@ -219,14 +220,15 @@ namespace Circuit_Simulator
                                     int length = BitConverter.ToInt32(intbuffer, 0);
 
 
-                                    Line linebuffer = new Line(new Point(startx, starty), new Point(endx, endy), new Point(dirx, diry), length, layers);
+                                    Line_Netw linebuffer = new Line_Netw(new Point(startx, starty), new Point(endx, endy), new Point(dirx, diry), length, layers);
                                     Simulator.networks[i].lines.Add(linebuffer);
                                  
                                 }
                                 networkbuffer.PlaceNetwork();
                                 
                             }
-
+                            Network.Delete(Simulator.FoundNetworks);
+                            Simulator.FoundNetworks.Clear();
                             #endregion
 
 
@@ -249,6 +251,8 @@ namespace Circuit_Simulator
                                 buffercomp.Place(new Point(posX, posY), rotation);
                                 Sim_Component.components[i] = buffercomp;
                             }
+                            Network.Delete(Simulator.FoundNetworks);
+                            Simulator.FoundNetworks.Clear();
                             #endregion
 
                             stream.Close();

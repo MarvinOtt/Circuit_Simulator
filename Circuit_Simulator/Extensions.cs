@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -106,6 +107,44 @@ namespace Circuit_Simulator
                     dest[x, y] = arr[source.X + x, source.Y + y];
                 }
             }
+        }
+
+        // Reading String from File
+        public static string ReadNullTerminated(this System.IO.FileStream rdr)
+        {
+            var bldr = new System.Text.StringBuilder();
+            int nc;
+            while ((nc = rdr.ReadByte()) > 0)
+                bldr.Append((char)nc);
+
+            return bldr.ToString();
+        }
+
+        public static void CMD_Execute(string cmd, string args)
+        {
+            Process p = new System.Diagnostics.Process();
+            p.StartInfo.FileName = cmd;
+            p.StartInfo.Arguments = args;
+            p.StartInfo.CreateNoWindow = false;
+
+            //required to capture standard output 
+            p.StartInfo.RedirectStandardOutput = false;
+            p.StartInfo.UseShellExecute = false;
+            p.Start();
+            p.WaitForExit();
+
+            ////read the command line output 
+            //StreamReader sr = p.StandardOutput;
+            //return (sr.ReadToEnd());
+        }
+
+
+        public static byte[] GetBytes(this string str)
+        {
+            byte[] bytes = new byte[str.Length + 1];
+            System.Buffer.BlockCopy(Encoding.ASCII.GetBytes(str), 0, bytes, 0, bytes.Length - 1);
+            bytes[bytes.Length - 1] = 0;
+            return bytes;
         }
     }
 }

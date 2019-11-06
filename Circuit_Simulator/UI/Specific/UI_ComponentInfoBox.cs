@@ -9,10 +9,10 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI
 {
-    class UI_ComponentInfoBox : UI_InfoBox
+    public class UI_ComponentInfoBox : UI_InfoBox
     {
-        string comptype = "Missing";
-        string infotext = "Missing";
+        public string comptype = "Missing";
+        public string infotext = "Missing";
 
 
         public UI_ComponentInfoBox(Point pos, Point size, Button_Conf conf) : base(pos, size, conf)
@@ -27,9 +27,14 @@ namespace Circuit_Simulator.UI
             strings.Add(comptype);
             strings.Add(infotext);
             int maxsizeX = strings.Max(x => conf.font.MeasureString(x).ToPoint().X);
-            pos = Game1.mo_states.New.Position + new Point(10, 10);
             size.X = maxsizeX + 4;
             size.Y = conf.font.MeasureString(comptype).ToPoint().Y * 2 + 4;
+            pos = Game1.mo_states.New.Position - new Point(0, size.Y + 10);
+            GetsUpdated = GetsDrawn = true;
+        }
+        public void hideInfo()
+        {
+            GetsUpdated = GetsDrawn = false;
         }
 
         protected override void UpdateSpecific()

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.IO;
 using System.Security.Permissions;
 //using Circuit_Simulator.UI;
 
@@ -131,6 +132,13 @@ namespace Circuit_Simulator
         {
             System.Windows.Forms.CloseReason c = e.CloseReason;
         }
+        protected override void OnExiting(Object sender, EventArgs args)
+        {
+            base.OnExiting(sender, args);
+            if (Sim_INF_DLL.SimDLL_Handle != IntPtr.Zero)
+                DLL_Methods.FreeLibrary(Sim_INF_DLL.SimDLL_Handle);
+            // Stop the threads
+        }
 
         public Game1()
         {
@@ -182,6 +190,11 @@ namespace Circuit_Simulator
 
             simulator = new Simulator();
             GraphicsChanged(null, EventArgs.Empty);
+            string pathtoexe = Directory.GetCurrentDirectory();
+            //System.Diagnostics.Process.Start("cmd", "/k " + "\"" + @"C:\GCC\MinGW\bin\g++" + "\"" + " -c -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
+            //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\GCC\\MinGW\\bin\\g++ -c -DBUILDING_EXAMPLE_DLL " + "\"" + "C:\\Users\\Marvin Ott\\code.c" + "\"" + " -o " + "\"" + "C:\\Users\\Marvin Ott\\code.o" + "\"");
+            //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\GCC\\gcc -shared -o C:\\Users\\code.dll C:\\Users\\code.o -Wl,--out-implib,libexample_dll.a");
+
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>

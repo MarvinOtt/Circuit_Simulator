@@ -9,6 +9,8 @@ compfunc* compfuncs;
 
 // Main Component Functions
 
+#define _COMPFUNCS_
+
 void CF_SWITCH(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
 {
 	WireStatesOUT[CompInfo[1]] = CompInfo[5];
@@ -42,10 +44,18 @@ void CF_XNOR(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* Com
 	WireStatesOUT[CompInfo[3]] = (~(WireStatesIN[CompInfo[1]] ^ WireStatesIN[CompInfo[2]])) & 1;
 }
 
+void CF_LED2x2(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
+{
+	CompInfo[3] =  WireStatesIN[CompInfo[1]];
+}
+
 void DLL_EXPORT InitSimulation(int comp_num)
 {
 	int index = 0;
 	compfuncs = (compfunc*)new compfunc[comp_num];
+
+	int _INITFUNCS_;
+
 	compfuncs[index++] = CF_SWITCH;
 	compfuncs[index++] = CF_AND;
 	compfuncs[index++] = CF_OR;
@@ -53,6 +63,7 @@ void DLL_EXPORT InitSimulation(int comp_num)
 	compfuncs[index++] = CF_NAND;
 	compfuncs[index++] = CF_NOR;
 	compfuncs[index++] = CF_XNOR;
+	compfuncs[index++] = CF_LED2x2;
 
 
 }

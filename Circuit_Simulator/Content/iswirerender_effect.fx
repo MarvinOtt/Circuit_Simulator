@@ -58,7 +58,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	uint tex_datp1p1 = tex[uint2(input.Position.x + 1, input.Position.y + 1)].a * 255.5f;
 
 
-	for (int i = 0; i < 7; ++i)
+	for (int i = 0; i < 8; ++i)
 	{
 		if ((tex_dat & (1 << i)) && (tex_datm1m1 & (1 << i)))
 			OUT = float4(0, 0, 0, 1.0f);

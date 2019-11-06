@@ -30,7 +30,7 @@ static float4 layercols[8] =
 	float4(1, 0, 1, 1),
 	float4(0, 1, 1, 1),
 	float4(1, 0.5f, 0, 1),
-	float4(0.2f, 0, 0.8f, 1)
+	float4(1, 1, 0, 1)
 };
 static float4 compcols[4] =
 {
@@ -305,7 +305,7 @@ float4 getcoloratpos(float x, float y)
 		}
 	}
 	uint type_int = getWiresAtPos(uint2(ux, uy));
-	if (type_int == 255 && OUT.a < 0.5f && OUT.a > 0.15f)
+	if (type_int >= 128 && OUT.a < 0.5f && OUT.a > 0.15f)
 	{
 		OUT = float4(1, 1, 1, 1);
 	}
@@ -332,7 +332,7 @@ float4 getcoloratpos(float x, float y)
 		uint type_intp1p1 = getWiresAtPos(uint2(ux + 1, uy + 1));
 		int i;
 		[unroll]
-		for (i = 6; i >= 0; --i)
+		for (i = 7; i >= 0; --i)
 		{
 
 			//int i = j;
