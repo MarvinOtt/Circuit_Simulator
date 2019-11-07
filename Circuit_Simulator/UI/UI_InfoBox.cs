@@ -16,16 +16,16 @@ namespace Circuit_Simulator.UI
         public UI_InfoBox(Point pos, Point size) : base(pos, size)
         {
             GetsUpdated = GetsDrawn = false;
-            values = new UI_List<UI_String>(pos, false);
-            ui_elements.Add(values);
+            values = new UI_List<UI_String>(new Point(2), false);
+            Add_UI_Elements(values);
         }
 
         public  void showInfo()
         {
-           
+            GetsUpdated = GetsDrawn = true;
             pos = Game1.mo_states.New.Position + new Point(10, 10);
             size.X = values.size.X + 4;
-            size.Y = values.size.Y * 2 + 4;
+            size.Y = values.size.Y + 4;
         }
 
         public void hideInfo()

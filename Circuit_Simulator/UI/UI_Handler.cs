@@ -189,7 +189,7 @@ namespace Circuit_Simulator
             //ComponentBox.Add_Categories(Cat_Input, Cat_Output, Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
             //Wire Info Box
-            info = new UI_InfoBox(new Point(500, 500), new Point(300, 300));
+            info = new UI_InfoBox(new Point(500,500), new Point(300, 300));
             info.values.Add_UI_Elements(new UI_String(new Point(0, 0), new Point(0, 0), componentconf));
 
             //input Box
