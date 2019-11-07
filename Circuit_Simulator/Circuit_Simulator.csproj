@@ -57,7 +57,6 @@
     <Compile Include="Sim_Component.cs" />
     <Compile Include="Sim_INF_DLL.cs" />
     <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
-    <Compile Include="UI\Specific\UI_WireInfoBox.cs" />
     <Compile Include="UI\UI_Box.cs" />
     <Compile Include="UI\UI_Button.cs" />
     <Compile Include="UI\UI_Dropdown_Button.cs" />
@@ -66,7 +65,6 @@
     <Compile Include="UI\Specific\UI_ComponentBox.cs" />
     <Compile Include="UI\Specific\UI_Comp_Cat.cs" />
     <Compile Include="UI\UI_InfoBox.cs" />
-    <Compile Include="UI\Specific\UI_ComponentInfoBox.cs" />
     <Compile Include="UI\UI_Scrollable.cs" />
     <Compile Include="UI\UI_String.cs" />
     <Compile Include="UI\UI_TexButton.cs" />

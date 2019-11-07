@@ -142,51 +142,7 @@ namespace Circuit_Simulator
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Point(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf, true);
 
-            //// Sample Components
-            //int comp_ID = 0;
 
-            //// Input
-            //SWITCH = new UI_Component("Switch", componentconf, 1);
-
-            //// Gates
-            //AND = new UI_Component("AND", componentconf, 0);
-            //OR = new UI_Component("OR", componentconf, comp_ID++);
-            //XOR = new UI_Component("XOR", componentconf, comp_ID++);
-            //NAND = new UI_Component("NAND", componentconf, comp_ID++);
-            //NOR = new UI_Component("NOR", componentconf, comp_ID++);
-            //XNOR = new UI_Component("XNOR", componentconf, comp_ID++);
-
-            //// OUTPUT
-            //LED2x2 = new UI_Component("Led 2x2", componentconf, comp_ID++);
-
-            //// Flip Flops
-            //FF_RS = new UI_Component("RS", componentconf, comp_ID++);
-            //FF_JK = new UI_Component("JK", componentconf, comp_ID++);
-            //FF_D = new UI_Component("Data", componentconf, comp_ID++);
-            //FF_T = new UI_Component("Toggle", componentconf, comp_ID++);
-
-            //// Shift Registers
-            //SISO = new UI_Component("SISO", componentconf, comp_ID++);
-            //SIPO = new UI_Component("SIPO", componentconf, comp_ID++);
-            //PISO = new UI_Component("PISO", componentconf, comp_ID++);
-            //PIPO = new UI_Component("PIPO", componentconf, comp_ID++);
-
-
-
-            ////Catagories
-            //Cat_Gates = new UI_Comp_Cat("Gates", cat_conf);
-            //Cat_FlipFlops = new UI_Comp_Cat("Flip Flops", cat_conf);
-            //Cat_ShiftRegisters = new UI_Comp_Cat("Shift Registers", cat_conf);
-            //Cat_Input = new UI_Comp_Cat("Input", cat_conf);
-            //Cat_Output = new UI_Comp_Cat("Output", cat_conf);
-
-            //Cat_Gates.AddComponents(AND, OR, XOR, NAND, NOR, XNOR);
-            //Cat_FlipFlops.AddComponents(FF_RS, FF_JK, FF_D, FF_T);
-            //Cat_ShiftRegisters.AddComponents(SISO, SIPO, PISO, PIPO);
-            //Cat_Input.AddComponents(SWITCH);
-            //Cat_Output.AddComponents(LED2x2);
-
-            //ComponentBox.Add_Categories(Cat_Input, Cat_Output, Cat_Gates, Cat_FlipFlops, Cat_ShiftRegisters);
 
             //Wire Info Box
             info = new UI_InfoBox(new Point(500,500), new Point(300, 300));
