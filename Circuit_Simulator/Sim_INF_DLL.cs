@@ -215,7 +215,22 @@ namespace Circuit_Simulator
 
         public void SimulateOneStep()
         {
-            DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
+            if (Simulator.simspeed >= 0)
+            {
+                for (int i = 0; i < (int)Math.Pow(2, Simulator.simspeed); ++i)
+                {
+                    DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
+                }
+            }
+            else
+            {
+                Simulator.simspeed_count++;
+                if(Simulator.simspeed_count >= (int)Math.Pow(2, -Simulator.simspeed))
+                {
+                    DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
+                    Simulator.simspeed_count = 0;
+                }
+            }
             for(int i = 0; i < Comp2UpdateAfterSim_count; ++i)
             {
                 Component comp = Sim_Component.components[Comp2UpdateAfterSim[i]];

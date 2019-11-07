@@ -246,7 +246,7 @@ namespace Circuit_Simulator
         public static int worldzoom = 0;
 
         int sim_speed = 1;
-        public static int toolmode = TOOL_WIRE, oldtoolmode = 0;
+        public static int toolmode = TOOL_WIRE, oldtoolmode = 0, simspeed, simspeed_count;
         public static bool IsSimulating;
 
         #region INPUT
@@ -650,6 +650,10 @@ namespace Circuit_Simulator
                     worldpos.X += 10;
                 if (Game1.kb_states.New.IsKeyDown(Keys.D))
                     worldpos.X -= 10;
+                if (Game1.kb_states.IsKeyToggleDown(Keys.Up))
+                    simspeed++;
+                if (Game1.kb_states.IsKeyToggleDown(Keys.Down))
+                    simspeed--;
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
                     currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM);
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
@@ -677,7 +681,7 @@ namespace Circuit_Simulator
             //if(Game1.kb_states.IsKeyToggleDown(Keys.D1))
                 
 
-            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE)
+            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && !IsSimulating)
             {
 
                 // Deleting Wires
@@ -731,30 +735,32 @@ namespace Circuit_Simulator
             }
             else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT)
             {
-                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsRightButtonToggleOff())
-                {
-                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                    int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
-                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                    Sim_Component.components[compID].Delete();
-                }
-
                 if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                     int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
                     Sim_Component.components[compID].Clicked();
                 }
-
-                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
+                if (!IsSimulating)
                 {
-                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                    UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
-                    UI_Handler.info.showInfo();
+                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsRightButtonToggleOff())
+                    {
+                        int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                        int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
+                        int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                        Sim_Component.components[compID].Delete();
+                    }
+
+                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
+                    {
+                        int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                        int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                        UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
+                        UI_Handler.info.showInfo();
+                    }
+                    else
+                        UI_Handler.info.hideInfo();
                 }
-                else
-                    UI_Handler.info.hideInfo();
 
             }
 
