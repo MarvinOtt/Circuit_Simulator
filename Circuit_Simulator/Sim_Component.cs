@@ -20,6 +20,7 @@ namespace Circuit_Simulator
             this.Y = Y;
             this.Width = Width;
             this.Height = Height;
+            
         }
         public FRectangle(Vector2 XY, Vector2 size)
         {

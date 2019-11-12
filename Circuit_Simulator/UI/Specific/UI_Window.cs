@@ -37,7 +37,7 @@ namespace Circuit_Simulator.UI
             this.conf = conf;
             Vector2 title_dim = conf.font.MeasureString(Title);
             Title_pos = new Vector2(5, headheight / 2 - title_dim.Y / 2);
-            target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            target = new RenderTarget2D(Game1.graphics.GraphicsDevice, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
             Add_UI_Elements(new UI_TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, new TexButton_Conf(2))); //X Button
@@ -57,6 +57,7 @@ namespace Circuit_Simulator.UI
                 GetsUpdated = GetsDrawn = false;
             if (size.Y >= Game1.Screenheight)
                 size.Y = Game1.Screenheight;
+
             // Handling Draging of Window
             Rectangle Grabbox = new Rectangle(absolutpos, new Point(size.X - ui_elements[0].size.X - 4, ui_elements[0].size.Y + 4));
             if (Grabbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
@@ -88,7 +89,7 @@ namespace Circuit_Simulator.UI
             int RSsize2 = RSsize * 2;
             bool IsResizeHover = false;
 
-            if (IsResizeable)
+            if (IsResizeable) //Resize
             {
                 Rectangle Resize_Bottom_Right_box = new Rectangle(absolutpos + size - new Point(RSsize), new Point(RSsize2));
                 if (Resize_Bottom_Right_box.Contains(Game1.mo_states.New.Position) && resize_type == 0 && !IsResizeHover)

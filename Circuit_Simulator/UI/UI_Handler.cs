@@ -42,6 +42,7 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public static UI_InfoBox info;
         public UI_Window input;
+        public UI_Box GeneralInfoBox;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
@@ -153,6 +154,12 @@ namespace Circuit_Simulator
             input.Add_UI_Elements(new UI_ValueInput(new Point(input.size.X / 2 - input.size.X / 4, 20 + input.size.Y / 2 - input.size.Y / 4), new Point(input.size.X / 2, input.size.Y / 2 -20 -1), componentconf, 1));
             input.GetsDrawn = input.GetsUpdated = false;
             InitializeUISettings(spriteBatch);
+
+            //GeneralInfo Box
+            GeneralInfoBox = new UI_Box(new Point(-1, Game1.Screenheight - 50), new Point(Game1.Screenwidth + 2, 50));
+            GeneralInfoBox.Add_UI_Elements(new UI_String(Point.Zero, Point.Zero, componentconf));
+            GeneralInfoBox.Add_UI_Elements(new UI_String(new Point(75, 0), Point.Zero, componentconf));
+
         }
 
         public static void InitComponents4CompBox()
@@ -272,6 +279,8 @@ namespace Circuit_Simulator
         public void Window_Graphics_Changed(object sender, EventArgs e)
         {
             //Toolbar.pos = new Vector2(0, Game1.Screenheight - 25);
+            GeneralInfoBox.pos = new Point(-1,  Game1.Screenheight - 50);
+            GeneralInfoBox.size = new Point(Game1.Screenwidth + 2, 50);
         }
 
 	    public void Update()
@@ -294,13 +303,15 @@ namespace Circuit_Simulator
             ComponentBox.UpdateMain();
             QuickHotbar.UpdateMain();
             Toolbar.UpdateMain();
+            GeneralInfoBox.UpdateMain();
 
 
-            
+
         }
 
 	    public void Draw(SpriteBatch spritebatch)
 	    {
+            GeneralInfoBox.Draw(spritebatch);
             Toolbar.Draw(spritebatch);
             QuickHotbar.Draw(spritebatch);
             ComponentBox.Draw(spritebatch);
