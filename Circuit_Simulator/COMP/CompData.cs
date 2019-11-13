@@ -31,6 +31,7 @@ namespace Circuit_Simulator.COMP
         public Texture2D overlaytex;
         public FRectangle[] overlay_bounds;
         public Rectangle overlaytex_bounds;
+        public CompLibrary library;
         private static Action<Component>[] AllClickActions = new Action<Component>[]
         {
             delegate (Component comp)

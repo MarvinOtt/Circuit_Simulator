@@ -167,9 +167,9 @@ namespace Circuit_Simulator
             InitializeUISettings(spriteBatch);
 
             //GeneralInfo Box
-            GeneralInfoBox = new UI_Box(new Point(-1, Game1.Screenheight - 25 + 1), new Point(Game1.Screenwidth + 2, 25));
+            GeneralInfoBox = new UI_Box<UI_String>(new Point(-1, Game1.Screenheight - 25 + 1), new Point(Game1.Screenwidth + 2, 25));
             GeneralInfoBox.Add_UI_Elements(new UI_String(Point.Zero, Point.Zero, componentconf));
-            GeneralInfoBox.Add_UI_Elements(new UI_String(new Point(75, 0), Point.Zero, componentconf));
+            GeneralInfoBox.Add_UI_Elements(new UI_String(new Point(150, 0), Point.Zero, componentconf));
 
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(200, 500),"Libaries", new Point(200, 200), componentconf, true);

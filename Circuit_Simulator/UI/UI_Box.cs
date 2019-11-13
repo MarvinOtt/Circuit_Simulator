@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Circuit_Simulator.UI
 {
-    public class UI_Box : UI_MultiElement<UI_Element>
+    public class UI_Box<T> : UI_MultiElement<T> where T : UI_Element
     {
 
         static Color BackgroundColor = new Color(new Vector3(0.15f));

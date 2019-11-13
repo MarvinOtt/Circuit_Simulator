@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Circuit_Simulator.COMP;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -37,6 +38,29 @@ namespace Circuit_Simulator
                 List<byte> bytestosave = new List<byte>();
                 int compcount = 0;
                 int wirecount = 0;
+                byte[] bytearray;
+
+                #region Save Library & Comp Table
+
+                stream.Write(BitConverter.GetBytes(CompLibrary.AllLibrarys.Count), 0, 4);
+                for (int i = 0; i < CompLibrary.AllLibrarys.Count; ++i)
+                {
+                    bytearray = CompLibrary.AllLibrarys[i].name.GetBytes();
+                    stream.Write(bytearray, 0, bytearray.Length);
+                }
+                stream.Write(BitConverter.GetBytes(Sim_Component.Components_Data.Count), 0, 4);
+                for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
+                {
+                    bytearray = Sim_Component.Components_Data[i].name.GetBytes();
+                    stream.Write(bytearray, 0, bytearray.Length);
+                }
+                for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
+                {
+                    int LibraryID = CompLibrary.AllLibrarys.IndexOf(Sim_Component.Components_Data[i].library);
+                    stream.Write(BitConverter.GetBytes(LibraryID), 0, 4);
+                }
+
+                #endregion
 
                 #region Save Wires
                 wirecount = Simulator.networks.Count(x => x != null);
@@ -162,6 +186,61 @@ namespace Circuit_Simulator
                         {
                             FileStream stream = new FileStream(filename, FileMode.Open);
 
+                            byte[] intbuffer = new byte[4];
+
+                            #region Load Tables and Check for Librarys and Components
+
+                            stream.Read(intbuffer, 0, 4);
+                            int librarycount = BitConverter.ToInt32(intbuffer, 0);
+                            string[] librarynames = new string[librarycount];
+                            for (int i = 0; i < librarycount; ++i)
+                            {
+                                librarynames[i] = stream.ReadNullTerminated();
+                            }
+                            stream.Read(intbuffer, 0, 4);
+                            int libcompcount = BitConverter.ToInt32(intbuffer, 0);
+                            string[] libcompnames = new string[libcompcount];
+                            int[] complibraryIDs = new int[libcompcount];
+                            for (int i = 0; i < libcompcount; ++i)
+                            {
+                                libcompnames[i] = stream.ReadNullTerminated();
+                            }
+                            for (int i = 0; i < libcompcount; ++i)
+                            {
+                                stream.Read(intbuffer, 0, 4);
+                                complibraryIDs[i] = BitConverter.ToInt32(intbuffer, 0);
+                            }
+                            bool AllLibrarysExist = true, AllComponentExist = true;
+                            for(int i = 0; i < librarycount; ++i)
+                            {
+                                if (CompLibrary.AllLibrarys.Find(x => x.name == librarynames[i]) == null)
+                                    AllLibrarysExist = false;
+                            }
+                            if(AllLibrarysExist)
+                            {
+                                for (int i = 0; i < libcompcount; ++i)
+                                {
+                                    CompLibrary curlibrary = CompLibrary.AllLibrarys.Find(x => x.name == librarynames[complibraryIDs[i]]);
+                                    if (curlibrary.Components.Find(x => x.name == libcompnames[i]) == null)
+                                        AllComponentExist = false;
+                                }
+                            }
+
+                            if (!AllLibrarysExist || !AllComponentExist)
+                                throw new Exception("Missing Library/s for this Save File!");
+
+                            int[] compmask = new int[libcompcount];
+                            for(int i = 0; i < libcompcount; ++i)
+                            {
+                                CompLibrary library = CompLibrary.AllLibrarys.Find(x => x.name == librarynames[complibraryIDs[i]]);
+                                int compdataID = Sim_Component.Components_Data.FindIndex(x => x.library == library && x.name == libcompnames[i]);
+                                compmask[i] = compdataID;
+                            }
+
+                            #endregion
+
+
+
                             Array.Clear(Sim_Component.components, 0, Sim_Component.components.Length);
                             Array.Clear(Simulator.networks, 0, Simulator.networks.Length);
                             Array.Clear(Simulator.IsWire, 0, Simulator.IsWire.Length);
@@ -185,9 +264,6 @@ namespace Circuit_Simulator
                             Simulator.logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
                             Sim_Component.CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
-                            byte[] intbuffer = new byte[4];
-
- 
                             
                             #region LoadWires 
 
@@ -241,7 +317,7 @@ namespace Circuit_Simulator
                             {
 
                                 stream.Read(intbuffer, 0, 4);
-                                Component buffercomp = new Component(BitConverter.ToInt32(intbuffer, 0), i);
+                                Component buffercomp = new Component(compmask[BitConverter.ToInt32(intbuffer, 0)], i);
                                 stream.Read(intbuffer, 0, 4);
                                 int posX = BitConverter.ToInt32(intbuffer, 0);
                                 stream.Read(intbuffer, 0, 4);

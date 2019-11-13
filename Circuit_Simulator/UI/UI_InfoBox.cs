@@ -9,7 +9,7 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI
 {
-    public class UI_InfoBox : UI_Box
+    public class UI_InfoBox : UI_Box<UI_Element>
     {
         public UI_List<UI_String> values;
 
