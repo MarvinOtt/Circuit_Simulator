@@ -656,6 +656,9 @@ namespace Circuit_Simulator
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
                     currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM);
 
+                UI_Handler.GeneralInfoBox.ui_elements[0].value = "Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString();
+                UI_Handler.GeneralInfoBox.ui_elements[1].value = "Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")";
+
                 if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
                 {
                     if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
