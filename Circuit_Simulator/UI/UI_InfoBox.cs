@@ -20,7 +20,7 @@ namespace Circuit_Simulator.UI
             Add_UI_Elements(values);
         }
 
-        public  void showInfo()
+        public  void ShowInfo()
         {
             GetsUpdated = GetsDrawn = true;
             pos = Game1.mo_states.New.Position + new Point(10, 10);
@@ -28,7 +28,7 @@ namespace Circuit_Simulator.UI
             size.Y = values.size.Y + 4;
         }
 
-        public void hideInfo()
+        public void HideInfo()
         {
             GetsUpdated = GetsDrawn = false;
         }

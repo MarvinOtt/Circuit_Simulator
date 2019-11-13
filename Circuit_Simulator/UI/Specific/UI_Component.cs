@@ -9,27 +9,22 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI.Specific
 {
-    public class UI_Component : UI_Element
+    public class UI_Component : UI_StringButton
     {
         public static int height = 20;
-        public string name;
         public int ID;
-        public bool IsHover;
-        public Generic_Conf conf;
-        Vector2 text_pos;
+        //Vector2 text_pos;
 
-        public UI_Component(string name, Generic_Conf conf, int ID) : base(Point.Zero, new Point(0, height))
+        public UI_Component(string name, int ID, Generic_Conf conf) : base(Point.Zero, new Point(0, height), name, conf)
         {
             this.ID = ID;
-            this.name = name;
-            this.conf = conf;
-            Vector2 textsize = conf.font.MeasureString(name);
-            text_pos = new Vector2(20, (int)(size.Y / 2 - textsize.Y / 2));
+            //Vector2 textsize = conf.font.MeasureString(name);
+            //text_pos = new Vector2(20, (int)(size.Y / 2 - textsize.Y / 2));
         }
 
         public override void ChangedUpdate2False()
         {
-            IsHover = false;
+            IsHovered = false;
             base.ChangedUpdate2False();
         }
 
@@ -49,17 +44,17 @@ namespace Circuit_Simulator.UI.Specific
                     Game1.simulator.sim_comp.InizializeComponentDrag(ID);
                     System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
                 }
-                IsHover = true;
+                IsHovered = true;
             }
             else
-                IsHover = false;
+                IsHovered = false;
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            if(IsHover)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.Syscolors[1]);
-            spritebatch.DrawString(conf.font, name, absolutpos.ToVector2() + text_pos, conf.fontcol);
+            if(IsHovered)
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
+            spritebatch.DrawString(conf.font, text, new Vector2(absolutpos.X + 20, absolutpos.Y + size.Y / 2 - text_dim.Y / 2), conf.font_color);
 
         }
     }

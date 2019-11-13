@@ -11,24 +11,21 @@ namespace Circuit_Simulator.UI
 {
     public class UI_Button : UI_Element
     {
-        Generic_Conf conf;
-        Vector2 text_pos;
-        string text;
-        public bool IsHovered, IsActivated, GotActivated;
+        public Generic_Conf conf;
+        public bool IsHovered, IsActivated, IsToggle;
 
-        public UI_Button(Point pos, Point size, string text, Generic_Conf conf) : base(pos, size)
+        public delegate void Button_Activated_Handler();
+        public event Button_Activated_Handler GotActivated = delegate { };
+
+        public UI_Button(Point pos, Point size, Generic_Conf conf) : base(pos, size)
         {
-            this.text = text;
             this.conf = conf;
-            Vector2 textsize = conf.font.MeasureString(text);
-            text_pos = size.ToVector2() / 2 - textsize / 2;
-
         }
 
         protected override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            GotActivated = false;
+            IsToggle = false;
             if (conf.behav == 2)
                 IsActivated = false;
             if (hitbox.Contains(Game1.mo_states.New.Position))
@@ -37,8 +34,9 @@ namespace Circuit_Simulator.UI
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsActivated ^= true;
+                    IsToggle = true;
                     if (IsActivated)
-                        GotActivated = true;
+                        GotActivated();
                 }
             }
             else
@@ -47,9 +45,7 @@ namespace Circuit_Simulator.UI
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), Color.Black);
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.Syscolors[(IsHovered ? 1 : 0) + (IsActivated ? 2 : 0)]);
-            spritebatch.DrawString(conf.font, text, absolutpos.ToVector2() + text_pos, conf.fontcol);
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.BGColor);
         }
     }
 }
