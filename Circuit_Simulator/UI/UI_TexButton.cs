@@ -16,7 +16,7 @@ namespace Circuit_Simulator
 	    public Texture2D tex;
 	    public Point tex_pos;
 
-        public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, conf)
+        public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
         {
             this.tex = tex;
             this.tex_pos = tex_pos;

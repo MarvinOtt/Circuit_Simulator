@@ -18,7 +18,7 @@ namespace Circuit_Simulator.UI
         public Generic_Conf conf;
         string Title;
         Vector2 Title_pos;
-        Point minsize;
+        public Point minsize;
         Point oldrightborderpos;
         static Texture2D tex;
         public static int headheight = 20;
@@ -152,36 +152,36 @@ namespace Circuit_Simulator.UI
                     {
                         case 1: // Bottom Resize
                             size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
-                            if (size.Y <= headheight + minsize.Y)
-                                size.Y = headheight + minsize.Y;
+                            if (size.Y <= minsize.Y)
+                                size.Y = minsize.Y;
                             break;
                         case 2: // Right Resize
                             size.X = Game1.mo_states.New.Position.X - absolutpos.X;
-                            if (size.X <= headheight + minsize.X)
-                                size.X = headheight + minsize.X;
+                            if (size.X <= minsize.X)
+                                size.X = minsize.X;
                             break;
                         case 3: // Left Resize
                             size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
-                            if (size.X <= headheight + minsize.X)
-                                size.X = headheight + minsize.X;
+                            if (size.X <= minsize.X)
+                                size.X = minsize.X;
                             pos.X = oldrightborderpos.X - size.X;
                             absolutpos.X = oldrightborderpos.X - size.X;
                             break;
                         case 4: // Bottom Right Resize
                             size.X = Game1.mo_states.New.Position.X - absolutpos.X;
                             size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
-                            if (size.X <= headheight + minsize.X)
-                                size.X = headheight + minsize.X;
-                            if (size.Y <= headheight + minsize.Y)
-                                size.Y = headheight + minsize.Y;
+                            if (size.X <= minsize.X)
+                                size.X = minsize.X;
+                            if (size.Y <= minsize.Y)
+                                size.Y = minsize.Y;
                             break;
                         case 5: // Bottom Left Resize
                             size.X = oldrightborderpos.X - Game1.mo_states.New.Position.X;
                             size.Y = Game1.mo_states.New.Position.Y - absolutpos.Y;
-                            if (size.X <= headheight + minsize.X)
-                                size.X = headheight + minsize.X;
-                            if (size.Y <= headheight + minsize.Y)
-                                size.Y = headheight + minsize.Y;
+                            if (size.X <= minsize.X)
+                                size.X = minsize.X;
+                            if (size.Y <= minsize.Y)
+                                size.Y = minsize.Y;
                             pos.X = oldrightborderpos.X - size.X;
                             absolutpos.X = oldrightborderpos.X - size.X;
                             break;

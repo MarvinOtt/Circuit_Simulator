@@ -43,8 +43,11 @@ namespace Circuit_Simulator.UI
                 ui_elements[i].UpdatePos();
                 currentpos.Y += ui_elements[i].size.Y;
             }
-            size.Y = ui_elements.Max(x => x.pos.Y + x.size.Y);
-            size.X = ui_elements.Max(x => x.size.X);
+            if (ui_elements.Count > 0)
+            {
+                size.Y = ui_elements.Max(x => x.pos.Y + x.size.Y);
+                size.X = ui_elements.Max(x => x.size.X);
+            }
         }
 
 

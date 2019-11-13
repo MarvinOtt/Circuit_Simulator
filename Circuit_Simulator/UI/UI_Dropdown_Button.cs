@@ -15,7 +15,7 @@ namespace Circuit_Simulator.UI
         
         Texture2D tex;
         public Point tex_pos;
-        public UI_Dropdown_Button(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, conf)
+        public UI_Dropdown_Button(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
         {
 
             this.tex = tex;

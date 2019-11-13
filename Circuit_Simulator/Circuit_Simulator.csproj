@@ -57,13 +57,14 @@
     <Compile Include="Sim_Component.cs" />
     <Compile Include="Sim_INF_DLL.cs" />
     <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
+    <Compile Include="UI\Specific\UI_Libary_Window.cs" />
     <Compile Include="UI\UI_Box.cs" />
     <Compile Include="UI\UI_Button.cs" />
     <Compile Include="UI\UI_Dropdown_Button.cs" />
     <Compile Include="UI\UI_Configs.cs" />
     <Compile Include="UI\Specific\UI_Component.cs" />
     <Compile Include="UI\Specific\UI_ComponentBox.cs" />
-    <Compile Include="UI\Specific\UI_Comp_Cat.cs" />
+    <Compile Include="UI\Specific\UI_Categorie.cs" />
     <Compile Include="UI\UI_InfoBox.cs" />
     <Compile Include="UI\UI_Scrollable.cs" />
     <Compile Include="UI\UI_String.cs" />
@@ -76,7 +77,7 @@
     <Compile Include="UI\UI_List.cs" />
     <Compile Include="UI\UI_MultiElement.cs" />
     <Compile Include="UI\UI_TB_Dropdown.cs" />
-    <Compile Include="UI\Specific\UI_Window.cs" />
+    <Compile Include="UI\UI_Window.cs" />
     <Compile Include="UI\UI_ValueInput.cs" />
   </ItemGroup>
   <ItemGroup>

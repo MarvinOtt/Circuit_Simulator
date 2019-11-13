@@ -12,13 +12,14 @@ namespace Circuit_Simulator.UI
     public class UI_Button : UI_Element
     {
         public Generic_Conf conf;
-        public bool IsHovered, IsActivated, IsToggle;
+        public bool IsHovered, IsActivated, IsToggle, DrawBorder;
 
         public delegate void Button_Activated_Handler();
         public event Button_Activated_Handler GotActivated = delegate { };
 
-        public UI_Button(Point pos, Point size, Generic_Conf conf) : base(pos, size)
+        public UI_Button(Point pos, Point size, bool DrawBorder, Generic_Conf conf) : base(pos, size)
         {
+            this.DrawBorder = DrawBorder;
             this.conf = conf;
         }
 
@@ -46,6 +47,8 @@ namespace Circuit_Simulator.UI
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.BGColor);
+            if(DrawBorder)
+                spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), conf.BorderColor, 1);
         }
     }
 }

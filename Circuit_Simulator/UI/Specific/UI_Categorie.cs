@@ -9,25 +9,26 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI.Specific
 {
-    public class UI_Comp_Cat : UI_MultiElement<UI_Element>
+    public class UI_Categorie<T> : UI_MultiElement<UI_Element> where T : UI_Element
     {
+        public static int height = 20;
         public string title;
         public Generic_Conf conf;
-        public UI_List<UI_Component> Components;
+        public UI_List<T> Components;
         public bool IsFold, IsHover;
         Vector2 title_pos;
 
-        public UI_Comp_Cat(string title, Generic_Conf conf ) : base(Point.Zero)
+        public UI_Categorie(string title, Generic_Conf conf ) : base(Point.Zero)
         {
             this.title = title;
             this.conf = conf;
-            Components = new UI_List<UI_Component>(new Point(0, UI_Component.height), false);
+            Components = new UI_List<T>(new Point(0, height), false);
             Add_UI_Elements(Components);
             Vector2 titlesize = conf.font.MeasureString(title);
             title_pos = new Vector2(4, (int)(size.Y / 2 - titlesize.Y / 2));
         }
 
-        public void AddComponents(params UI_Component[] components)
+        public void AddComponents(params T[] components)
         {
             Components.Add_UI_Elements(components);
         }
@@ -48,14 +49,14 @@ namespace Circuit_Simulator.UI.Specific
         {
             base.UpdatePos();
             if (IsFold)
-                size.Y = UI_Component.height;
+                size.Y = height;
             else
-                size.Y = UI_Component.height * (1 + Components.ui_elements.Count);
+                size.Y = height * (1 + Components.ui_elements.Count);
         }
 
         protected override void UpdateSpecific()
         {
-            Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, UI_Component.height));
+            Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, height));
 
             //if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
             //{
@@ -78,7 +79,7 @@ namespace Circuit_Simulator.UI.Specific
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             if (IsHover)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, UI_Component.height)), conf.HoverColor);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, height)), conf.HoverColor);
             spritebatch.DrawString(conf.font, title, absolutpos.ToVector2() + title_pos, conf.font_color);
 
             base.DrawSpecific(spritebatch);

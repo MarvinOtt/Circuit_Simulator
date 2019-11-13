@@ -11,11 +11,10 @@ namespace Circuit_Simulator.UI.Specific
 {
     public class UI_Component : UI_StringButton
     {
-        public static int height = 20;
         public int ID;
         //Vector2 text_pos;
 
-        public UI_Component(string name, int ID, Generic_Conf conf) : base(Point.Zero, new Point(0, height), name, conf)
+        public UI_Component(Point size, string name, int ID, Generic_Conf conf) : base(Point.Zero, size, name, false, conf)
         {
             this.ID = ID;
             //Vector2 textsize = conf.font.MeasureString(name);

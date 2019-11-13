@@ -13,7 +13,7 @@ namespace Circuit_Simulator.UI
     {
         public string text;
         public Vector2 text_dim;
-        public UI_StringButton(Point pos, Point size, string text, Generic_Conf conf) : base(pos, size, conf)
+        public UI_StringButton(Point pos, Point size, string text, bool DrawBorder, Generic_Conf conf) : base(pos, size, DrawBorder, conf)
         {
             this.text = text;
             text_dim = conf.font.MeasureString(text);

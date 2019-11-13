@@ -26,9 +26,9 @@ namespace Circuit_Simulator
         public static bool UI_Element_Pressed, UI_IsWindowHide;
         public static int UI_Active_State;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
-        static int buttonheight = 25;
-        static int buttonwidth = 67;
-        static int sqarebuttonwidth = 25;
+        public static int buttonheight = 25;
+        public static int buttonwidth = 67;
+        public static int sqarebuttonwidth = 25;
         public static Color main_BG_Col = new Color(new Vector3(0.15f));
         public static Color main_Hover_Col = Color.White * 0.1f;
         public static Color BackgroundColor = new Color(new Vector3(0.15f));
@@ -41,13 +41,13 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public static UI_InfoBox info;
         public UI_Window input;
-        public UI_Window LibaryWindow;
+        public UI_Libary_Window LibaryWindow;
         public UI_Box GeneralInfoBox;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
         public static UI_List<UI_Dropdown_Button> wire_ddbl;
-        public static Generic_Conf componentconf, gen_conf;
+        public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf;
 
         public UI_Handler(ContentManager Content)
@@ -82,12 +82,16 @@ namespace Circuit_Simulator
             behave1conf.behav = 1;
             behave2conf = new Generic_Conf(gen_conf);
             behave2conf.behav = 2;
+            genbutconf = new Generic_Conf(gen_conf);
+            genbutconf.BorderColor = BorderColor;
+            genbutconf.font = toolbarfont;
+
 
             //Toolbar
             Toolbar = new UI_MultiElement<UI_Element>(new Point(0, 0));
             string[] TB_Names = new string[] { "File", "Config", "View", "Tools", "Help" };
             for(int i = 0; i < TB_Names.Length; ++i)
-                Toolbar.Add_UI_Elements(new UI_StringButton(new Point(buttonwidth * i, 0), new Point(buttonwidth, buttonheight), TB_Names[i], toolbarbuttonconf));
+                Toolbar.Add_UI_Elements(new UI_StringButton(new Point(buttonwidth * i, 0), new Point(buttonwidth, buttonheight), TB_Names[i], false, toolbarbuttonconf));
 
             // Initializing Menus for Toolbar
             ButtonMenu_File = new UI_TB_Dropdown(new Point(0, 25));
@@ -108,7 +112,7 @@ namespace Circuit_Simulator
                 //((Button_Menu)ButtonMenu_View.ui_elements[i]).conf.behav = 2;
             }
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Point(0, 25));
-            string[] ToolsButton_Names = new string[] { "Test", "Test", "Test" };
+            string[] ToolsButton_Names = new string[] { "Libaries", "Test", "Test" };
             for (int i = 0; i < ToolsButton_Names.Length; ++i)
                 ButtonMenu_Tools.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf2));
 
@@ -168,8 +172,8 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Point(75, 0), Point.Zero, componentconf));
 
             //Libary Window
-            LibaryWindow = new UI_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(200, 500),"Libaries", new Point(200, 500), componentconf, true);
-
+            LibaryWindow = new UI_Libary_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(200, 500),"Libaries", new Point(200, 200), componentconf, true);
+            //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
         }
 
         public static void InitComponents4CompBox()
@@ -180,15 +184,15 @@ namespace Circuit_Simulator
             {
                 categorys.Add(comps[i].catagory);
             }
-            UI_Comp_Cat[] comp_cats = new UI_Comp_Cat[categorys.Count];
+            UI_Categorie<UI_Component>[] comp_cats = new UI_Categorie<UI_Component>[categorys.Count];
             for(int i = 0; i < comp_cats.Length; ++i)
             {
-                comp_cats[i] = new UI_Comp_Cat(categorys.ElementAt(i), cat_conf);
+                comp_cats[i] = new UI_Categorie<UI_Component>(categorys.ElementAt(i), cat_conf);
             }
             List<string> categorys_list = categorys.ToList();
             for(int i = 0; i < comps.Count; ++i)
             {
-                comp_cats[categorys_list.IndexOf(comps[i].catagory)].AddComponents(new UI_Component(comps[i].name, i, componentconf));
+                comp_cats[categorys_list.IndexOf(comps[i].catagory)].AddComponents(new UI_Component(new Point(0, 20), comps[i].name, i, componentconf));
             }
             ComponentBox.Catagories.ui_elements[0].ui_elements.Clear();
             ComponentBox.Add_Categories(comp_cats);
