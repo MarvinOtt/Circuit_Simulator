@@ -33,7 +33,7 @@ namespace Circuit_Simulator.UI.Specific
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
      
-            spritebatch.DrawString(comp.conf.font, comp.name, Game1.mo_states.New.Position.ToVector2(), comp.conf.fontcol);
+            spritebatch.DrawString(comp.conf.font, comp.text, Game1.mo_states.New.Position.ToVector2(), comp.conf.font_color);
 
         }
     }

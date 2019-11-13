@@ -220,10 +220,8 @@ namespace Circuit_Simulator
         public Sim_Component sim_comp;
         public Sim_INF_DLL sim_inf_dll;
 
-
-        BasicEffect basicEffect;
         Effect sim_effect, line_effect, iswirerender_effect;
-        RenderTarget2D main_target, final_target, WireCalc_target;
+        RenderTarget2D main_target, WireCalc_target;
         public static RenderTarget2D logic_target, sec_target;
         Network CalcNetwork;
 
@@ -245,7 +243,6 @@ namespace Circuit_Simulator
         public static Point worldpos;
         public static int worldzoom = 0;
 
-        int sim_speed = 1;
         public static int toolmode = TOOL_WIRE, oldtoolmode = 0, simspeed, simspeed_count;
         public static bool IsSimulating;
 
@@ -317,7 +314,7 @@ namespace Circuit_Simulator
             sim_effect.Parameters["worldsizey"].SetValue(SIZEY);
         }
 
-        public void screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
+        public void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
         {
             x = (int)((screencoos.X - worldpos.X) / (float)Math.Pow(2, worldzoom));
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, worldzoom));
@@ -607,8 +604,8 @@ namespace Circuit_Simulator
                 sim_inf_dll.GenerateSimulationData();
         }
 
-        public byte getUILayers()
-        {
+        public byte GetUILayers()
+        { 
             byte OUT = 0;
             for(int i = 0; i < LAYER_NUM + 1; ++i)
             {
@@ -635,7 +632,7 @@ namespace Circuit_Simulator
             //int r = Test(4, 8);
 
 
-            screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
+            Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
             Point mo_worldpos = new Point(mo_worldposx, mo_worldposy);
             IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
@@ -695,7 +692,7 @@ namespace Circuit_Simulator
                     byte[,] data = new byte[1, 1];
                     byte wiredata = IsWire[mo_worldposx, mo_worldposy];
                     data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-                    data[0, 0] &= (byte)~getUILayers();
+                    data[0, 0] &= (byte)~GetUILayers();
                     PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
                 }
 
@@ -707,7 +704,7 @@ namespace Circuit_Simulator
                 // Placing Wires
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
                 {
-                    byte layers = getUILayers();
+                    byte layers = GetUILayers();
                     IsWire[mo_worldposx, mo_worldposy] |= layers;
                     if (true)//layers != 255)
                     {
@@ -756,10 +753,10 @@ namespace Circuit_Simulator
                         int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                         int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
                         UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
-                        UI_Handler.info.showInfo();
+                        UI_Handler.info.ShowInfo();
                     }
                     else
-                        UI_Handler.info.hideInfo();
+                        UI_Handler.info.HideInfo();
                 }
 
             }

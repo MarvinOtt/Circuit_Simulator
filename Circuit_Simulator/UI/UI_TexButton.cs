@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Circuit_Simulator.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -10,42 +11,38 @@ using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator
 {
-    public class UI_TexButton : UI_Element
+    public class UI_TexButton : UI_Button
     {
 	    public Texture2D tex;
 	    public Point tex_pos;
-        TexButton_Conf conf;
-	    public bool IsHovered, IsActivated;
-        public delegate void Button_Activated_Handler();
-        public event Button_Activated_Handler GotActivated = delegate { };
 
-        public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, TexButton_Conf conf) : base(pos, size)
+        public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, conf)
         {
-            this.conf = conf;
             this.tex = tex;
             this.tex_pos = tex_pos;
         }
 
 	    protected override void UpdateSpecific()
 	    {
-			Rectangle hitbox = new Rectangle(absolutpos, size);
-            //GotActivated = false;
-		    if (conf.behav == 2)
-			    IsActivated = false;
-		    if (hitbox.Contains(Game1.mo_states.New.Position))
-		    {
-			    IsHovered = true;
-			    if (Game1.mo_states.IsLeftButtonToggleOff())
-                {
-                    IsActivated ^= true;
-                    if (IsActivated)
-                    {
-                        GotActivated();
-                    }
-                }
-		    }
-		    else
-			    IsHovered = false;
+            //Rectangle hitbox = new Rectangle(absolutpos, size);
+            //         //GotActivated = false;
+            //   if (conf.behav == 2)
+            //    IsActivated = false;
+            //   if (hitbox.Contains(Game1.mo_states.New.Position))
+            //   {
+            //    IsHovered = true;
+            //    if (Game1.mo_states.IsLeftButtonToggleOff())
+            //             {
+            //                 IsActivated ^= true;
+            //                 if (IsActivated)
+            //                 {
+            //                     GotActivated();
+            //                 }
+            //             }
+            //   }
+            //   else
+            //    IsHovered = false;
+            base.UpdateSpecific();
 	    }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
@@ -56,19 +53,17 @@ namespace Circuit_Simulator
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
                 else if (IsHovered && !IsActivated)                                                                             //Hover
                 {
-                    if (conf.IsHoverEnabled)
-                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
                 }
                 else if (!IsHovered && IsActivated)                                                                             //Click
                 {
-                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2 + 2), size), Color.White);
                 }
                 else                                                                                                            //ClickHover
                 {
-                    if (conf.IsHoverEnabled)
-                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
+                    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
                 }
             }
@@ -78,14 +73,12 @@ namespace Circuit_Simulator
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
                 else if(((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))
                 {
-                    if (conf.IsHoverEnabled)
-                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
+                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
                 }
                 else
                 {
-                    if(conf.IsHoverEnabled)
-                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverCol);
+                        spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
                 }
             }

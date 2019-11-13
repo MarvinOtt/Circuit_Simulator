@@ -596,7 +596,7 @@ namespace Circuit_Simulator
         public void ComponentDrop(int dataID)
         {
             Point pos = Point.Zero;
-            Game1.simulator.screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
+            Game1.simulator.Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
             ComponentDropAtPos(dataID, pos);
         }
         public void ComponentDropAtPos(int dataID, Point pos)

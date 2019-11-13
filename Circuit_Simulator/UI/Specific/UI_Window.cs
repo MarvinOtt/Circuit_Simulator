@@ -40,7 +40,7 @@ namespace Circuit_Simulator.UI
             target = new RenderTarget2D(Game1.graphics.GraphicsDevice, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
-            Add_UI_Elements(new UI_TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, new TexButton_Conf(2))); //X Button
+            Add_UI_Elements(new UI_TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
            
             
             
@@ -193,7 +193,7 @@ namespace Circuit_Simulator.UI
 
         }
 
-        public float pointRectDist(Point p, Rectangle rec)
+        public float PointRectDist(Point p, Rectangle rec)
         {
             var cx = Math.Max(Math.Min(p.X, rec.X + rec.Width), rec.X);
             var cy = Math.Max(Math.Min(p.Y, rec.Y + rec.Height), rec.Y);
@@ -205,7 +205,7 @@ namespace Circuit_Simulator.UI
             float trans = 1.0f;
             if (UI_Handler.UI_IsWindowHide)
             {
-                float closestdist = pointRectDist(Game1.mo_states.New.Position, new Rectangle(pos, size));
+                float closestdist = PointRectDist(Game1.mo_states.New.Position, new Rectangle(pos, size));
                 trans = MathHelper.Clamp(0.0f + closestdist * 0.0035f, 0.15f, 0.5f);
             }
             spritebatch.End();
@@ -216,7 +216,7 @@ namespace Circuit_Simulator.UI
             spritebatch.Begin();
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
-            spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.fontcol);
+            spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.font_color);
 
             base.DrawSpecific(spritebatch);
 

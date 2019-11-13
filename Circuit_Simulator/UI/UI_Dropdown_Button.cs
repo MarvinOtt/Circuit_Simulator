@@ -6,30 +6,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI
 {
-    public class UI_Dropdown_Button : UI_Element
+    public class UI_Dropdown_Button : UI_Button
     {
-        Color BackgroundColor;
-        Color BorderColor;
-        Color tex_color;
+        
         Texture2D tex;
-        public bool IsHovered, IsActivated, GotActivated;
         public Point tex_pos;
-        public UI_Dropdown_Button(Point pos, Point size, Point tex_pos, Color tex_color, Texture2D tex) : base(pos, size)
+        public UI_Dropdown_Button(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, conf)
         {
-            BackgroundColor = UI_Handler.main_BG_Col;
-            BorderColor = UI_Handler.BorderColor;
+
             this.tex = tex;
             this.tex_pos = tex_pos;
-            this.tex_color = tex_color;
         }
 
         protected override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            GotActivated = false;
 
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
@@ -45,33 +40,30 @@ namespace Circuit_Simulator.UI
             }
             else
                 IsHovered = false;
-            base.UpdateSpecific();
 
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-
             base.DrawSpecific(spritebatch);
 
             if(IsActivated)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.ActivColor);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.ActiveColor);
 
             if (!IsHovered && !IsActivated)
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), tex_color);
+                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), conf.tex_color);
             else if (((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))
             {
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.main_Hover_Col);
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), tex_color);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
+                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), conf.tex_color);
             }
             else
             {
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.main_Hover_Col);
-                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), tex_color);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
+                spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), conf.tex_color);
             }
 
-            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
+            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), conf.BorderColor, 1);
            
         }
     }

@@ -73,14 +73,6 @@ namespace Circuit_Simulator.UI
                                 
 
                                 break;
-                            //case 3: //everything goes
-                         
-                                 
-                            //        value += ((char)newkeys[i]).ToString();
-
-
-
-                                break;
                             default:  
                                 break;
                         }

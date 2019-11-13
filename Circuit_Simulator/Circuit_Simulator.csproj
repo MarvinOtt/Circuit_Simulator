@@ -67,6 +67,7 @@
     <Compile Include="UI\UI_InfoBox.cs" />
     <Compile Include="UI\UI_Scrollable.cs" />
     <Compile Include="UI\UI_String.cs" />
+    <Compile Include="UI\UI_StringButton.cs" />
     <Compile Include="UI\UI_TexButton.cs" />
     <Compile Include="UI\Specific\UI_Button_Menu.cs" />
     <Compile Include="UI\Specific\UI_QuickHBElement.cs" />

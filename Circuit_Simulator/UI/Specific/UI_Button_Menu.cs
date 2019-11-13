@@ -5,57 +5,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Circuit_Simulator.UI.UI_Configs;
 
 namespace Circuit_Simulator.UI
 {
-    public class Button_Menu : UI_Element
+    public class Button_Menu : UI_Button
     {
-        public bool IsHovered, IsActivated, IsToggle;
-        private static SpriteFont font;
         string Title;
         float Title_height;
-        public int behav;
-        public Button_Menu(Point pos, Point size, string Title) : base(pos, size)
-        {
-            if (font == null)
-                font = Game1.content.Load<SpriteFont>("UI\\TB_Dropdown_font");
-            Vector2 title_dim = font.MeasureString(Title);
+        public Button_Menu(Point pos, Point size, string Title, Generic_Conf conf) : base(pos, size, conf)
+        {  
+            Vector2 title_dim = conf.font.MeasureString(Title);
             Title_height = title_dim.Y;
             if (16 + title_dim.X + 8 > size.X)
                 size.X = 8 + (int)title_dim.X + 8;
             this.Title = Title;
             this.size = size;
-            this.behav = 1;
         }
 
         protected override void UpdateSpecific()
         {
             size.X = parent.size.X;
-            Rectangle hitbox = new Rectangle(absolutpos, size);
-            if(behav == 1)
-                IsActivated = false;
-            IsToggle = false;
-            if (hitbox.Contains(Game1.mo_states.New.Position))
-            {
-                IsHovered = true;
-                if (Game1.mo_states.IsLeftButtonToggleOff())
-                {
-                    IsActivated ^= true;
-                    IsToggle = true;
-                }
-            }
-            else
-                IsHovered = false;
+            base.UpdateSpecific();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             if (IsHovered && !IsActivated)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.main_Hover_Col);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
             if(IsActivated)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), UI_Handler.ActivColor);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.ActiveColor);
 
-            spritebatch.DrawString(font, Title, new Vector2(absolutpos.X + 8, absolutpos.Y + size.Y / 2 - Title_height / 2), Color.White);
+            spritebatch.DrawString(conf.font, Title, new Vector2(absolutpos.X + 8, absolutpos.Y + size.Y / 2 - Title_height / 2), conf.font_color);
         }
     }
 }

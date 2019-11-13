@@ -78,8 +78,8 @@ namespace Circuit_Simulator.UI.Specific
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             if (IsHover)
-                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, UI_Component.height)),conf.Syscolors[1]);
-            spritebatch.DrawString(conf.font, title, absolutpos.ToVector2() + title_pos, conf.fontcol);
+                spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, UI_Component.height)), conf.HoverColor);
+            spritebatch.DrawString(conf.font, title, absolutpos.ToVector2() + title_pos, conf.font_color);
 
             base.DrawSpecific(spritebatch);
         }
