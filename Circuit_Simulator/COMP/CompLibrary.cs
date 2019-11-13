@@ -16,7 +16,7 @@ namespace Circuit_Simulator.COMP
         private const int LOADED = 2;
 
         public static List<CompLibrary> AllLibrarys = new List<CompLibrary>();
-        private List<CompData> Components;
+        public List<CompData> Components;
         public string name;
         public string SaveFile;
         public int STATE;
@@ -32,6 +32,7 @@ namespace Circuit_Simulator.COMP
 
         public void AddComponent(CompData comp)
         {
+            comp.library = this;
             Components.Add(comp);
             Sim_Component.Components_Data.Add(comp);
         }
