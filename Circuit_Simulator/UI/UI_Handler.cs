@@ -42,7 +42,7 @@ namespace Circuit_Simulator
         public static UI_InfoBox info;
         public UI_Window input;
         public UI_Libary_Window LibaryWindow;
-        public UI_Box GeneralInfoBox;
+        public static UI_Box<UI_String> GeneralInfoBox;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
