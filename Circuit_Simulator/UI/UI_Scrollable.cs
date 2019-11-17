@@ -25,10 +25,10 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateSpecific()
         {
-            if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
-                ui_elements.ForEach(x => x.GetsUpdated = true);
-            else
-                ui_elements.ForEach(x => x.GetsUpdated = false);
+            //if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
+            //    ui_elements.ForEach(x => x.GetsUpdated = true);
+            //else
+            //    ui_elements.ForEach(x => x.GetsUpdated = false);
             int minpos = ui_elements.Min(x => x.pos.Y);
             int maxpos = ui_elements.Max(x => x.pos.Y + x.size.Y);
             int ysize = maxpos - minpos;
@@ -60,9 +60,12 @@ namespace Circuit_Simulator.UI
                         ui_elements.ForEach(x => x.pos.Y -= minypos);
                 }
             }
-
-
             base.UpdateSpecific();
+        }
+
+        protected override void UpdateAlways()
+        {
+            base.UpdateAlways();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

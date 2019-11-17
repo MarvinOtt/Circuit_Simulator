@@ -47,14 +47,6 @@ namespace Circuit_Simulator
             }
         }
 
-        public override void AlwaysUpdate(bool aaa)
-        {
-            for (int i = 0; i < ui_elements.Count; ++i)
-            {
-                ui_elements[i].Update();
-            }
-        }
-
         public override void UpdatePos()
         {
             base.UpdatePos();
@@ -64,7 +56,7 @@ namespace Circuit_Simulator
             }
         }
 
-        protected override void UpdateSpecific()
+        protected override void UpdateAlways()
 	    {
             for (int i = 0; i < ui_elements.Count; ++i)
             {

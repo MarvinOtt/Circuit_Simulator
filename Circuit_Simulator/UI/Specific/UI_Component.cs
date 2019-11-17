@@ -45,8 +45,15 @@ namespace Circuit_Simulator.UI.Specific
                 }
                 IsHovered = true;
             }
-            else
+        }
+
+        protected override void UpdateAlways()
+        {
+            Rectangle hitbox = new Rectangle(absolutpos, size);
+
+            if (!hitbox.Contains(Game1.mo_states.New.Position))
                 IsHovered = false;
+            base.UpdateAlways();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

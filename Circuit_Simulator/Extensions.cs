@@ -146,5 +146,17 @@ namespace Circuit_Simulator
             bytes[bytes.Length - 1] = 0;
             return bytes;
         }
+
+        //Move Item in List
+        public static void Move<T>(this List<T> list, int oldindex, int newindex)
+        {
+            var item = list[oldindex];
+
+            list.RemoveAt(oldindex);
+
+            if (newindex > oldindex) newindex--;
+
+            list.Insert(newindex, item);
+        }
     }
 }

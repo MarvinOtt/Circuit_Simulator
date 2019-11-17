@@ -51,7 +51,7 @@ namespace Circuit_Simulator.UI
         }
 
 
-        protected override void UpdateSpecific()
+        protected override void UpdateAlways()
         {
       
             Point currentpos = Point.Zero;

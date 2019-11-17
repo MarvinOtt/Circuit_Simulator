@@ -17,7 +17,6 @@ namespace Circuit_Simulator.UI
         public Point tex_pos;
         public UI_Dropdown_Button(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
         {
-
             this.tex = tex;
             this.tex_pos = tex_pos;
         }
@@ -38,9 +37,14 @@ namespace Circuit_Simulator.UI
                     IsActivated = false;
                 }
             }
-            else
-                IsHovered = false;
+        }
+        protected override void UpdateAlways()
+        {
+            Rectangle hitbox = new Rectangle(absolutpos, size);
 
+            if (!hitbox.Contains(Game1.mo_states.New.Position))
+                IsHovered = false;
+            base.UpdateAlways();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

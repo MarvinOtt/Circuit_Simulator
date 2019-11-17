@@ -15,7 +15,7 @@ namespace Circuit_Simulator.UI.Specific
         public string title;
         public Generic_Conf conf;
         public UI_List<T> Components;
-        public bool IsFold, IsHover;
+        private bool IsFold, IsHover2;
         Vector2 title_pos;
 
         public UI_Categorie(string title, Generic_Conf conf ) : base(Point.Zero)
@@ -41,7 +41,7 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void ChangedUpdate2False()
         {
-            IsHover = false;
+            IsHover2 = false;
             base.ChangedUpdate2False();
         }
 
@@ -62,23 +62,30 @@ namespace Circuit_Simulator.UI.Specific
             //{
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
-                IsHover = true;
+                IsHover2 = true;
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     IsFold ^= true;
                     Components.GetsUpdated = Components.GetsDrawn = !IsFold;
                 }
             }
-            else
-                IsHover = false;
             //}
 
             base.UpdateSpecific();
         }
 
+        protected override void UpdateAlways()
+        {
+            Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, height));
+
+            if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed)
+                IsHover2 = false;
+            base.UpdateAlways();
+        }
+
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            if (IsHover)
+            if (IsHover2)
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, height)), conf.HoverColor);
             spritebatch.DrawString(conf.font, title, absolutpos.ToVector2() + title_pos, conf.font_color);
 

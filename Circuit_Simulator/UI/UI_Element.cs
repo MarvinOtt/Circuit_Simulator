@@ -54,10 +54,6 @@ namespace Circuit_Simulator
             // Should be overridden
         }
 
-        public virtual void AlwaysUpdate(bool aaa)
-        {
-            // Should be overridden
-        }
 
         public virtual void UpdatePos()
         {
@@ -83,12 +79,13 @@ namespace Circuit_Simulator
 
             if (_GetsUpdated && !(IsTypeOfWindow && UI_Handler.UI_IsWindowHide))
             {
-                if((!UI_Handler.UI_Element_Pressed || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this))
+                if((!UI_Handler.UI_Element_Pressed/* || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)*/) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this))
                     UpdateSpecific();
+                UpdateAlways();
                 if(UpdateAndDrawChild)
                     child?.Update();
                 //AlwaysUpdate(aaa && _GetsUpdated);
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && ((Game1.mo_states.Old.LeftButton == ButtonState.Pressed || Game1.mo_states.Old.RightButton == ButtonState.Pressed) || (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed)))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))// && ((Game1.mo_states.Old.LeftButton == ButtonState.Pressed || Game1.mo_states.Old.RightButton == ButtonState.Pressed) || (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed)))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
                     UI_Handler.UI_Active_State = 1;
@@ -104,16 +101,22 @@ namespace Circuit_Simulator
             // Should be overridden
         }
 
-	    public void Draw(SpriteBatch spritebatch)
+        protected virtual void UpdateAlways()
         {
-            absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            if (parent != null && CanBeSizeRelated)
-            {
-                if (pos.X < 0)
-                    absolutpos.X += parent.size.X;
-                if (pos.Y < 0)
-                    absolutpos.Y += parent.size.Y;
-            }
+            // Should be overridden
+        }
+
+        public void Draw(SpriteBatch spritebatch)
+        {
+            UpdatePos();
+            //absolutpos = parent == null ? pos : pos + parent.absolutpos;
+            //if (parent != null && CanBeSizeRelated)
+            //{
+            //    if (pos.X < 0)
+            //        absolutpos.X += parent.size.X;
+            //    if (pos.Y < 0)
+            //        absolutpos.Y += parent.size.Y;
+            //}
             if (_GetsDrawn)
             {
                 DrawSpecific(spritebatch);

@@ -114,7 +114,7 @@ namespace Circuit_Simulator
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Point(0, 25));
             string[] ToolsButton_Names = new string[] { "Libaries", "Test", "Test" };
             for (int i = 0; i < ToolsButton_Names.Length; ++i)
-                ButtonMenu_Tools.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf2));
+                ButtonMenu_Tools.Add_UI_Elements(new Button_Menu(new Point(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf1));
 
             ButtonMenu_Help = new UI_TB_Dropdown(Toolbar.ui_elements[4].pos + new Point(0, 25));
             string[] HelpButton_Names = new string[] { "Test", "Test", "Test" };
@@ -161,10 +161,9 @@ namespace Circuit_Simulator
             info.values.Add_UI_Elements(new UI_String(new Point(0, 0), new Point(0, 0), componentconf));
 
             //input Box
-            input = new UI_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.10)), "Value", new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.1)), componentconf, false);
-            input.Add_UI_Elements(new UI_ValueInput(new Point(input.size.X / 2 - input.size.X / 4, 20 + input.size.Y / 2 - input.size.Y / 4), new Point(input.size.X / 2, input.size.Y / 2 -20 -1), componentconf, 1));
-            input.GetsDrawn = input.GetsUpdated = false;
-            InitializeUISettings(spriteBatch);
+            //input = new UI_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.10)), "Value", new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.1)), componentconf, false);
+            //input.Add_UI_Elements(new UI_ValueInput(new Point(input.size.X / 2 - input.size.X / 4, 20 + input.size.Y / 2 - input.size.Y / 4), new Point(input.size.X / 2, input.size.Y / 2 -20 -1), componentconf, 1));
+            //input.GetsDrawn = input.GetsUpdated = false;
 
             //GeneralInfo Box
             GeneralInfoBox = new UI_Box<UI_String>(new Point(-1, Game1.Screenheight - 25 + 1), new Point(Game1.Screenwidth + 2, 25));
@@ -174,6 +173,11 @@ namespace Circuit_Simulator
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(200, 500),"Libaries", new Point(200, 200), componentconf, true);
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
+
+
+
+
+            InitializeUISettings(spriteBatch);
         }
 
         public static void InitComponents4CompBox()
@@ -216,6 +220,15 @@ namespace Circuit_Simulator
                 else
                     current.IsActivated = ComponentBox.GetsUpdated;
             });
+            // Config for opening Library Window
+            ButtonMenu_Tools.ui_elements[0].UpdateFunctions.Add(delegate ()
+            {
+                Button_Menu current = (Button_Menu)ButtonMenu_Tools.ui_elements[0];
+                if (current.IsToggle)
+                    LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = current.IsActivated;
+                else
+                    current.IsActivated = LibaryWindow.GetsUpdated;
+            });
             ButtonMenu_View.ui_elements[1].UpdateFunctions.Add(delegate ()
             {
                 Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[1];
@@ -239,7 +252,7 @@ namespace Circuit_Simulator
                     // Deactivate current active button when something else got pressed
                     bool IsInOther =  new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
                     IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(Game1.mo_states.New.Position);
-                    if (cur.IsActivated && Game1.mo_states.IsLeftButtonToggleOff() && !IsInOther)
+                    if (cur.IsActivated && (Game1.mo_states.IsLeftButtonToggleOff() || Game1.mo_states.IsLeftButtonToggleOn()) && !IsInOther)
                         cur.IsActivated = false;
                 });
             }
@@ -307,13 +320,12 @@ namespace Circuit_Simulator
                 //return;
             }
 
-            input.UpdateMain();
-            LibaryWindow.UpdateMain();
+            //input.UpdateMain();
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].UpdateMain();
             wire_ddbl.UpdateMain();
+            UI_Window.All_Update();
             info.UpdateMain();
-            ComponentBox.UpdateMain();
             QuickHotbar.UpdateMain();
             Toolbar.UpdateMain();
             GeneralInfoBox.UpdateMain();
@@ -327,13 +339,12 @@ namespace Circuit_Simulator
             GeneralInfoBox.Draw(spritebatch);
             Toolbar.Draw(spritebatch);
             QuickHotbar.Draw(spritebatch);
-            ComponentBox.Draw(spritebatch);
+            UI_Window.All_Draw(spritebatch);
             info.Draw(spritebatch);
             wire_ddbl.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
-            LibaryWindow.Draw(spritebatch);
-            input.Draw(spritebatch);
+            //input.Draw(spritebatch);
             dragcomp.Draw(spritebatch);
         }
     }

@@ -44,6 +44,13 @@ namespace Circuit_Simulator.UI
                 IsHovered = false;
         }
 
+        protected override void UpdateAlways()
+        {
+            Rectangle hitbox = new Rectangle(absolutpos, size);
+            if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed)
+                IsHovered = false;
+        }
+
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.BGColor);
