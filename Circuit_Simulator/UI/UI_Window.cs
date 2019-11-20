@@ -43,7 +43,7 @@ namespace Circuit_Simulator.UI
             target = new RenderTarget2D(Game1.graphics.GraphicsDevice, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
-            Add_UI_Elements(new UI_TexButton(new Pos(-18, 2, ORIGIN.TOPRIGHT), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
+            Add_UI_Elements(new UI_TexButton(new Pos(-18, 2, ORIGIN.TR), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
             All_Windows.Add(this);
             
             

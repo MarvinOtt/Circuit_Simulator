@@ -42,10 +42,10 @@ namespace Circuit_Simulator
 
                 #region Save Library & Comp Table
 
-                stream.Write(BitConverter.GetBytes(CompLibrary.AllLibrarys.Count), 0, 4);
-                for (int i = 0; i < CompLibrary.AllLibrarys.Count; ++i)
+                stream.Write(BitConverter.GetBytes(CompLibrary.AllLibraries.Count), 0, 4);
+                for (int i = 0; i < CompLibrary.AllLibraries.Count; ++i)
                 {
-                    bytearray = CompLibrary.AllLibrarys[i].name.GetBytes();
+                    bytearray = CompLibrary.AllLibraries[i].name.GetBytes();
                     stream.Write(bytearray, 0, bytearray.Length);
                 }
                 stream.Write(BitConverter.GetBytes(Sim_Component.Components_Data.Count), 0, 4);
@@ -56,7 +56,7 @@ namespace Circuit_Simulator
                 }
                 for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
                 {
-                    int LibraryID = CompLibrary.AllLibrarys.IndexOf(Sim_Component.Components_Data[i].library);
+                    int LibraryID = CompLibrary.AllLibraries.IndexOf(Sim_Component.Components_Data[i].library);
                     stream.Write(BitConverter.GetBytes(LibraryID), 0, 4);
                 }
 
@@ -213,14 +213,14 @@ namespace Circuit_Simulator
                             bool AllLibrarysExist = true, AllComponentExist = true;
                             for(int i = 0; i < librarycount; ++i)
                             {
-                                if (CompLibrary.AllLibrarys.Find(x => x.name == librarynames[i]) == null)
+                                if (CompLibrary.AllLibraries.Find(x => x.name == librarynames[i]) == null)
                                     AllLibrarysExist = false;
                             }
                             if(AllLibrarysExist)
                             {
                                 for (int i = 0; i < libcompcount; ++i)
                                 {
-                                    CompLibrary curlibrary = CompLibrary.AllLibrarys.Find(x => x.name == librarynames[complibraryIDs[i]]);
+                                    CompLibrary curlibrary = CompLibrary.AllLibraries.Find(x => x.name == librarynames[complibraryIDs[i]]);
                                     if (curlibrary.Components.Find(x => x.name == libcompnames[i]) == null)
                                         AllComponentExist = false;
                                 }
@@ -232,7 +232,7 @@ namespace Circuit_Simulator
                             int[] compmask = new int[libcompcount];
                             for(int i = 0; i < libcompcount; ++i)
                             {
-                                CompLibrary library = CompLibrary.AllLibrarys.Find(x => x.name == librarynames[complibraryIDs[i]]);
+                                CompLibrary library = CompLibrary.AllLibraries.Find(x => x.name == librarynames[complibraryIDs[i]]);
                                 int compdataID = Sim_Component.Components_Data.FindIndex(x => x.library == library && x.name == libcompnames[i]);
                                 compmask[i] = compdataID;
                             }

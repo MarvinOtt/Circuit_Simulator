@@ -28,16 +28,19 @@ namespace Circuit_Simulator.UI
 
         public override void Add_UI_Elements(params T[] elements)
         {
-            elements.ForEach(x => x.parent = this);
-            ui_elements.AddRange(elements);
-            size.X = ui_elements.Max(x => x.size.X);
-            size.Y = ui_elements.Sum(x => x.size.Y);
+            if (elements.Length > 0)
+            {
+                elements.ForEach(x => x.parent = this);
+                ui_elements.AddRange(elements);
+                size.X = ui_elements.Max(x => x.size.X);
+                size.Y = ui_elements.Sum(x => x.size.Y);
+            }
         }
 
         public override void UpdatePos()
         {
             base.UpdatePos();
-            Point currentpos = Point.Zero;
+            Point currentpos = new Point(0, 0);
             for (int i = 0; i < ui_elements.Count; ++i)
             {
                 ui_elements[i].pos.pos = currentpos;

@@ -31,7 +31,26 @@ namespace Circuit_Simulator.UI.Specific
         public void Add_Categories(params UI_Categorie<UI_Component>[] cats)
         {
             cats.ForEach(x => x.SetXSize(size.X - bezelsize * 2));
+            for(int i = 0; i < cats.Length; ++i)
+            {
+                for (int j = 0; j < cats[i].Components.ui_elements.Count; ++j)
+                {
+                    cats[i].Components.ui_elements[j].GotActivatedLeft += PlaceComp;
+                }
+            }
             Catagories.ui_elements[0].Add_UI_Elements(cats);
+        }
+
+        public void PlaceComp(object sender)
+        {
+            UI_Component comp = sender as UI_Component;
+            UI_Handler.dragcomp.GetsUpdated = true;
+            UI_Handler.dragcomp.GetsDrawn = true;
+            UI_Handler.dragcomp.comp = comp;
+            UI_Handler.ZaWarudo = UI_Handler.dragcomp;
+            UI_Handler.UI_Active_State = UI_Handler.UI_Active_CompDrag;
+            Game1.simulator.sim_comp.InizializeComponentDrag(comp.ID);
+            System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
         }
 
         protected override void UpdateSpecific()
@@ -44,7 +63,6 @@ namespace Circuit_Simulator.UI.Specific
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            UI_Element ee = this;
 
             base.DrawSpecific(spritebatch);
           

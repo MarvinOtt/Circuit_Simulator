@@ -42,7 +42,7 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public static UI_InfoBox info;
         public UI_Window input;
-        public UI_Libary_Window LibaryWindow;
+        public static UI_Libary_Window LibaryWindow;
         public static UI_Box<UI_String> GeneralInfoBox;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
@@ -172,8 +172,9 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(150, 0), Point.Zero, componentconf));
 
             //Libary Window
-            LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(200, 500),"Libaries", new Point(200, 200), componentconf, true);
+            LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(300, 200), componentconf, true);
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
+            
 
 
 
@@ -181,8 +182,14 @@ namespace Circuit_Simulator
             InitializeUISettings(spriteBatch);
         }
 
-        public static void InitComponents4CompBox()
+        public static void InitComponents()
         {
+            LibaryWindow.Libraries.ui_elements[0].ui_elements.Clear();
+            for(int i = 0; i < CompLibrary.AllLibraries.Count; ++i)
+            {
+                LibaryWindow.Add_Library(CompLibrary.AllLibraries[i]);
+            }
+
             HashSet<string> categorys = new HashSet<string>();
             List<CompData> comps = Sim_Component.Components_Data;
             for (int i = 0; i < comps.Count; ++i)
@@ -197,7 +204,7 @@ namespace Circuit_Simulator
             List<string> categorys_list = categorys.ToList();
             for(int i = 0; i < comps.Count; ++i)
             {
-                comp_cats[categorys_list.IndexOf(comps[i].catagory)].AddComponents(new UI_Component(new Point(0, 20), comps[i].name, i, componentconf));
+                comp_cats[categorys_list.IndexOf(comps[i].catagory)].AddComponents(new UI_Component(new Pos(0), new Point(0, 20), comps[i].name, i, 20, componentconf));
             }
             ComponentBox.Catagories.ui_elements[0].ui_elements.Clear();
             ComponentBox.Add_Categories(comp_cats);
@@ -265,11 +272,11 @@ namespace Circuit_Simulator
                 UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
                 current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
             });
-            ((UI_TexButton)QuickHotbar.ui_elements[5]).GotActivated += delegate ()
+            ((UI_TexButton)QuickHotbar.ui_elements[5]).GotActivatedLeft += delegate (object sender)
             {
                 ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = false;
             };
-            ((UI_TexButton)QuickHotbar.ui_elements[4]).GotActivated += delegate ()
+            ((UI_TexButton)QuickHotbar.ui_elements[4]).GotActivatedLeft += delegate (object sender)
             {
                 ((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = false;
             };

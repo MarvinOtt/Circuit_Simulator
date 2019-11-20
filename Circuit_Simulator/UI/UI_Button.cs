@@ -15,8 +15,9 @@ namespace Circuit_Simulator.UI
         public Generic_Conf conf;
         public bool IsHovered, IsActivated, IsToggle, DrawBorder;
 
-        public delegate void Button_Activated_Handler();
-        public event Button_Activated_Handler GotActivated = delegate { };
+        public delegate void Button_Activated_Handler(object sender);
+        public event Button_Activated_Handler GotActivatedLeft = delegate { };
+        public event Button_Activated_Handler GotActivatedRight = delegate { };
 
         public UI_Button(Pos pos, Point size, bool DrawBorder, Generic_Conf conf) : base(pos, size)
         {
@@ -38,7 +39,12 @@ namespace Circuit_Simulator.UI
                     IsActivated ^= true;
                     IsToggle = true;
                     if (IsActivated)
-                        GotActivated();
+                        GotActivatedLeft(this);
+                }
+
+                if (Game1.mo_states.IsRightButtonToggleOff())
+                {
+                    GotActivatedRight(this);
                 }
             }
             else

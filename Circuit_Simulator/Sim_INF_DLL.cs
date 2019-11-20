@@ -72,7 +72,7 @@ namespace Circuit_Simulator
         public static void LoadLibrarys(params string[] paths)
         {
             Sim_Component.Components_Data.Clear();
-            CompLibrary.AllLibrarys.Clear();
+            CompLibrary.AllLibraries.Clear();
 
             for(int i = 0; i < paths.Length; ++i)
             {
@@ -82,7 +82,7 @@ namespace Circuit_Simulator
                     newlibrary.Load();
                 }
             }
-            UI_Handler.InitComponents4CompBox();
+            UI_Handler.InitComponents();
             GenerateDllCodeAndCompile();
         }
 
