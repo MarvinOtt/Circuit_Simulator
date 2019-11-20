@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.Specific
 {
@@ -18,11 +19,11 @@ namespace Circuit_Simulator.UI.Specific
         private bool IsFold, IsHover2;
         Vector2 title_pos;
 
-        public UI_Categorie(string title, Generic_Conf conf ) : base(Point.Zero)
+        public UI_Categorie(string title, Generic_Conf conf ) : base(Pos.Zero)
         {
             this.title = title;
             this.conf = conf;
-            Components = new UI_List<T>(new Point(0, height), false);
+            Components = new UI_List<T>(new Pos(0, height), false);
             Add_UI_Elements(Components);
             Vector2 titlesize = conf.font.MeasureString(title);
             title_pos = new Vector2(4, (int)(size.Y / 2 - titlesize.Y / 2));

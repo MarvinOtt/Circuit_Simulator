@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -13,13 +14,13 @@ namespace Circuit_Simulator.UI
         Color BackgroundColor;
         Color BorderColor;
 
-        public UI_TB_Dropdown(Point pos) : base(pos)
+        public UI_TB_Dropdown(Pos pos) : base(pos)
         {
             BackgroundColor = new Color(new Vector3(0.08f));
             BorderColor = new Color(new Vector3(0.25f));
         }
 
-        public UI_TB_Dropdown(Point pos, Point size) : base(pos, size)
+        public UI_TB_Dropdown(Pos pos, Point size) : base(pos, size)
         {
             BackgroundColor = new Color(new Vector3(0.08f)); 
             BorderColor = new Color(new Vector3(0.25f));

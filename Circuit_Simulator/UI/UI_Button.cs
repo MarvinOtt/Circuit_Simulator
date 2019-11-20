@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -17,7 +18,7 @@ namespace Circuit_Simulator.UI
         public delegate void Button_Activated_Handler();
         public event Button_Activated_Handler GotActivated = delegate { };
 
-        public UI_Button(Point pos, Point size, bool DrawBorder, Generic_Conf conf) : base(pos, size)
+        public UI_Button(Pos pos, Point size, bool DrawBorder, Generic_Conf conf) : base(pos, size)
         {
             this.DrawBorder = DrawBorder;
             this.conf = conf;

@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator
 {
@@ -16,7 +17,7 @@ namespace Circuit_Simulator
 	    public Texture2D tex;
 	    public Point tex_pos;
 
-        public UI_TexButton(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
+        public UI_TexButton(Pos pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
         {
             this.tex = tex;
             this.tex_pos = tex_pos;

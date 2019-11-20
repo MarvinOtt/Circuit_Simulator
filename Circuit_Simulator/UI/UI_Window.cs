@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -30,7 +31,7 @@ namespace Circuit_Simulator.UI
         bool IsGrab;
         Point Grabpos;
 
-        public UI_Window(Point pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size)
+        public UI_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size)
         {
             IsTypeOfWindow = true;
             this.IsResizeable = IsResizeable;
@@ -42,7 +43,7 @@ namespace Circuit_Simulator.UI
             target = new RenderTarget2D(Game1.graphics.GraphicsDevice, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
-            Add_UI_Elements(new UI_TexButton(new Point(-18, 2), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
+            Add_UI_Elements(new UI_TexButton(new Pos(-18, 2, ORIGIN.TOPRIGHT), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
             All_Windows.Add(this);
             
             
@@ -88,7 +89,7 @@ namespace Circuit_Simulator.UI
             if (Grabbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
             {
                 IsGrab = true;
-                Grabpos = Game1.mo_states.New.Position - pos;
+                Grabpos = Game1.mo_states.New.Position - absolutpos;
                 System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
             }
             if (IsGrab && Game1.mo_states.IsLeftButtonToggleOff())
@@ -98,7 +99,7 @@ namespace Circuit_Simulator.UI
             }
             if (IsGrab)
             {
-                pos = Game1.mo_states.New.Position - Grabpos;
+                pos.pos = Game1.mo_states.New.Position - Grabpos;
             }
             if (pos.X < 0)
                 pos.X = 0;
@@ -108,7 +109,7 @@ namespace Circuit_Simulator.UI
                 pos.Y = 0;
             if (pos.Y + headheight > Game1.Screenheight)
                 pos.Y = Game1.Screenheight - headheight;
-            absolutpos = pos;
+            absolutpos = pos.pos;
 
             int RSsize = 8;
             int RSsize2 = RSsize * 2;
@@ -245,29 +246,30 @@ namespace Circuit_Simulator.UI
             float trans = 1.0f;
             if (UI_Handler.UI_IsWindowHide)
             {
-                float closestdist = PointRectDist(Game1.mo_states.New.Position, new Rectangle(pos, size));
+                float closestdist = PointRectDist(Game1.mo_states.New.Position, new Rectangle(pos.pos, size));
                 trans = MathHelper.Clamp(0.0f + closestdist * 0.0035f, 0.15f, 0.5f);
             }
             spritebatch.End();
+            Point oldabsolutepos = absolutpos;
             absolutpos = Point.Zero;
 
 
             Game1.graphics.GraphicsDevice.SetRenderTarget(target);
             spritebatch.Begin();
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
-            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
-            spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.font_color);
+            spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, size), BackgroundColor);
+            spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
+            spritebatch.DrawString(conf.font, Title, Vector2.Zero + Title_pos, conf.font_color);
 
             base.DrawSpecific(spritebatch);
 
-            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
+            spritebatch.DrawHollowRectangle(new Rectangle(Point.Zero, size), BorderColor, 1);
             spritebatch.End();
 
             Game1.graphics.GraphicsDevice.SetRenderTarget(null);
 
-
+            absolutpos = oldabsolutepos;
             spritebatch.Begin();
-            spritebatch.Draw(target, new Rectangle(pos, size), new Rectangle(Point.Zero, size), Color.White * trans);
+            spritebatch.Draw(target, new Rectangle(absolutpos, size), new Rectangle(Point.Zero, size), Color.White * trans);
 
         }
     }

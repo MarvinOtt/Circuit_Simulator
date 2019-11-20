@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -20,7 +21,7 @@ namespace Circuit_Simulator.UI
         Rectangle hitbox;
         Keys[] newkeys;
         Keys[] oldkeys;
-        public UI_ValueInput(Point pos, Point size, Generic_Conf conf, int inputtype) : base(pos, size)
+        public UI_ValueInput(Pos pos, Point size, Generic_Conf conf, int inputtype) : base(pos, size)
         {
             this.conf = conf;
             this.inputtype = inputtype;

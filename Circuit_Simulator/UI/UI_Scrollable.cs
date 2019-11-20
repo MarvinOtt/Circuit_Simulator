@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -12,7 +13,7 @@ namespace Circuit_Simulator.UI
     {
         private RenderTarget2D target;
 
-        public UI_Scrollable(Point pos, Point size) : base(pos, size)
+        public UI_Scrollable(Pos pos, Point size) : base(pos, size)
         {
             target = new RenderTarget2D(Game1.graphics.GraphicsDevice, 1000, 1000);
         }

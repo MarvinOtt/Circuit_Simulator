@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -15,7 +16,7 @@ namespace Circuit_Simulator.UI
         
         Texture2D tex;
         public Point tex_pos;
-        public UI_Dropdown_Button(Point pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
+        public UI_Dropdown_Button(Pos pos, Point size, Point tex_pos, Texture2D tex, Generic_Conf conf) : base(pos, size, false, conf)
         {
             this.tex = tex;
             this.tex_pos = tex_pos;

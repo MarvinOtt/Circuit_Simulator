@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.Specific
 {
@@ -14,10 +15,10 @@ namespace Circuit_Simulator.UI.Specific
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Catagories;
         public static Rectangle cathitbox;
 
-        public UI_ComponentBox(Point pos, Point size, string title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size, title, minsize, conf, IsResizeable)
+        public UI_ComponentBox(Pos pos, Point size, string title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size, title, minsize, conf, IsResizeable)
         {
-            Catagories = new UI_Scrollable<UI_List<UI_Categorie<UI_Component>>>(new Point(bezelsize, 50), Point.Zero);
-            Catagories.Add_UI_Elements(new UI_List<UI_Categorie<UI_Component>>(Point.Zero, false));
+            Catagories = new UI_Scrollable<UI_List<UI_Categorie<UI_Component>>>(new Pos(bezelsize, 50), Point.Zero);
+            Catagories.Add_UI_Elements(new UI_List<UI_Categorie<UI_Component>>(Pos.Zero, false));
             Add_UI_Elements(Catagories);
         }
 
@@ -43,6 +44,8 @@ namespace Circuit_Simulator.UI.Specific
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
+            UI_Element ee = this;
+
             base.DrawSpecific(spritebatch);
           
         }

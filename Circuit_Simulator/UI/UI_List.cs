@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -14,11 +15,11 @@ namespace Circuit_Simulator.UI
         Color BackgroundCol;
         public Point ScrollPosOrigin, ScrollSize;
 
-        public UI_List(Point pos, bool CanBeSizeRelated) : base(pos)
+        public UI_List(Pos pos, bool CanBeSizeRelated) : base(pos)
         {
             this.CanBeSizeRelated = CanBeSizeRelated;
         }
-        public UI_List(Point pos, Color backgroundcol, bool CanBeSizeRelated) : base(pos)
+        public UI_List(Pos pos, Color backgroundcol, bool CanBeSizeRelated) : base(pos)
         {
             DrawBackground = true;
             BackgroundCol = backgroundcol;
@@ -39,7 +40,7 @@ namespace Circuit_Simulator.UI
             Point currentpos = Point.Zero;
             for (int i = 0; i < ui_elements.Count; ++i)
             {
-                ui_elements[i].pos = currentpos;
+                ui_elements[i].pos.pos = currentpos;
                 ui_elements[i].UpdatePos();
                 currentpos.Y += ui_elements[i].size.Y;
             }
@@ -57,7 +58,7 @@ namespace Circuit_Simulator.UI
             Point currentpos = Point.Zero;
             for (int i = 0; i < ui_elements.Count; ++i)
             {
-                ui_elements[i].pos = currentpos;
+                ui_elements[i].pos.pos = currentpos;
                 ui_elements[i].Update();
                 currentpos.Y += ui_elements[i].size.Y;
             }

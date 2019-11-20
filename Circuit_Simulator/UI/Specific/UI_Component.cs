@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.Specific
 {
@@ -14,7 +15,7 @@ namespace Circuit_Simulator.UI.Specific
         public int ID;
         //Vector2 text_pos;
 
-        public UI_Component(Point size, string name, int ID, Generic_Conf conf) : base(Point.Zero, size, name, false, conf)
+        public UI_Component(Point size, string name, int ID, Generic_Conf conf) : base(Pos.Zero, size, name, false, conf)
         {
             this.ID = ID;
             //Vector2 textsize = conf.font.MeasureString(name);

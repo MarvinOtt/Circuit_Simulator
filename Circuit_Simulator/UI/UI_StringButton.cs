@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -13,7 +14,7 @@ namespace Circuit_Simulator.UI
     {
         public string text;
         public Vector2 text_dim;
-        public UI_StringButton(Point pos, Point size, string text, bool DrawBorder, Generic_Conf conf) : base(pos, size, DrawBorder, conf)
+        public UI_StringButton(Pos pos, Point size, string text, bool DrawBorder, Generic_Conf conf) : base(pos, size, DrawBorder, conf)
         {
             this.text = text;
             text_dim = conf.font.MeasureString(text);

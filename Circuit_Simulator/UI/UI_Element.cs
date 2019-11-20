@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator
 {
     public class UI_Element
     {
-	    public Point pos, size;
+        public Pos pos;
+        public Point size;
 	    public Point absolutpos;
         private bool _GetsDrawn = true, _GetsUpdated = true;
         public bool GetsDrawn { get { return _GetsDrawn; } set { _GetsDrawn = value; } }
@@ -26,12 +28,30 @@ namespace Circuit_Simulator
             }
         }
         public bool CanBeSizeRelated = true, IsTypeOfWindow, UpdateAndDrawChild;
-        public UI_Element parent;
-        public UI_Element child;
+        private UI_Element _parent;
+        private UI_Element _child;
+
+        public UI_Element parent
+        {
+            get { return _parent; }
+            set
+            {
+                SetParent(value);
+            }
+        }
+        public UI_Element child
+        {
+            get { return _child; }
+            set
+            {
+                SetChild(value);
+            }
+        }
+
         public List<Action> UpdateFunctions;
 	    public List<Action> DrawFunctions;
 
-        public UI_Element(Point pos, Point size)
+        public UI_Element(Pos pos, Point size)
 	    {
 		    this.pos = pos;
             this.size = size;
@@ -39,7 +59,7 @@ namespace Circuit_Simulator
 		    DrawFunctions = new List<Action>();
         }
 
-	    public UI_Element(Point pos, Point size, UI_Element parent)
+	    public UI_Element(Pos pos, Point size, UI_Element parent)
 	    {
 		    this.pos = pos;
             this.size = size;
@@ -54,18 +74,23 @@ namespace Circuit_Simulator
             // Should be overridden
         }
 
+        public void SetChild(UI_Element child)
+        {
+            _child = child;
+            if(_child != null)
+                _child.parent = this;
+        }
+        public void SetParent(UI_Element parent)
+        {
+            _parent = parent;
+            pos.SetParentIfNotAlreadySet(parent);
+        }
 
         public virtual void UpdatePos()
         {
-            absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            if (parent != null && CanBeSizeRelated)
-            {
-                if (pos.X < 0)
-                    absolutpos.X += parent.size.X;
-                if (pos.Y < 0)
-                    absolutpos.Y += parent.size.Y;
-            }
-            child?.UpdatePos();
+            pos.Update();
+            absolutpos = parent == null ? pos.pos : pos.pos + parent.absolutpos;
+            _child?.UpdatePos();
         }
 
         public void UpdateMain()
@@ -83,7 +108,7 @@ namespace Circuit_Simulator
                     UpdateSpecific();
                 UpdateAlways();
                 if(UpdateAndDrawChild)
-                    child?.Update();
+                    _child?.Update();
                 //AlwaysUpdate(aaa && _GetsUpdated);
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))// && ((Game1.mo_states.Old.LeftButton == ButtonState.Pressed || Game1.mo_states.Old.RightButton == ButtonState.Pressed) || (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed)))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
                     UI_Handler.UI_Element_Pressed = true;

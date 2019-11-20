@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -13,7 +14,7 @@ namespace Circuit_Simulator.UI
     {
         string Title;
         float Title_height;
-        public Button_Menu(Point pos, Point size, string Title, Generic_Conf conf) : base(pos, size, false, conf)
+        public Button_Menu(Pos pos, Point size, string Title, Generic_Conf conf) : base(pos, size, false, conf)
         {  
             Vector2 title_dim = conf.font.MeasureString(Title);
             Title_height = title_dim.Y;

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.Specific
 {
@@ -13,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
     {
         public UI_Component comp;
 
-        public UI_Drag_Comp() : base(Point.Zero, Point.Zero)
+        public UI_Drag_Comp() : base(Pos.Zero, Point.Zero)
         {
             GetsDrawn = false;
             GetsUpdated = false;
@@ -21,7 +22,7 @@ namespace Circuit_Simulator.UI.Specific
 
         protected override void UpdateSpecific()
         {
-            pos = Game1.mo_states.New.Position;
+            pos.pos = Game1.mo_states.New.Position;
             UI_Handler.UI_Active_State = 2;
             if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
             {

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
@@ -14,7 +15,7 @@ namespace Circuit_Simulator.UI
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
 
-        public UI_Box(Point pos, Point size) : base(pos, size)
+        public UI_Box(Pos pos, Point size) : base(pos, size)
         {
 
         }

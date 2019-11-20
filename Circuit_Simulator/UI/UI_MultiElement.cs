@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator
 {
@@ -12,15 +13,15 @@ namespace Circuit_Simulator
     {
 	    public List<T> ui_elements;
 
-        public UI_MultiElement(Point pos) : base(pos, Point.Zero)
+        public UI_MultiElement(Pos pos) : base(pos, Point.Zero)
         {
 			ui_elements = new List<T>();
         }
-        public UI_MultiElement(Point pos, Point size) : base(pos, size)
+        public UI_MultiElement(Pos pos, Point size) : base(pos, size)
         {
             ui_elements = new List<T>();
         }
-        public UI_MultiElement(Point pos, Point size, UI_Element parent, Color bgc) : base(pos, size, parent)
+        public UI_MultiElement(Pos pos, Point size, UI_Element parent, Color bgc) : base(pos, size, parent)
 	    {
 		    ui_elements = new List<T>();
 	    }
