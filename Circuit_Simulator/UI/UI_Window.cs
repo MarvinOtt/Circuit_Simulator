@@ -23,12 +23,14 @@ namespace Circuit_Simulator.UI
         Vector2 Title_pos;
         public Point minsize;
         Point oldrightborderpos;
+        Point PreSnapSize;
         static Texture2D tex;
         public static int headheight = 20;
         public static int bezelsize = 10;
         public int resize_type;
         public bool IsResizeable;
         bool IsGrab;
+        bool Snap, Snapleft, Snapright, Snapbottom;
         Point Grabpos;
 
         public UI_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size)
@@ -38,6 +40,7 @@ namespace Circuit_Simulator.UI
             this.minsize = minsize;
             this.Title = Title;
             this.conf = conf;
+            this.PreSnapSize = size;
             Vector2 title_dim = conf.font.MeasureString(Title);
             Title_pos = new Vector2(5, headheight / 2 - title_dim.Y / 2);
             target = new RenderTarget2D(Game1.graphics.GraphicsDevice, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
@@ -45,13 +48,13 @@ namespace Circuit_Simulator.UI
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
             Add_UI_Elements(new UI_TexButton(new Pos(-18, 2, ORIGIN.TR), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
             All_Windows.Add(this);
-            
-            
+
+
         }
 
         public static void All_Update()
         {
-            for(int i = 0; i < All_Windows.Count; ++i)
+            for (int i = 0; i < All_Windows.Count; ++i)
             {
                 All_Windows[i].UpdateMain();
             }
@@ -78,10 +81,74 @@ namespace Circuit_Simulator.UI
                 size.Y = Game1.Screenheight;
 
             Rectangle Hitbox = new Rectangle(absolutpos, size);
-            if(Hitbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
+            if (Hitbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
             {
                 int curindex = All_Windows.IndexOf(this);
                 All_Windows.Move(curindex, 0);
+            }
+
+            // Handling Snapping of the Window
+            if (!Snap)
+            {
+                //Snapleft
+                PreSnapSize = size;
+                if (IsGrab && Game1.mo_states.New.Position.X < 2 && Game1.mo_states.IsLeftButtonToggleOff())
+                {
+
+                    size.Y = Game1.Screenheight - (UI_Handler.buttonheight + UI_Handler.sqarebuttonwidth) - 24;
+                    size.X = minsize.X;
+
+                    pos.X = 0;
+                    pos.Y = UI_Handler.buttonheight + UI_Handler.sqarebuttonwidth;
+                    Resize();
+                    Snap = Snapleft = true;
+                    IsGrab = false;
+
+
+
+                }
+                //Snapright
+                else if (IsGrab && Game1.mo_states.New.Position.X > Game1.Screenwidth - 2 && Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    size.Y = Game1.Screenheight - (UI_Handler.buttonheight + UI_Handler.sqarebuttonwidth) - 24;
+                    size.X = minsize.X;
+
+                    pos.X = Game1.Screenwidth - size.X;
+                    pos.Y = UI_Handler.buttonheight + UI_Handler.sqarebuttonwidth;
+                    Resize();
+                    Snap = Snapright = true;
+                    IsGrab = false;
+
+                }
+                //Toplimit
+                else if (pos.Y < 0)
+                {
+                    pos.Y = 0;
+                }
+                //Snapbottom
+                else if (IsGrab && Game1.mo_states.New.Position.Y > Game1.Screenheight - 24 - 2 && Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    size.X = Game1.Screenwidth;
+                    size.Y = minsize.Y;
+
+                    pos.X = 0;
+                    pos.Y = Game1.Screenheight - size.Y - 24;
+                    Resize();
+                    Snap = Snapbottom = true;
+                    IsGrab = false;
+                }
+            }
+            if (Snap)
+            {
+                if (IsGrab)
+                {
+                    Snap = Snapbottom = Snapleft = Snapright = false;
+                    size = PreSnapSize;
+                    Grabpos = new Point(size.X / 2, headheight / 2);
+                    Resize();
+                }
+
+
             }
 
             // Handling Draging of Window
@@ -101,14 +168,9 @@ namespace Circuit_Simulator.UI
             {
                 pos.pos = Game1.mo_states.New.Position - Grabpos;
             }
-            if (pos.X < 0)
-                pos.X = 0;
-            if (pos.X + size.X > Game1.Screenwidth)
-                pos.X = Game1.Screenwidth - size.X;
-            if (pos.Y < 0)
-                pos.Y = 0;
-            if (pos.Y + headheight > Game1.Screenheight)
-                pos.Y = Game1.Screenheight - headheight;
+
+            
+
             absolutpos = pos.pos;
 
             int RSsize = 8;
@@ -257,7 +319,7 @@ namespace Circuit_Simulator.UI
             Game1.graphics.GraphicsDevice.SetRenderTarget(target);
             spritebatch.Begin();
             spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, size), BackgroundColor);
-            spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, new Point(size.X, headheight )), BorderColor); //Chartreuse Best Color
+            spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, new Point(size.X, headheight)), BorderColor); //Chartreuse Best Color
             spritebatch.DrawString(conf.font, Title, Vector2.Zero + Title_pos, conf.font_color);
 
             base.DrawSpecific(spritebatch);

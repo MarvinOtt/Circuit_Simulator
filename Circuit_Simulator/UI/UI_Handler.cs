@@ -153,7 +153,7 @@ namespace Circuit_Simulator
             wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 7) + Simulator.LAYER_NUM + 1 + 7, 0), Button_tex, gen_conf));
 
             //Componentbox
-            ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(120, 20), componentconf, true);
+            ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
 
 
 
