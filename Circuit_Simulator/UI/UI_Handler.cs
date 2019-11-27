@@ -43,7 +43,9 @@ namespace Circuit_Simulator
         public static UI_InfoBox info;
         public UI_Window input;
         public static UI_Libary_Window LibaryWindow;
+        public static UI_EditComp_Window editcompwindow;
         public static UI_Box<UI_String> GeneralInfoBox;
+        public static UI_Box<UI_StringButton> EditLib;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
@@ -174,7 +176,12 @@ namespace Circuit_Simulator
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(300, 200), componentconf, true);
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
-            
+
+            //EditCompWindow
+            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
+
+            //EditLib
+            EditLib = new UI_Box<UI_StringButton>(new Pos(0,0), new Point(((int)(Game1.Screenwidth * 0.05)), (int)(Game1.Screenheight * 0.05)));
 
 
 

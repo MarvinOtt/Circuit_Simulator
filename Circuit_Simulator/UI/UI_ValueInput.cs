@@ -15,7 +15,7 @@ namespace Circuit_Simulator.UI
     {
         public Generic_Conf conf;
 
-        string value = "";
+        public string value = "";
         bool IsTyping;
         int inputtype;
         Rectangle hitbox;
@@ -71,11 +71,25 @@ namespace Circuit_Simulator.UI
                                 {
                                     value += ((int)newkeys[i] - 48).ToString();
                                 }
-                                
+                                break;
 
+                            case 3: //Text
+                                if((int)newkeys[i] >= 65 && (int)newkeys[i] <= 90 && value.Length <= 16)
+                                {
+                                    if(Game1.kb_states.New.AreKeysDown(Keys.LeftShift) || Game1.kb_states.New.AreKeysDown(Keys.RightShift))
+                                    {
+                                        value += ((char)newkeys[i]);
+                                    }
+                                    else
+                                        value += (char)(((int)newkeys[i]) + 32);
+                                   
+                                }
+                                else if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 57 && value.Length <= 10)
+                                {
+                                    value += ((int)newkeys[i] - 48).ToString();
+                                }
                                 break;
-                            default:  
-                                break;
+                         
                         }
                         if ((int)newkeys[i] == 8 && value.Length > 0)
                         {
@@ -102,7 +116,7 @@ namespace Circuit_Simulator.UI
                 if (DateTime.Now.Millisecond % 1000 < 500)
                 {
                     int Xsize = (int)conf.font.MeasureString(value).X;
-                    int Ysize = (int)conf.font.MeasureString("A").Y;
+                    int Ysize = (int)conf.font.MeasureString("Test").Y;
                     spritebatch.DrawFilledRectangle(new Rectangle(new Point(absolutpos.X + 5 + Xsize, absolutpos.Y + size.Y / 2 - Ysize / 2), new Point(1, Ysize)), Color.White);
                 }
             }

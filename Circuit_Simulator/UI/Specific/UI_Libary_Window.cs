@@ -59,6 +59,10 @@ namespace Circuit_Simulator.UI.Specific
         public void EditComp(object sender)
         {
             UI_Component comp = sender as UI_Component;
+            UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
+            UI_Window.All_Highlight(UI_Handler.editcompwindow);
+            UI_Handler.editcompwindow.rootcomp = Sim_Component.Components_Data[comp.ID];
+
         }
         public void DeleteComp(object sender)
         {
@@ -79,6 +83,11 @@ namespace Circuit_Simulator.UI.Specific
             UI_Categorie<UI_Component> curUIlib = sender as UI_Categorie<UI_Component>;
             CompLibrary curlib = CompLibrary.AllLibraries[curUIlib.cat.ID];
             curlib.IsFold = curUIlib.IsFold;
+        }
+        public void EditLib(object sender)
+        {
+            UI_Categorie<UI_Component> curUIlib = sender as UI_Categorie<UI_Component>;
+            CompLibrary curlib = CompLibrary.AllLibraries[curUIlib.cat.ID];
         }
 
         protected override void UpdateSpecific()
