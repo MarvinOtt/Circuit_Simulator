@@ -15,6 +15,7 @@ namespace Circuit_Simulator.UI.Specific
     {
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Libraries;
         public static Rectangle libhitbox;
+        public static int currlibID;
 
         public UI_Libary_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable = true) : base(pos, size, Title, minsize, conf, IsResizeable)
         {
@@ -26,6 +27,10 @@ namespace Circuit_Simulator.UI.Specific
 
             Add_UI_Elements(AddButton, Open, SaveAll);
             Add_UI_Elements(Libraries);
+
+            UI_Handler.EditLib.ui_elements[0].GotActivatedLeft += AddComp;
+            UI_Handler.EditLib.ui_elements[1].GotActivatedLeft += DeleteLib;
+
         }
        
         protected override void Resize()
@@ -38,7 +43,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             UI_Categorie<UI_Component> newlib = new UI_Categorie<UI_Component>(libs.name, UI_Handler.cat_conf);
             newlib.cat.ID = CompLibrary.AllLibraries.IndexOf(libs);
-            newlib.cat.GotActivatedRight += DeleteLib;
+            newlib.cat.GotActivatedRight += EditLib;
             newlib.GotFolded += LibFolded;
             newlib.Fold(libs.IsFold);
             for(int i = 0; i < libs.Components.Count; i++)
@@ -52,11 +57,14 @@ namespace Circuit_Simulator.UI.Specific
             }
             newlib.SetXSize(size.X - bezelsize * 2);
             Libraries.ui_elements[0].Add_UI_Elements(newlib);
-            //libs.ForEach(x => x.SetXSize(size.X - bezelsize * 2));
-            //Libaries.ui_elements[0].Add_UI_Elements(libs);
+   
         }
 
-        public void EditComp(object sender)
+        public void AddComp(object sender)
+        {
+
+        }
+            public void EditComp(object sender)
         {
             UI_Component comp = sender as UI_Component;
             UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
@@ -86,8 +94,11 @@ namespace Circuit_Simulator.UI.Specific
         }
         public void EditLib(object sender)
         {
-            UI_Categorie<UI_Component> curUIlib = sender as UI_Categorie<UI_Component>;
-            CompLibrary curlib = CompLibrary.AllLibraries[curUIlib.cat.ID];
+            UI_Component curUIlib = sender as UI_Component;
+            CompLibrary curlib = CompLibrary.AllLibraries[curUIlib.ID];
+            UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
+            UI_Handler.EditLib.pos.pos = Game1.mo_states.New.Position;
+            currlibID = curUIlib.ID;
         }
 
         protected override void UpdateSpecific()
