@@ -17,9 +17,9 @@ namespace Circuit_Simulator.UI
                 this.value = value;
             }
             public static ORIGIN DEFAULT = new ORIGIN(0);
-            public static ORIGIN TOPRIGHT = new ORIGIN(1);
-            public static ORIGIN BOTTOMRIGHT = new ORIGIN(2);
-            public static ORIGIN BOTTOMLEFT = new ORIGIN(3);
+            public static ORIGIN TR = new ORIGIN(1);
+            public static ORIGIN BR = new ORIGIN(2);
+            public static ORIGIN BL = new ORIGIN(3);
 
             public static bool operator ==(ORIGIN a, ORIGIN b)
             {
@@ -43,21 +43,26 @@ namespace Circuit_Simulator.UI
                     Y = value.Y;
                 }
             }
-            public ORIGIN origin;
-            private UI_Element parent;
+            public ORIGIN dest_origin, src_origin;
+            public UI_Element parent;
+            public UI_Element ego;
 
-            public Pos(int XY, ORIGIN origin = default(ORIGIN), UI_Element parent = null)
+            public Pos(int XY, ORIGIN dest_origin = default(ORIGIN), ORIGIN src_origin = default(ORIGIN), UI_Element parent = null)
             {
                 X_abs = Y_abs = X = Y = XY;
-                this.origin = origin;
+                this.dest_origin = dest_origin;
+                this.src_origin = src_origin;
                 this.parent = parent;
+                ego = null;
             }
-            public Pos(int X, int Y, ORIGIN origin = default(ORIGIN), UI_Element parent = null)
+            public Pos(int X, int Y, ORIGIN dest_origin = default(ORIGIN), ORIGIN src_origin = default(ORIGIN), UI_Element parent = null)
             {
                 this.X_abs = this.X = X;
                 this.Y_abs = this.Y = Y;
-                this.origin = origin;
+                this.dest_origin = dest_origin;
+                this.src_origin = src_origin;
                 this.parent = parent;
+                ego = null;
             }
 
             public void SetParentIfNotAlreadySet(UI_Element parent)
@@ -68,19 +73,19 @@ namespace Circuit_Simulator.UI
 
             public void Update()
             {
-                if(parent != null && origin != ORIGIN.DEFAULT)
+                if(parent != null && dest_origin != ORIGIN.DEFAULT)
                 {
-                    if(origin == ORIGIN.TOPRIGHT)
+                    if(dest_origin == ORIGIN.TR)
                     {
                         X_abs = parent.size.X + X;
                         Y_abs = Y;
                     }
-                    else if(origin == ORIGIN.BOTTOMRIGHT)
+                    else if(dest_origin == ORIGIN.BR)
                     {
                         X_abs = parent.size.X + X;
                         Y_abs = parent.size.Y + Y;
                     }
-                    else if (origin == ORIGIN.BOTTOMLEFT)
+                    else if (dest_origin == ORIGIN.BL)
                     {
                         X_abs = X;
                         Y_abs = parent.size.Y + Y;
@@ -91,15 +96,31 @@ namespace Circuit_Simulator.UI
                     X_abs = X;
                     Y_abs = Y;
                 }
+                if (src_origin != ORIGIN.DEFAULT)
+                {
+                    if (src_origin == ORIGIN.TR)
+                    {
+                        X_abs -= ego.size.X;
+                    }
+                    else if (src_origin == ORIGIN.BR)
+                    {
+                        X_abs -= ego.size.X;
+                        Y_abs -= ego.size.Y;
+                    }
+                    else if (src_origin == ORIGIN.BL)
+                    {
+                        Y_abs -= ego.size.Y;
+                    }
+                }
             }
 
             public Vector2 ToVector2()
             {
-                return new Vector2(X, Y);
+                return new Vector2(X_abs, Y_abs);
             }
             public Point ToPoint()
             {
-                return new Point(X, Y);
+                return new Point(X_abs, Y_abs);
             }
 
             public static Pos operator +(Pos a, Pos b)

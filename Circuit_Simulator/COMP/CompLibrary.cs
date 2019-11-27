@@ -15,10 +15,11 @@ namespace Circuit_Simulator.COMP
         private const int LOAD_FAILED = 1;
         private const int LOADED = 2;
 
-        public static List<CompLibrary> AllLibrarys = new List<CompLibrary>();
+        public static List<CompLibrary> AllLibraries = new List<CompLibrary>();
         public List<CompData> Components;
         public string name;
         public string SaveFile;
+        public bool IsFold = true;
         public int STATE;
 
         public CompLibrary(string name, string SaveFile)
@@ -27,7 +28,7 @@ namespace Circuit_Simulator.COMP
             this.name = name;
             this.SaveFile = SaveFile;
             Components = new List<CompData>();
-            AllLibrarys.Add(this);
+            AllLibraries.Add(this);
         }
 
         public void AddComponent(CompData comp)

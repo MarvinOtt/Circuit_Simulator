@@ -55,6 +55,7 @@ namespace Circuit_Simulator
 	    {
 		    this.pos = pos;
             this.size = size;
+            this.pos.ego = this;
             UpdateFunctions = new List<Action>();
 		    DrawFunctions = new List<Action>();
         }
@@ -64,6 +65,7 @@ namespace Circuit_Simulator
 		    this.pos = pos;
             this.size = size;
 		    this.parent = parent;
+            this.pos.ego = this;
 		    UpdateFunctions = new List<Action>();
 		    DrawFunctions = new List<Action>();
         }
@@ -89,12 +91,13 @@ namespace Circuit_Simulator
         public virtual void UpdatePos()
         {
             pos.Update();
-            absolutpos = parent == null ? pos.pos : pos.pos + parent.absolutpos;
+            absolutpos = pos.parent == null ? pos.pos : pos.pos + pos.parent.absolutpos;
             _child?.UpdatePos();
         }
 
         public void UpdateMain()
         {
+            pos.ego = this;
             UpdatePos();
             Update();
         }
@@ -109,8 +112,7 @@ namespace Circuit_Simulator
                 UpdateAlways();
                 if(UpdateAndDrawChild)
                     _child?.Update();
-                //AlwaysUpdate(aaa && _GetsUpdated);
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))// && ((Game1.mo_states.Old.LeftButton == ButtonState.Pressed || Game1.mo_states.Old.RightButton == ButtonState.Pressed) || (Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.New.RightButton == ButtonState.Pressed)))// && (Game1.mo_states.IsLeftButtonToggleOn() || Game1.mo_states.IsLeftButtonToggleOff()))
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
                     UI_Handler.UI_Element_Pressed = true;
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
                     UI_Handler.UI_Active_State = 1;
