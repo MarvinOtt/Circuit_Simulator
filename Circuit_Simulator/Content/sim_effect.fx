@@ -332,7 +332,7 @@ float4 getcoloratpos(float x, float y)
 		uint type_intp1p1 = getWiresAtPos(uint2(ux + 1, uy + 1));
 		int i;
 		[unroll]
-		for (i = 7; i >= 0; --i)
+		for (i = 6; i >= 0; --i)
 		{
 
 			//int i = j;

@@ -656,7 +656,17 @@ namespace Circuit_Simulator
                 {
                     Point pos = pins2check[i];
                     Component cur_comp = components[CompGrid[pos.X / 32, pos.Y / 32][CompNetwork[pos.X, pos.Y]]];
-                    int wireID = Simulator.WireIDs[pos.X / 2, pos.Y / 2, 7];
+                    bool IsNetwork = false;
+                    int wireID = 0;
+                    for(int j = 0; j < 7; ++j)
+                    {
+                        int wireID2 = Simulator.WireIDs[pos.X / 2, pos.Y / 2, j];
+                        if (wireID2 != 0 && (Simulator.IsWire[pos.X, pos.Y] & (1 << j)) != 0)
+                        {
+                            IsNetwork = true;
+                            wireID = wireID2;
+                        }
+                    }
                     cur_comp.pinNetworkIDs[CompType[pos.X, pos.Y] - (PINOFFSET + 1)] = wireID;
                 }
 

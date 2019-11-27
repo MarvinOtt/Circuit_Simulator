@@ -280,8 +280,9 @@ namespace Circuit_Simulator
             CalcGridStat = new byte[SIZEX, SIZEY];
             IsChange = new byte[SIZEX, SIZEY];
             CalcOccurNetw = new int[10000];
-            WireIDs = new int[SIZEX / 2, SIZEY / 2, LAYER_NUM + 1];
+            WireIDs = new int[SIZEX / 2, SIZEY / 2, LAYER_NUM];
             networks = new Network[10000000];
+            networks[0] = new Network(0);
             emptyNetworkID = new int[10000000];
             revshiftarray = new byte[256];
             for (int i = 0; i < 8; ++i)
@@ -323,9 +324,11 @@ namespace Circuit_Simulator
         public void DoFFIfValid(int x, int y, byte curval)
         {
             byte nextval = IsWire[x, y];
-            byte finalval = (byte)(curval & nextval);
-            if (nextval >= 128 && finalval != 0)
-                finalval = nextval;
+            byte finalval = (byte)(curval & nextval & 0x7F);
+            //if (nextval >= 128 && finalval != 0)
+            //finalval = nextval;
+            if (curval > 128)
+                finalval = (byte)(curval & 0x7F & nextval);
             if (finalval > 0 && ((CalcGridData[x, y] ^ finalval) & finalval) > 0)
                 FloodFillCellAndNeighbours(x, y, finalval);
 
@@ -355,7 +358,7 @@ namespace Circuit_Simulator
                 DoFFIfValid(x + 1, y + 1, curval);
                 if(true)
                 {
-                    int netID = WireIDs[x / 2, y / 2, revshiftarray[curval]];
+                    int netID = WireIDs[x / 2, y / 2, revshiftarray[curval & 0x7F]];
                     if ((CalcOccurNetw_Pos == 0 || CalcOccurNetw[CalcOccurNetw_Pos - 1] != netID) && netID > 3)
                         CalcOccurNetw[CalcOccurNetw_Pos++] = netID;
                 }
@@ -426,7 +429,7 @@ namespace Circuit_Simulator
                 if ((CalcGridStat[xx, yy] & linelayers) != linelayers && CalcGridData[xx, yy] == linelayers)
                 {
                     CalcGridStat[xx, yy] |= linelayers;
-                    for (int b = 0; b < 8; ++b)
+                    for (int b = 0; b < 7; ++b)
                         if (((linelayers >> b) & 1) != 0)
                             WireIDs[xx / 2, yy / 2, b] = CalcNetwork.ID;
                 }
@@ -440,7 +443,7 @@ namespace Circuit_Simulator
                 if ((CalcGridStat[xx, yy] & linelayers) != linelayers && CalcGridData[xx, yy] == linelayers)
                 {
                     CalcGridStat[xx, yy] |= linelayers;
-                    for (int b = 0; b < 8; ++b)
+                    for (int b = 0; b < 7; ++b)
                         if (((linelayers >> b) & 1) != 0)
                             WireIDs[xx / 2, yy / 2, b] = CalcNetwork.ID;
                 }
@@ -529,7 +532,7 @@ namespace Circuit_Simulator
             {
                 for (int y = Brec.Top; y < Brec.Bottom; ++y)
                 {
-                    for (int i = 0; i < LAYER_NUM + 1; ++i)
+                    for (int i = 0; i < LAYER_NUM; ++i)
                     {
                         if (WireIDs[x / 2, y / 2, i] != 0 && (IsWire[x, y] & (1 << i)) > 0)
                         {
@@ -566,12 +569,15 @@ namespace Circuit_Simulator
             {
                 for (int y = Brec.Top; y < Brec.Bottom; ++y)
                 {
-                    for(int i = 0; i < LAYER_NUM + 1; ++i)
+                    if (IsWire[x, y] > 128)
+                        CalculateNetworkAt(x, y, IsWire[x, y]);
+                    else
                     {
-                        if (IsWire[x, y] >= 128)
-                            CalculateNetworkAt(x, y, IsWire[x, y]);
-                        else if ((IsWire[x, y] & (1 << i)) > 0)
-                            CalculateNetworkAt(x, y, (byte)(1 << i));
+                        for (int i = 0; i < LAYER_NUM; ++i)
+                        {
+                            if ((IsWire[x, y] & (1 << i)) > 0)
+                                CalculateNetworkAt(x, y, (byte)(1 << i));
+                        }
                     }
                 }
             }
@@ -652,9 +658,9 @@ namespace Circuit_Simulator
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Down))
                     simspeed--;
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
-                    currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM);
+                    currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
-                    currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM);
+                    currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
 
                 UI_Handler.GeneralInfoBox.ui_elements[0].value = "Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString();
                 UI_Handler.GeneralInfoBox.ui_elements[1].value = "Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")";
@@ -831,33 +837,33 @@ namespace Circuit_Simulator
                     //WireCalc_target
                 }
             }
-            VertexPositionLine[] vertexes = new VertexPositionLine[]
-            {
-                new VertexPositionLine(new Point(3, 1), 1),
-                new VertexPositionLine(new Point(1, 3), 1)
-            };
+            //VertexPositionLine[] vertexes = new VertexPositionLine[]
+            //{
+            //    new VertexPositionLine(new Point(3, 1), 1),
+            //    new VertexPositionLine(new Point(1, 3), 1)
+            //};
 
-            Game1.graphics.GraphicsDevice.SetRenderTarget(sec_target);
-            line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
-            line_effect.Parameters["tex"].SetValue(logic_target);
-            line_effect.CurrentTechnique.Passes[0].Apply();
-            Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertexes, 0, 1);
+            //Game1.graphics.GraphicsDevice.SetRenderTarget(sec_target);
+            //line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+            //line_effect.Parameters["tex"].SetValue(logic_target);
+            //line_effect.CurrentTechnique.Passes[0].Apply();
+            //Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertexes, 0, 1);
 
-            Game1.graphics.GraphicsDevice.SetRenderTarget(logic_target);
-            line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
-            line_effect.Parameters["tex"].SetValue(sec_target);
-            line_effect.CurrentTechnique.Passes[0].Apply();
-            Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertexes, 0, 1);
+            //Game1.graphics.GraphicsDevice.SetRenderTarget(logic_target);
+            //line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+            //line_effect.Parameters["tex"].SetValue(sec_target);
+            //line_effect.CurrentTechnique.Passes[0].Apply();
+            //Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertexes, 0, 1);
 
-            Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            //Game1.graphics.GraphicsDevice.SetRenderTarget(null);
 
-            Game1.graphics.GraphicsDevice.SetRenderTarget(WireCalc_target);
-            iswirerender_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
-            iswirerender_effect.Parameters["tex"].SetValue(logic_target);
-            iswirerender_effect.CurrentTechnique.Passes[0].Apply();
-            Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertexes, 0, 1);
+            //Game1.graphics.GraphicsDevice.SetRenderTarget(WireCalc_target);
+            //iswirerender_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+            //iswirerender_effect.Parameters["tex"].SetValue(logic_target);
+            //iswirerender_effect.CurrentTechnique.Passes[0].Apply();
+            //Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertexes, 0, 1);
 
-            Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            //Game1.graphics.GraphicsDevice.SetRenderTarget(null);
 
             sim_comp.DrawLineOverlays(spritebatch);
             sim_comp.Draw(spritebatch);
