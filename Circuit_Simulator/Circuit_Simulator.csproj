@@ -56,8 +56,8 @@
     <Compile Include="Simulator.cs" />
     <Compile Include="Sim_Component.cs" />
     <Compile Include="Sim_INF_DLL.cs" />
-    <Compile Include="UI\Specific\UI_EditComp_Window.cs" />
     <Compile Include="UI\UI_TextBox.cs" />
+    <Compile Include="UI\Specific\UI_EditComp_Window.cs" />
     <Compile Include="UI\UI_STRUCTS.cs" />
     <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
     <Compile Include="UI\Specific\UI_Libary_Window.cs" />
