@@ -68,6 +68,12 @@ namespace Circuit_Simulator.UI
             }
         }
 
+        public static void All_Highlight(UI_Window window)
+        {
+            int curindex = All_Windows.IndexOf(window);
+            All_Windows.Move(curindex, 0);
+        }
+
         protected virtual void Resize()
         {
 
@@ -83,8 +89,7 @@ namespace Circuit_Simulator.UI
             Rectangle Hitbox = new Rectangle(absolutpos, size);
             if (Hitbox.Contains(Game1.mo_states.New.Position) && Game1.mo_states.IsLeftButtonToggleOn())
             {
-                int curindex = All_Windows.IndexOf(this);
-                All_Windows.Move(curindex, 0);
+                All_Highlight(this);
             }
 
             // Handling Snapping of the Window

@@ -34,6 +34,10 @@ namespace Circuit_Simulator.UI.Specific
             Add_UI_Elements(Libraries);
 
             //Reload.GotActivatedLeft += Reload_All;
+
+            UI_Handler.EditLib.ui_elements[0].GotActivatedLeft += AddComp;
+            UI_Handler.EditLib.ui_elements[1].GotActivatedLeft += DeleteLib;
+
         }
        
         protected override void Resize()
@@ -62,8 +66,7 @@ namespace Circuit_Simulator.UI.Specific
             }
             newlib.SetXSize(size.X - bezelsize * 2);
             Libraries.ui_elements[0].Add_UI_Elements(newlib);
-            //libs.ForEach(x => x.SetXSize(size.X - bezelsize * 2));
-            //Libaries.ui_elements[0].Add_UI_Elements(libs);
+   
         }
 
         public override void ChangedUpdate2True()
@@ -110,6 +113,10 @@ namespace Circuit_Simulator.UI.Specific
         {
             IsChange = true;
             UI_Component comp = sender as UI_Component;
+            UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
+            UI_Window.All_Highlight(UI_Handler.editcompwindow);
+            UI_Handler.editcompwindow.rootcomp = Sim_Component.Components_Data[comp.ID];
+
         }
         public void DeleteComp(object sender)
         {
@@ -139,6 +146,14 @@ namespace Circuit_Simulator.UI.Specific
             UI_Categorie<UI_Component> curUIlib = sender as UI_Categorie<UI_Component>;
             CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == curUIlib.cat.ID_Name);
             curlib.IsFold = curUIlib.IsFold;
+        }
+        public void EditLib(object sender)
+        {
+            UI_Component curUIlib = sender as UI_Component;
+            CompLibrary curlib = CompLibrary.AllLibraries[curUIlib.ID];
+            UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
+            UI_Handler.EditLib.pos.pos = Game1.mo_states.New.Position;
+            currlibID = curUIlib.ID;
         }
 
         protected override void UpdateSpecific()

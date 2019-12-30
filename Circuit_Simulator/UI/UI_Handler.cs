@@ -44,7 +44,9 @@ namespace Circuit_Simulator
         public static UI_InfoBox info;
         public UI_Window input;
         public static UI_Libary_Window LibaryWindow;
+        public static UI_EditComp_Window editcompwindow;
         public static UI_Box<UI_String> GeneralInfoBox;
+        public static UI_Box<UI_StringButton> EditLib;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
@@ -174,13 +176,24 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_String(Pos.Zero, Point.Zero, componentconf));
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(150, 0), Point.Zero, componentconf));
 
+
+            //EditLib
+            EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 2)));
+            UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
+            UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Library", true, componentconf);
+            EditLib.Add_UI_Elements(NewComp, Dellib);
+
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
             LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = false;
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
+
+
+
+            //EditCompWindow
+            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
+
             
-
-
 
 
             InitializeUISettings(spriteBatch);
@@ -268,6 +281,15 @@ namespace Circuit_Simulator
                         cur.IsActivated = false;
                 });
             }
+        
+            EditLib.UpdateFunctions.Add(delegate ()
+            {
+                if(Game1.mo_states.IsLeftButtonToggleOff())
+                {
+                    
+                    EditLib.GetsUpdated = EditLib.GetsDrawn = false;
+                }
+            });
            
 
             // Wire MaskButton
@@ -337,6 +359,7 @@ namespace Circuit_Simulator
             //input.UpdateMain();
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].UpdateMain();
+            EditLib.UpdateMain();
             wire_ddbl.UpdateMain();
             UI_Window.All_Update();
             info.UpdateMain();
@@ -356,6 +379,7 @@ namespace Circuit_Simulator
             UI_Window.All_Draw(spritebatch);
             info.Draw(spritebatch);
             wire_ddbl.Draw(spritebatch);
+            EditLib.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
 
