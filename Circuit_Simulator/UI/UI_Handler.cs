@@ -182,6 +182,7 @@ namespace Circuit_Simulator
             UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
             UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Library", true, componentconf);
             EditLib.Add_UI_Elements(NewComp, Dellib);
+            EditLib.GetsUpdated = EditLib.GetsDrawn = false;
 
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);

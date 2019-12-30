@@ -106,9 +106,12 @@ namespace Circuit_Simulator.UI.Specific
         //    }
         //    UI_Handler.InitComponents();
         //    FileHandler.OpenCurrent();
-            
-        //}
 
+        //}
+        public void AddComp(object sender)
+        {
+
+        }
         public void EditComp(object sender)
         {
             IsChange = true;
@@ -150,10 +153,10 @@ namespace Circuit_Simulator.UI.Specific
         public void EditLib(object sender)
         {
             UI_Component curUIlib = sender as UI_Component;
-            CompLibrary curlib = CompLibrary.AllLibraries[curUIlib.ID];
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys[curUIlib.ID];
             UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
             UI_Handler.EditLib.pos.pos = Game1.mo_states.New.Position;
-            currlibID = curUIlib.ID;
+            //currlibID = curUIlib.ID;
         }
 
         protected override void UpdateSpecific()
