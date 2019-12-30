@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Circuit_Simulator.COMP;
 using Circuit_Simulator.UI;
 using Circuit_Simulator.UI.Specific;
+using Circuit_Simulator.UI.TextBox;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -50,6 +51,7 @@ namespace Circuit_Simulator
         public static UI_List<UI_Dropdown_Button> wire_ddbl;
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf;
+        UI_TextBox textbox;
 
         public UI_Handler(ContentManager Content)
 	    {
@@ -87,6 +89,7 @@ namespace Circuit_Simulator
             genbutconf.BorderColor = BorderColor;
             genbutconf.font = toolbarfont;
 
+            //textbox = new UI_TextBox(new Pos(300, 300), new Point(200, 200), componentconf);
 
             //Toolbar
             Toolbar = new UI_MultiElement<UI_Element>(new Pos(0, 0));
@@ -172,7 +175,8 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(150, 0), Point.Zero, componentconf));
 
             //Libary Window
-            LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(300, 200), componentconf, true);
+            LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
+            LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = false;
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
             
 
@@ -184,11 +188,11 @@ namespace Circuit_Simulator
 
         public static void InitComponents()
         {
-            LibaryWindow.Libraries.ui_elements[0].ui_elements.Clear();
-            for(int i = 0; i < CompLibrary.AllLibraries.Count; ++i)
-            {
-                LibaryWindow.Add_Library(CompLibrary.AllLibraries[i]);
-            }
+            //LibaryWindow.Libraries.ui_elements[0].ui_elements.Clear();
+            //for(int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
+            //{
+            //    LibaryWindow.Add_Library(CompLibrary.AllUsedLibraries[i]);
+            //}
 
             HashSet<string> categorys = new HashSet<string>();
             List<CompData> comps = Sim_Component.Components_Data;
@@ -293,21 +297,21 @@ namespace Circuit_Simulator
                     Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
             });
 
-            QuickHotbar.ui_elements[2].UpdateFunctions.Add(delegate ()
+            ((UI_TexButton)QuickHotbar.ui_elements[2]).GotActivatedLeft += delegate (object sender)
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[2]).IsActivated)
                 {
                     FileHandler.Save();
                 }
-            });
+            };
 
-            QuickHotbar.ui_elements[3].UpdateFunctions.Add(delegate ()
+            ((UI_TexButton)QuickHotbar.ui_elements[3]).GotActivatedLeft += delegate (object sender)
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[3]).IsActivated)
                 {
                     FileHandler.Open();
                 }
-            });
+            };
         }
 
         // Gets called when something of the Window or Graphics got changed
@@ -327,6 +331,8 @@ namespace Circuit_Simulator
                 ZaWarudo.UpdateMain();
                 //return;
             }
+
+            //textbox.UpdateMain();
 
             //input.UpdateMain();
             for (int i = 0; i < toolbar_menus.Length; ++i)
@@ -352,6 +358,8 @@ namespace Circuit_Simulator
             wire_ddbl.Draw(spritebatch);
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
+
+            //textbox.Draw(spritebatch);
             //input.Draw(spritebatch);
             dragcomp.Draw(spritebatch);
         }

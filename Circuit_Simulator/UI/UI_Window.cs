@@ -166,6 +166,8 @@ namespace Circuit_Simulator.UI
             }
             if (IsGrab)
             {
+                UI_Handler.UI_Element_Pressed = true;
+                UI_Handler.UI_Active_State = 1;
                 pos.pos = Game1.mo_states.New.Position - Grabpos;
             }
 

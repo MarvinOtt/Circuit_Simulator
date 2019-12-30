@@ -15,20 +15,24 @@ namespace Circuit_Simulator.COMP
         private const int LOAD_FAILED = 1;
         private const int LOADED = 2;
 
-        public static List<CompLibrary> AllLibraries = new List<CompLibrary>();
+        public static List<CompLibrary> AllUsedLibraries = new List<CompLibrary>();
+        public static List<CompLibrary> LibraryWindow_LoadedLibrarys = new List<CompLibrary>();
         public List<CompData> Components;
         public string name;
         public string SaveFile;
         public bool IsFold = true;
         public int STATE;
 
-        public CompLibrary(string name, string SaveFile)
+        public CompLibrary(string name, string SaveFile, bool AddToUsedLibraries = true)
         {
             STATE = 0;
             this.name = name;
             this.SaveFile = SaveFile;
             Components = new List<CompData>();
-            AllLibraries.Add(this);
+            if (AddToUsedLibraries)
+                AllUsedLibraries.Add(this);
+            else
+                LibraryWindow_LoadedLibrarys.Add(this);
         }
 
         public void AddComponent(CompData comp)
@@ -190,6 +194,8 @@ namespace Circuit_Simulator.COMP
                     newcomp.Finish();
                     AddComponent(newcomp);
                 }
+                stream.Close();
+                stream.Dispose();
                 STATE = LOADED;
             }
             catch (Exception exp)

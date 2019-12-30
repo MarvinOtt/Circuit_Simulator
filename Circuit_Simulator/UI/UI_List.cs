@@ -57,13 +57,12 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateAlways()
         {
-      
             Point currentpos = Point.Zero;
             for (int i = 0; i < ui_elements.Count; ++i)
             {
                 ui_elements[i].pos.pos = currentpos;
                 ui_elements[i].Update();
-                currentpos.Y += ui_elements[i].size.Y;
+                //currentpos.Y += ui_elements[i].size.Y;
             }
         }
 

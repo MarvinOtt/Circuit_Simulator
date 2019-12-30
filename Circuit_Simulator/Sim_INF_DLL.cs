@@ -72,7 +72,7 @@ namespace Circuit_Simulator
         public static void LoadLibrarys(params string[] paths)
         {
             Sim_Component.Components_Data.Clear();
-            CompLibrary.AllLibraries.Clear();
+            CompLibrary.AllUsedLibraries.Clear();
 
             for(int i = 0; i < paths.Length; ++i)
             {

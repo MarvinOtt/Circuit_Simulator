@@ -92,6 +92,7 @@ namespace Circuit_Simulator
 
         public void Place(Point pos, int newrotation)
         {
+            FileHandler.IsUpToDate = false;
             Stopwatch watch = new Stopwatch();
             watch.Start();
             this.pos = pos;
@@ -150,6 +151,7 @@ namespace Circuit_Simulator
 
         public void Delete()
         {
+            FileHandler.IsUpToDate = false;
             List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[rotation];
             Rectangle area = Sim_Component.Components_Data[dataID].bounds[rotation];
             area.Location += pos;
@@ -605,6 +607,7 @@ namespace Circuit_Simulator
             {
                 if(Component.IsValidPlacement(dataID, pos))
                 {
+                    FileHandler.IsUpToDate = false;
                     Component newcomp;// = new Component(ID, nextComponentID);
                     if(emptyComponentID_count > 0)
                         newcomp = new Component(dataID, emptyComponentID[--emptyComponentID_count]);

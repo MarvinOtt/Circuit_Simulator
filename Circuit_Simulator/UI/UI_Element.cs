@@ -15,6 +15,7 @@ namespace Circuit_Simulator
         public Pos pos;
         public Point size;
 	    public Point absolutpos;
+        public string ID_Name;
         private bool _GetsDrawn = true, _GetsUpdated = true;
         public bool GetsDrawn { get { return _GetsDrawn; } set { _GetsDrawn = value; } }
         public bool GetsUpdated
@@ -22,9 +23,12 @@ namespace Circuit_Simulator
             get { return _GetsUpdated; }
             set
             {
+                bool old = _GetsUpdated;
                 _GetsUpdated = value;
-                if(!value)
+                if (!value && old)
                     ChangedUpdate2False();
+                else if(value && !old)
+                    ChangedUpdate2True();
             }
         }
         public bool CanBeSizeRelated = true, IsTypeOfWindow, UpdateAndDrawChild;
@@ -73,6 +77,11 @@ namespace Circuit_Simulator
         public virtual void ChangedUpdate2False()
         {
             child?.ChangedUpdate2False();
+            // Should be overridden
+        }
+        public virtual void ChangedUpdate2True()
+        {
+            child?.ChangedUpdate2True();
             // Should be overridden
         }
 

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using ScintillaNET;
 using System;
 using System.IO;
 using System.Security.Permissions;
@@ -69,12 +70,15 @@ namespace Circuit_Simulator
     {
         public static GraphicsDeviceManager graphics;
         public static ContentManager content;
+        public static Game1 ME;
         public static System.Windows.Forms.Form form;
         public static event EventHandler GraphicsChanged;
         public static Simulator simulator;
         SpriteBatch spriteBatch;
         public static SpriteFont basefont;
-        
+
+        System.Windows.Forms.Form popup;
+        Scintilla t;
 
         #region UI
 
@@ -143,6 +147,7 @@ namespace Circuit_Simulator
         public Game1()
         {
             // Graphic Initialization
+            ME = this;
             GraphicsChanged += UpdateEverythingOfGraphics;
             graphics = new GraphicsDeviceManager(this)
             {
@@ -195,11 +200,15 @@ namespace Circuit_Simulator
             //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\GCC\\MinGW\\bin\\g++ -c -DBUILDING_EXAMPLE_DLL " + "\"" + "C:\\Users\\Marvin Ott\\code.c" + "\"" + " -o " + "\"" + "C:\\Users\\Marvin Ott\\code.o" + "\"");
             //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\GCC\\gcc -shared -o C:\\Users\\code.dll C:\\Users\\code.o -Wl,--out-implib,libexample_dll.a");
 
+            
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
+            //popup.Size = new System.Drawing.Size(t.Width - (System.Windows.Forms.SystemInformation.VerticalScrollBarWidth - 1), popup.Height - (40 - 1));
+            //popup.Width = 200;
+            //popup.Height = 200;
             //----------------//
             // HANDLING INPUT //
             //----------------//

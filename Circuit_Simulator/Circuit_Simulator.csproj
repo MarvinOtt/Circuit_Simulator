@@ -56,6 +56,7 @@
     <Compile Include="Simulator.cs" />
     <Compile Include="Sim_Component.cs" />
     <Compile Include="Sim_INF_DLL.cs" />
+    <Compile Include="UI\UI_TextBox.cs" />
     <Compile Include="UI\UI_STRUCTS.cs" />
     <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
     <Compile Include="UI\Specific\UI_Libary_Window.cs" />
@@ -82,8 +83,12 @@
     <Compile Include="UI\UI_ValueInput.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
@@ -97,6 +102,7 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="App.config" />
     <None Include="app.manifest" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

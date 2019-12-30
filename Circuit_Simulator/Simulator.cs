@@ -137,7 +137,7 @@ namespace Circuit_Simulator
                     byte linelayers = lines[i].layers;
                     Simulator.IsWire[curpos.X, curpos.Y] |= linelayers;
 
-                    for (int b = 0; b < 8; ++b)
+                    for (int b = 0; b < 7; ++b)
                         if (((linelayers >> b) & 1) != 0)
                             Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, b] = ID;
 
@@ -698,6 +698,7 @@ namespace Circuit_Simulator
                 //}
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.RightButton == ButtonState.Pressed)
                 {
+                    FileHandler.IsUpToDate = false;
                     byte[,] data = new byte[1, 1];
                     byte wiredata = IsWire[mo_worldposx, mo_worldposy];
                     data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
@@ -713,6 +714,7 @@ namespace Circuit_Simulator
                 // Placing Wires
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
                 {
+                    FileHandler.IsUpToDate = false;
                     byte layers = GetUILayers();
                     IsWire[mo_worldposx, mo_worldposy] |= layers;
                     if (true)//layers != 255)
@@ -731,6 +733,7 @@ namespace Circuit_Simulator
                 // Placing Via
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.IsMiddleButtonToggleOn())
                 {
+                    FileHandler.IsUpToDate = false;
                     IsWire[mo_worldposx, mo_worldposy] = 128;
                     CalculateNetworkAt(mo_worldposx, mo_worldposy, 128);
                     Network.Delete(FoundNetworks);
