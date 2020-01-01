@@ -17,7 +17,7 @@ namespace Circuit_Simulator.UI.Specific
         public static Rectangle libhitbox;
         //UI_String NeedSavingString;
         UI_StringButton AddButton, Open, SaveAll, Reload;
-        UI_ValueInput RenameBox;
+        UI_ValueInput RenameBox1, RenameBox2;
         public static bool IsChange;
 
         public UI_Libary_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable = true) : base(pos, size, Title, minsize, conf, IsResizeable)
@@ -28,19 +28,24 @@ namespace Circuit_Simulator.UI.Specific
             Open = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, AddButton), new Point((int)(UI_Handler.buttonwidth), UI_Handler.buttonheight), "Open", true, UI_Handler.genbutconf);
             SaveAll = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, Open), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Save All", true, UI_Handler.genbutconf);
             Reload = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, SaveAll), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Reload", true, UI_Handler.genbutconf);
-            RenameBox = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.genbutconf, 3);
+            RenameBox1 = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.genbutconf, 3);
+            RenameBox2 = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.componentconf, 3);
 
             //NeedSavingString = new UI_String(new Pos(10, 10 + headheight), Point.Zero, conf, "In order to edit Librarys, the circuit has to be saved.");
 
-            Add_UI_Elements(RenameBox, AddButton, Open, SaveAll, Reload);
+            Add_UI_Elements(RenameBox1, RenameBox2, AddButton, Open, SaveAll, Reload);
             Add_UI_Elements(Libraries);
 
-            //Reload.GotActivatedLeft += Reload_All;
+           
+            UI_Handler.EditLib.ui_elements[0].GotActivatedLeft += RenameLib;
+            UI_Handler.EditLib.ui_elements[1].GotActivatedLeft += AddComp;
+            UI_Handler.EditLib.ui_elements[2].GotActivatedLeft += DeleteLib;
 
-            UI_Handler.EditLib.ui_elements[0].GotActivatedLeft += AddComp;
-            UI_Handler.EditLib.ui_elements[1].GotActivatedLeft += DeleteLib;
-            UI_Handler.EditLib.ui_elements[2].GotActivatedLeft += RenameLib;
-            RenameBox.ValueChanged += Rename_Finish;
+            UI_Handler.EditComp.ui_elements[0].GotActivatedLeft += RenameComp;
+            UI_Handler.EditComp.ui_elements[1].GotActivatedLeft += DeleteComp;
+           
+            RenameBox1.ValueChanged += RenameLib_Finish;
+            RenameBox2.ValueChanged += RenameComp_Finish;
 
 
         }
@@ -64,8 +69,8 @@ namespace Circuit_Simulator.UI.Specific
                 int ID = i;
                 UI_Component cur_comp = new UI_Component(new Pos(0), new Point(20, 20), libs.Components[i].name, ID, 20, UI_Handler.componentconf);
                 cur_comp.ID_Name = libs.name + "|" + libs.Components[i].name;
-                cur_comp.GotActivatedLeft += EditComp;
-                cur_comp.GotActivatedRight += DeleteComp;
+                cur_comp.GotActivatedLeft += EditCompWindow;
+                cur_comp.GotActivatedRight += EditComp;
 
                 newlib.AddComponents(cur_comp);
             }
@@ -121,7 +126,7 @@ namespace Circuit_Simulator.UI.Specific
 
 
         }
-        public void EditComp(object sender)
+        public void EditCompWindow(object sender)
         {
             IsChange = true;
             UI_Component comp = sender as UI_Component;
@@ -135,9 +140,8 @@ namespace Circuit_Simulator.UI.Specific
         public void DeleteComp(object sender)
         {
             IsChange = true;
-            UI_Component comp = sender as UI_Component;
-            string[] names = comp.ID_Name.Split('|');
-            UI_List<UI_Component> complist = (comp.parent as UI_List<UI_Component>);
+            UI_StringButton comp = sender as UI_StringButton;
+            string[] names = comp.parent.ID_Name.Split('|');
             CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.RemoveAll(x => x.name == names[1]); //RemoveAt(complist.ui_elements.IndexOf(comp));
             //complist.ui_elements.Remove(comp);
             Reload_UI();
@@ -150,21 +154,21 @@ namespace Circuit_Simulator.UI.Specific
         public void RenameLib(object sender)
         {
             UI_StringButton pressedElement = sender as UI_StringButton;
-            UI_Categorie<UI_Component> curUIlib = Libraries.ui_elements[0].ui_elements.Find(x => x.cat.ID_Name == pressedElement.parent.ID_Name);
+            UI_Categorie<UI_Component> curUIlib= Libraries.ui_elements[0].ui_elements.Find(x => x.cat.ID_Name == pressedElement.pos.parent.ID_Name);
 
-            RenameBox.pos = new Pos(Libraries.pos.X, Libraries.pos.Y, ORIGIN.DEFAULT, ORIGIN.DEFAULT, this);
-            RenameBox.size = curUIlib.cat.size;
-            RenameBox.value = pressedElement.parent.ID_Name;
-            RenameBox.ID_Name = pressedElement.parent.ID_Name;
-            RenameBox.GetsUpdated = RenameBox.GetsDrawn = true;
+            RenameBox1.pos = new Pos(Libraries.pos.X, Libraries.pos.Y, ORIGIN.DEFAULT, ORIGIN.DEFAULT, this);
+            RenameBox1.size = curUIlib.cat.size;
+            RenameBox1.value = pressedElement.pos.parent.ID_Name;
+            RenameBox1.ID_Name = pressedElement.pos.parent.ID_Name;
+            RenameBox1.GetsUpdated = RenameBox1.GetsDrawn = true;
         }
 
-        public void Rename_Finish(object sender)
+        public void RenameLib_Finish(object sender)
         {
-            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == RenameBox.ID_Name);
-            if(RenameBox.value.Length > 0)
-                curlib.name = RenameBox.value;
-            RenameBox.GetsUpdated = RenameBox.GetsDrawn = false;
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == RenameBox1.ID_Name);
+            if(RenameBox1.value.Length > 0)
+                curlib.name = RenameBox1.value;
+            RenameBox1.GetsUpdated = RenameBox1.GetsDrawn = false;
             Reload_UI();
 
         }
@@ -190,8 +194,48 @@ namespace Circuit_Simulator.UI.Specific
             UI_Handler.EditLib.ID_Name = curlib.name;
             UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
             UI_Handler.EditLib.pos.pos = Game1.mo_states.New.Position + new Point(5,5);
+            UI_Handler.EditLib.UpdatePos();
             //currlibID = curUIlib.ID;
         }
+
+        public void EditComp(object sender)
+        {
+            UI_Component curUIcomp = sender as UI_Component;
+            UI_Handler.EditComp.ID_Name = curUIcomp.ID_Name;
+            UI_Handler.EditComp.GetsUpdated = UI_Handler.EditComp.GetsDrawn = true;
+            UI_Handler.EditComp.pos.pos = Game1.mo_states.New.Position + new Point(5, 5);
+        }
+
+        public void RenameComp(object sender)
+        {
+            UI_StringButton pressedElement = sender as UI_StringButton;
+            string[] names = pressedElement.parent.ID_Name.Split('|');
+
+            UI_Component curUIcomp = Libraries.ui_elements[0].ui_elements.Find(x => x.cat.ID_Name == names[0]).Components.ui_elements.Find(x => x.ID_Name == pressedElement.parent.ID_Name);
+
+
+            RenameBox2.pos = new Pos(Libraries.pos.X, (curUIcomp.absolutpos.Y - this.pos.Y), ORIGIN.DEFAULT, ORIGIN.DEFAULT, this);
+            RenameBox2.size = curUIcomp.size;
+            RenameBox2.value = names[1];
+            RenameBox2.ID_Name = pressedElement.pos.parent.ID_Name;
+            RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = true;
+        }
+
+        public void RenameComp_Finish(object sender)
+        {
+            string[] names = UI_Handler.EditComp.ID_Name.Split('|');
+            CompData comp = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
+            //UI_Component curcomp = Libraries.ui_elements[0].ui_elements.Find(x => x.cat.ID_Name == names[0]).Components.ui_elements.Find(x => x.ID_Name == UI_Handler.EditComp.ID_Name);
+            if (RenameBox2.value.Length > 0)
+            {
+                comp.name = RenameBox2.value;
+                
+            }
+            RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = false;
+            Reload_UI();
+
+        }
+
 
         protected override void UpdateSpecific()
         {

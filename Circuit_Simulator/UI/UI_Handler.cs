@@ -46,6 +46,7 @@ namespace Circuit_Simulator
         public static UI_EditComp_Window editcompwindow;
         public static UI_Box<UI_String> GeneralInfoBox;
         public static UI_Box<UI_StringButton> EditLib;
+        public static UI_Box<UI_StringButton> EditComp;
         public static UI_QuickHBElement QuickHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
@@ -174,15 +175,21 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(150, 0), Point.Zero, componentconf));
 
 
-            //EditLib
+            //EditLib options
             EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 3)));
-            UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
+            UI_StringButton RenameLib = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
+            UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameLib), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
             UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Library", true, componentconf);
-            UI_StringButton Rename = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, Dellib), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
-            EditLib.Add_UI_Elements(NewComp, Dellib, Rename);
+            
+            EditLib.Add_UI_Elements(RenameLib, NewComp, Dellib);
             EditLib.GetsUpdated = EditLib.GetsDrawn = false;
 
-
+            //EditComp options
+            EditComp = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 2)));
+            UI_StringButton RenameComp = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
+            UI_StringButton DelComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Component", true, componentconf);
+            EditComp.Add_UI_Elements(RenameComp, DelComp);
+            EditComp.GetsUpdated = EditComp.GetsDrawn = false;
 
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
@@ -289,7 +296,16 @@ namespace Circuit_Simulator
                 }
             
             });
-           
+            EditComp.UpdateFunctions.Add(delegate ()
+            {
+                if (Game1.mo_states.IsLeftButtonToggleOff())
+                {
+
+                    EditComp.GetsUpdated = EditComp.GetsDrawn = false;
+                }
+
+            });
+
 
             // Wire MaskButton
             QuickHotbar.ui_elements[6].UpdateFunctions.Add(delegate ()
@@ -359,6 +375,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].UpdateMain();
             EditLib.UpdateMain();
+            EditComp.UpdateMain();
             wire_ddbl.UpdateMain();
             UI_Window.All_Update();
             info.UpdateMain();
@@ -378,7 +395,9 @@ namespace Circuit_Simulator
             UI_Window.All_Draw(spritebatch);
             info.Draw(spritebatch);
             wire_ddbl.Draw(spritebatch);
+            EditComp.Draw(spritebatch);
             EditLib.Draw(spritebatch);
+            
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
 
