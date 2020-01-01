@@ -79,16 +79,20 @@ namespace Circuit_Simulator.UI
             RenderTargetBinding[] previoustargets = Game1.graphics.GraphicsDevice.GetRenderTargets();
             Game1.graphics.GraphicsDevice.SetRenderTarget(target);
             Game1.graphics.GraphicsDevice.Clear(new Color(new Vector3(0.1f)));
-            spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Matrix.CreateTranslation(new Vector3(-absolutpos.X, -absolutpos.Y, 0)));
+            Matrix matrix = Matrix.CreateTranslation(new Vector3(-absolutpos.X, -absolutpos.Y, 0));
+            Game1.Render_PreviousMatrix[Game1.Render_PreviousMatrix_Index] = matrix;
+            Game1.Render_PreviousMatrix_Index++;
+            spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, matrix);
 
             base.DrawSpecific(spritebatch);
 
             spritebatch.End();
             Game1.graphics.GraphicsDevice.SetRenderTargets(previoustargets);
             if(previoustargets.Length > 0)
-                spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Game1.Render_PreviousMatrix);
+                spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, Game1.Render_PreviousMatrix[Game1.Render_PreviousMatrix_Index - 2]);
             else
                 spritebatch.Begin();
+            Game1.Render_PreviousMatrix_Index--;
             spritebatch.Draw(target, absolutpos.ToVector2(), new Rectangle(Point.Zero, size), Color.White);
 
         }

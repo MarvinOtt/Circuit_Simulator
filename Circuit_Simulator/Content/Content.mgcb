@@ -94,6 +94,12 @@
 /processorParam:TextureFormat=Compressed
 /build:UI/component_font.spritefont
 
+#begin UI/GridPaint_effect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:UI/GridPaint_effect.fx
+
 #begin UI/Project Spritemap.png
 /importer:TextureImporter
 /processor:TextureProcessor

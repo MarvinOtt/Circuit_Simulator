@@ -332,7 +332,8 @@ namespace Circuit_Simulator.UI
             Game1.graphics.GraphicsDevice.SetRenderTarget(target);
             Matrix matrix = Matrix.CreateTranslation(new Vector3(new Vector2(-absolutpos.X, -absolutpos.Y), 0));
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, matrix);
-            Game1.Render_PreviousMatrix = matrix;
+            Game1.Render_PreviousMatrix[Game1.Render_PreviousMatrix_Index] = matrix;
+            Game1.Render_PreviousMatrix_Index++;
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
             spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight)), BorderColor); //Chartreuse Best Color
             spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.font_color);
@@ -343,8 +344,8 @@ namespace Circuit_Simulator.UI
             spritebatch.End();
 
             Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            Game1.Render_PreviousMatrix_Index--;
 
-            
             spritebatch.Begin();
             spritebatch.Draw(target, new Rectangle(absolutpos, size), new Rectangle(Point.Zero, size), Color.White * trans);
 

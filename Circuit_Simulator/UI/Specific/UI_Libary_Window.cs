@@ -48,7 +48,8 @@ namespace Circuit_Simulator.UI.Specific
         protected override void Resize()
         {
             Libraries.ui_elements[0].ui_elements.ForEach(x => x.SetXSize(size.X - bezelsize * 2));
-
+            if (RenameBox.GetsDrawn)
+                RenameBox.size.X = Libraries.size.X;
         }
 
         public void Add_Library(CompLibrary libs)
@@ -125,11 +126,11 @@ namespace Circuit_Simulator.UI.Specific
         {
             IsChange = true;
             UI_Component comp = sender as UI_Component;
-            
             UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
             UI_Window.All_Highlight(UI_Handler.editcompwindow);
-            UI_Handler.editcompwindow.SetRootComp(Sim_Component.Components_Data[comp.ID]);
-            //UI_Handler.editcompwindow.ui_elements[0].
+            string[] names = comp.ID_Name.Split('|');
+            CompData compdata = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
+            UI_Handler.editcompwindow.SetRootComp(compdata);
 
         }
         public void DeleteComp(object sender)
@@ -157,6 +158,7 @@ namespace Circuit_Simulator.UI.Specific
             RenameBox.value = pressedElement.parent.ID_Name;
             RenameBox.ID_Name = pressedElement.parent.ID_Name;
             RenameBox.GetsUpdated = RenameBox.GetsDrawn = true;
+            RenameBox.IsTyping = true;
         }
 
         public void Rename_Finish(object sender)

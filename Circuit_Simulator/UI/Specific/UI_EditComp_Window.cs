@@ -26,6 +26,7 @@ namespace Circuit_Simulator.UI.Specific
             UI_String spooky = new UI_String(new Pos(0), Point.Zero, conf, "");
             UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name: ");
             Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 4, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
+            Box_Name.ValueChanged += BoxName_ValueChange;
             Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero);
             Code_Sim_Button = new UI_StringButton(new Pos(5, 5), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
             Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
@@ -50,15 +51,19 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void ChangedUpdate2True()
         {
-
             base.ChangedUpdate2True();
+        }
+
+        public void BoxName_ValueChange(object sender)
+        {
+            rootcomp.name = Box_Name.value;
+            UI_Handler.LibaryWindow.Reload_UI();
         }
 
         public void Code_Sim_Button_Pressed(object sender)
         {
             CodeBox_Sim.Show();
         }
-
         public void Code_AfterSim_Button_Pressed(object sender)
         {
             CodeBox_AfterSim.Show();

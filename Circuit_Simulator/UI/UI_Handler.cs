@@ -53,6 +53,7 @@ namespace Circuit_Simulator
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf;
 
+        UI_GridPaint gridpaint;
 
         public UI_Handler(ContentManager Content)
 	    {
@@ -89,6 +90,8 @@ namespace Circuit_Simulator
             genbutconf = new Generic_Conf(gen_conf);
             genbutconf.BorderColor = BorderColor;
             genbutconf.font = toolbarfont;
+
+            gridpaint = new UI_GridPaint(new Pos(0), new Point(200), 500, new Point(250));
 
             //Toolbar
             Toolbar = new UI_MultiElement<UI_Element>(new Pos(0, 0));
@@ -354,6 +357,7 @@ namespace Circuit_Simulator
             }
 
             //textbox.UpdateMain();
+            //gridpaint.UpdateMain();
 
             //input.UpdateMain();
             for (int i = 0; i < toolbar_menus.Length; ++i)
@@ -382,6 +386,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
 
+            //gridpaint.Draw(spritebatch);
             //textbox.Draw(spritebatch);
             //input.Draw(spritebatch);
             dragcomp.Draw(spritebatch);

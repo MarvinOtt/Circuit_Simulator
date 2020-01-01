@@ -17,7 +17,7 @@ namespace Circuit_Simulator.UI
 
         public int final_value;
         public string value = "";
-        bool IsTyping;
+        public bool IsTyping;
         int inputtype;
         Rectangle hitbox;
         Keys[] newkeys;
@@ -100,7 +100,7 @@ namespace Circuit_Simulator.UI
                                 break;
 
                             case 3: //Text
-                                if((int)newkeys[i] >= 65 && (int)newkeys[i] <= 90 && value.Length <= 16)
+                                if((int)newkeys[i] >= 65 && (int)newkeys[i] <= 90 && value.Length <= 42)
                                 {
                                     if(Game1.kb_states.New.AreKeysDown(Keys.LeftShift) || Game1.kb_states.New.AreKeysDown(Keys.RightShift))
                                     {
