@@ -121,6 +121,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             IsChange = true;
             UI_Component comp = sender as UI_Component;
+            
             UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
             UI_Window.All_Highlight(UI_Handler.editcompwindow);
             UI_Handler.editcompwindow.rootcomp = Sim_Component.Components_Data[comp.ID];
@@ -202,10 +203,10 @@ namespace Circuit_Simulator.UI.Specific
             //    NeedSavingString.GetsUpdated = NeedSavingString.GetsDrawn = true;
             //}
 
+            
             base.UpdateSpecific();
             Libraries.size = new Point(size.X - bezelsize * 2, size.Y - bezelsize * 2 - Libraries.pos.Y - UI_Handler.buttonheight);
-
-
+            base.UpdatePos();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

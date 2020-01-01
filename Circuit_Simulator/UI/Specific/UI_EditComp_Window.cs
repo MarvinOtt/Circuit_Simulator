@@ -32,6 +32,12 @@ namespace Circuit_Simulator.UI.Specific
             Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
         }
 
+        public override void ChangedUpdate2True()
+        {
+
+            base.ChangedUpdate2True();
+        }
+
         public void Code_Sim_Button_Pressed(object sender)
         {
             UI_Handler.CodeBox_Sim.Show();
