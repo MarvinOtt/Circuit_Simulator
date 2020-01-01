@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 using static Circuit_Simulator.UI.UI_Configs;
 using static Circuit_Simulator.UI.UI_STRUCTS;
 
-namespace Circuit_Simulator.UI.TextBox
+namespace Circuit_Simulator.UI
 {
     public class UI_TextBox : UI_Element
     {
         Generic_Conf conf;
         System.Windows.Forms.Form form;
-        Scintilla t;
+        public Scintilla t;
 
         public UI_TextBox(Pos pos, Point size, Generic_Conf conf) : base(new Pos(-10), new Point(-1))
         {
