@@ -194,7 +194,7 @@ namespace Circuit_Simulator
 
 
             //EditCompWindow
-            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
+            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
 
             // Code Boxes
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), gen_conf);
