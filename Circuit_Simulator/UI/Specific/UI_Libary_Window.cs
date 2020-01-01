@@ -53,8 +53,10 @@ namespace Circuit_Simulator.UI.Specific
         protected override void Resize()
         {
             Libraries.ui_elements[0].ui_elements.ForEach(x => x.SetXSize(size.X - bezelsize * 2));
-            if (RenameBox.GetsDrawn)
-                RenameBox.size.X = Libraries.size.X;
+            if (RenameBox1.GetsDrawn)
+                RenameBox1.size.X = Libraries.size.X;
+            if (RenameBox2.GetsDrawn)
+                RenameBox2.size.X = Libraries.size.X;
         }
 
         public void Add_Library(CompLibrary libs)
