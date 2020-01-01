@@ -115,6 +115,11 @@ namespace Circuit_Simulator.UI.Specific
         //}
         public void AddComp(object sender)
         {
+            IsChange = true;
+            UI_Component comp = sender as UI_Component;
+            UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
+            UI_Window.All_Highlight(UI_Handler.editcompwindow);
+            UI_Handler.editcompwindow.rootcomp = Sim_Component.Components_Data[comp.ID];
 
         }
         public void EditComp(object sender)
@@ -124,7 +129,8 @@ namespace Circuit_Simulator.UI.Specific
             
             UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
             UI_Window.All_Highlight(UI_Handler.editcompwindow);
-            UI_Handler.editcompwindow.rootcomp = Sim_Component.Components_Data[comp.ID];
+            UI_Handler.editcompwindow.SetRootComp(Sim_Component.Components_Data[comp.ID]);
+            //UI_Handler.editcompwindow.ui_elements[0].
 
         }
         public void DeleteComp(object sender)
