@@ -29,8 +29,6 @@ namespace Circuit_Simulator.UI
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
             IsToggle = false;
-            if (conf.behav == 2)
-                IsActivated = false;
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
                 IsHovered = true;
@@ -47,8 +45,6 @@ namespace Circuit_Simulator.UI
                     GotActivatedRight(this);
                 }
             }
-            else
-                IsHovered = false;
         }
 
         protected override void UpdateAlways()
@@ -56,6 +52,8 @@ namespace Circuit_Simulator.UI
             Rectangle hitbox = new Rectangle(absolutpos, size);
             if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed)
                 IsHovered = false;
+            if (conf.behav == 2)
+                IsActivated = false;
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

@@ -124,7 +124,7 @@ namespace Circuit_Simulator
                 CompData curdata = Sim_Component.Components_Data[i];
                 if (curdata.IsUpdateAfterSim)
                 {
-                    code_withafterupdatefuncs = code_withafterupdatefuncs.Insert(afterupdatefuncpos, curdata.Code_AfterSimAction);
+                    code_withafterupdatefuncs = code_withafterupdatefuncs.Insert(afterupdatefuncpos, curdata.Code_AfterSim);
                 }
             }
             string pathtoexe = Directory.GetCurrentDirectory();
@@ -153,7 +153,7 @@ namespace Circuit_Simulator
                 CompData curdata = Sim_Component.Components_Data[i];
                 if (curdata.IsUpdateAfterSim)
                 {
-                    IntPtr AddressOfFunc_AfterSimUpdate = DLL_Methods.GetProcAddress(SimDLL_Handle, curdata.Code_AfterSimAction_FuncName);
+                    IntPtr AddressOfFunc_AfterSimUpdate = DLL_Methods.GetProcAddress(SimDLL_Handle, curdata.Code_AfterSim_FuncName);
 
                     curdata.AfterSimAction = (CompData.AfterSimAction_Prototype)Marshal.GetDelegateForFunctionPointer(AddressOfFunc_AfterSimUpdate, typeof(CompData.AfterSimAction_Prototype));
                 }

@@ -14,8 +14,8 @@ namespace Circuit_Simulator.COMP
         public List<ComponentPixel>[] data;
         public string name;
         public string catagory;
-        public string Code_AfterSimAction, Code_Sim;
-        public string Code_Sim_FuncName, Code_AfterSimAction_FuncName;
+        public string Code_AfterSim, Code_Sim;
+        public string Code_Sim_FuncName, Code_AfterSim_FuncName;
         public Rectangle[] bounds;
         public int currentrotation;
         public int pin_num, OverlayStateID, internalstate_length;
@@ -168,14 +168,14 @@ namespace Circuit_Simulator.COMP
             stream.Write(BitConverter.GetBytes(ClickAction_Type), 0, 4);
             if (IsUpdateAfterSim)
             {
-                bytearray = Code_AfterSimAction.GetBytes();
+                bytearray = Code_AfterSim.GetBytes();
                 stream.Write(bytearray, 0, bytearray.Length);
             }
             bytearray = Code_Sim.GetBytes();
             stream.Write(bytearray, 0, bytearray.Length);
             if (IsUpdateAfterSim)
             {
-                bytearray = Code_AfterSimAction_FuncName.GetBytes();
+                bytearray = Code_AfterSim_FuncName.GetBytes();
                 stream.Write(bytearray, 0, bytearray.Length);
             }
             bytearray = Code_Sim_FuncName.GetBytes();

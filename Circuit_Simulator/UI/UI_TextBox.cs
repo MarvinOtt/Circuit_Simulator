@@ -13,13 +13,13 @@ using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.TextBox
 {
-    class UI_TextBox : UI_Element
+    public class UI_TextBox : UI_Element
     {
         Generic_Conf conf;
         System.Windows.Forms.Form form;
         Scintilla t;
 
-        public UI_TextBox(Pos pos, Point size, Generic_Conf conf) : base(pos, size)
+        public UI_TextBox(Pos pos, Point size, Generic_Conf conf) : base(new Pos(-10), new Point(-1))
         {
             form = new System.Windows.Forms.Form();
             t = new Scintilla();
@@ -29,7 +29,7 @@ namespace Circuit_Simulator.UI.TextBox
             t.Name = "Code Editor";
             t.Font = new System.Drawing.Font("Times New Roman", 16);
             t.BackColor = System.Drawing.Color.Black;
-            t.Size = new System.Drawing.Size(200, 200);
+            t.Size = new System.Drawing.Size(size.X, size.Y);
             t.VScrollBar = true;
             t.HScrollBar = false;
             t.Lexer = Lexer.Cpp;
@@ -78,8 +78,12 @@ namespace Circuit_Simulator.UI.TextBox
             t.CaretForeColor = System.Drawing.Color.White;
             t.SetSelectionBackColor(true, System.Drawing.Color.FromArgb(100, 100, 100));
             form.Controls.Add(t);
+            form.MinimizeBox = false;
             form.Resize += Form_Resize;
+            //form.LostFocus += Form_LostFocus;
+            form.Deactivate += Form_LostFocus;
             form.FormClosing += Form_Closed;
+            //form. += Form_LostFocus;
             Form_Resize(null, null);
             
         }
@@ -134,7 +138,7 @@ namespace Circuit_Simulator.UI.TextBox
 
         private void scintilla_InsertCheck(object sender, InsertCheckEventArgs e)
         {
-            if ((e.Text.EndsWith("\r") || e.Text.EndsWith("\n")))
+            if ((e.Text.EndsWith("\r") || e.Text.EndsWith("\n")) && e.Text.Length > 1)
             {
                 e.Text.Remove(e.Text.Length - 2);
                 var curLine = t.LineFromPosition(e.Position);
@@ -159,10 +163,20 @@ namespace Circuit_Simulator.UI.TextBox
             form.Hide();
         }
 
+        private void Form_LostFocus(object sender, EventArgs e)
+        {
+            form.BringToFront();
+            form.Activate();
+            form.Hide();
+        }
+
+        public void Show()
+        {
+            form.Show();
+        }
+
         protected override void UpdateSpecific()
         {
-            if (Game1.kb_states.New.IsKeyDown(Keys.B))
-                form.Show();
             //t.Size = new System.Drawing.Size(form.Width - (System.Windows.Forms.SystemInformation.VerticalScrollBarWidth - 1), form.Height - (40 - 1));
             //base.UpdateSpecific();
         }

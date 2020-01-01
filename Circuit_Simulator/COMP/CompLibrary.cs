@@ -185,10 +185,10 @@ namespace Circuit_Simulator.COMP
                     stream.Read(intbuffer, 0, 4);
                     newcomp.ClickAction_Type = BitConverter.ToInt32(intbuffer, 0);
                     if(IsUpdateAfterSim)
-                        newcomp.Code_AfterSimAction = stream.ReadNullTerminated();
+                        newcomp.Code_AfterSim = stream.ReadNullTerminated();
                     newcomp.Code_Sim = stream.ReadNullTerminated();
                     if (IsUpdateAfterSim)
-                        newcomp.Code_AfterSimAction_FuncName = stream.ReadNullTerminated();
+                        newcomp.Code_AfterSim_FuncName = stream.ReadNullTerminated();
                     newcomp.Code_Sim_FuncName = stream.ReadNullTerminated();
 
                     newcomp.Finish();

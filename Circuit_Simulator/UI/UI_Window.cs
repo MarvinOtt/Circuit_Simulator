@@ -17,6 +17,7 @@ namespace Circuit_Simulator.UI
 
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
+        private UI_TexButton ExitButton;
         RenderTarget2D target;
         public Generic_Conf conf;
         string Title;
@@ -46,7 +47,9 @@ namespace Circuit_Simulator.UI
             target = new RenderTarget2D(Game1.graphics.GraphicsDevice, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width, GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height, false, SurfaceFormat.Bgra32, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             if (tex == null)
                 tex = Game1.content.Load<Texture2D>("UI\\Window_SM");
-            Add_UI_Elements(new UI_TexButton(new Pos(-18, 2, ORIGIN.TR), new Point(16), new Point(0), tex, UI_Handler.gen_conf)); //X Button
+            ExitButton = new UI_TexButton(new Pos(-18, 2, ORIGIN.TR), new Point(16), new Point(0), tex, UI_Handler.gen_conf);
+            ExitButton.GotActivatedLeft += Exit_Pressed;
+            Add_UI_Elements(ExitButton); //X Button
             All_Windows.Add(this);
 
 
@@ -79,10 +82,15 @@ namespace Circuit_Simulator.UI
 
         }
 
+        public void Exit_Pressed(object sender)
+        {
+            GetsUpdated = GetsDrawn = false;
+        }
+
         protected override void UpdateSpecific()
         {
-            if (((UI_TexButton)ui_elements[0]).IsActivated)
-                GetsUpdated = GetsDrawn = false;
+            //if (((UI_TexButton)ui_elements[0]).IsActivated)
+            //    GetsUpdated = GetsDrawn = false;
             if (size.Y >= Game1.Screenheight)
                 size.Y = Game1.Screenheight;
 
@@ -319,24 +327,24 @@ namespace Circuit_Simulator.UI
                 trans = MathHelper.Clamp(0.0f + closestdist * 0.0035f, 0.15f, 0.5f);
             }
             spritebatch.End();
-            Point oldabsolutepos = absolutpos;
-            absolutpos = Point.Zero;
 
 
             Game1.graphics.GraphicsDevice.SetRenderTarget(target);
-            spritebatch.Begin();
-            spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, size), BackgroundColor);
-            spritebatch.DrawFilledRectangle(new Rectangle(Point.Zero, new Point(size.X, headheight)), BorderColor); //Chartreuse Best Color
-            spritebatch.DrawString(conf.font, Title, Vector2.Zero + Title_pos, conf.font_color);
+            Matrix matrix = Matrix.CreateTranslation(new Vector3(new Vector2(-absolutpos.X, -absolutpos.Y), 0));
+            spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, matrix);
+            Game1.Render_PreviousMatrix = matrix;
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), BackgroundColor);
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, headheight)), BorderColor); //Chartreuse Best Color
+            spritebatch.DrawString(conf.font, Title, absolutpos.ToVector2() + Title_pos, conf.font_color);
 
             base.DrawSpecific(spritebatch);
 
-            spritebatch.DrawHollowRectangle(new Rectangle(Point.Zero, size), BorderColor, 1);
+            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), BorderColor, 1);
             spritebatch.End();
 
             Game1.graphics.GraphicsDevice.SetRenderTarget(null);
 
-            absolutpos = oldabsolutepos;
+            
             spritebatch.Begin();
             spritebatch.Draw(target, new Rectangle(absolutpos, size), new Rectangle(Point.Zero, size), Color.White * trans);
 

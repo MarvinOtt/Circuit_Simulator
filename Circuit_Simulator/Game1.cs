@@ -74,6 +74,7 @@ namespace Circuit_Simulator
         public static System.Windows.Forms.Form form;
         public static event EventHandler GraphicsChanged;
         public static Simulator simulator;
+        public static Matrix Render_PreviousMatrix;
         SpriteBatch spriteBatch;
         public static SpriteFont basefont;
 

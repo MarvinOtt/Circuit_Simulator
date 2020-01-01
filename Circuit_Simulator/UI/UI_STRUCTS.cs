@@ -73,22 +73,27 @@ namespace Circuit_Simulator.UI
 
             public void Update()
             {
-                if(parent != null && dest_origin != ORIGIN.DEFAULT)
+                if(parent != null)
                 {
                     if(dest_origin == ORIGIN.TR)
                     {
-                        X_abs = parent.size.X + X;
-                        Y_abs = Y;
+                        X_abs = parent.pos.X_abs + parent.size.X + X;
+                        Y_abs = parent.pos.Y_abs + Y;
                     }
                     else if(dest_origin == ORIGIN.BR)
                     {
-                        X_abs = parent.size.X + X;
-                        Y_abs = parent.size.Y + Y;
+                        X_abs = parent.pos.X_abs + parent.size.X + X;
+                        Y_abs = parent.pos.Y_abs + parent.size.Y + Y;
                     }
                     else if (dest_origin == ORIGIN.BL)
                     {
-                        X_abs = X;
-                        Y_abs = parent.size.Y + Y;
+                        X_abs = parent.pos.X_abs + X;
+                        Y_abs = parent.pos.Y_abs + parent.size.Y + Y;
+                    }
+                    else
+                    {
+                        X_abs = parent.pos.X_abs + X;
+                        Y_abs = parent.pos.Y_abs + Y;
                     }
                 }
                 else

@@ -53,7 +53,9 @@ namespace Circuit_Simulator
         public static UI_List<UI_Dropdown_Button> wire_ddbl;
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf;
-        UI_TextBox textbox;
+
+        //Code Boxes
+        public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
 
         public UI_Handler(ContentManager Content)
 	    {
@@ -90,8 +92,6 @@ namespace Circuit_Simulator
             genbutconf = new Generic_Conf(gen_conf);
             genbutconf.BorderColor = BorderColor;
             genbutconf.font = toolbarfont;
-
-            //textbox = new UI_TextBox(new Pos(300, 300), new Point(200, 200), componentconf);
 
             //Toolbar
             Toolbar = new UI_MultiElement<UI_Element>(new Pos(0, 0));
@@ -189,12 +189,12 @@ namespace Circuit_Simulator
             LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = false;
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
 
-
-
             //EditCompWindow
             editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
 
-            
+            // Code Boxes
+            CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), gen_conf);
+            CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), gen_conf);
 
 
             InitializeUISettings(spriteBatch);

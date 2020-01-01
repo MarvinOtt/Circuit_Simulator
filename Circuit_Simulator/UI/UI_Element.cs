@@ -100,7 +100,7 @@ namespace Circuit_Simulator
         public virtual void UpdatePos()
         {
             pos.Update();
-            absolutpos = pos.parent == null ? pos.pos : pos.pos + pos.parent.absolutpos;
+            absolutpos = pos.pos;// pos.parent == null ? pos.pos : pos.pos + pos.parent.pos.pos;
             _child?.UpdatePos();
         }
 
@@ -144,7 +144,7 @@ namespace Circuit_Simulator
 
         public void Draw(SpriteBatch spritebatch)
         {
-            UpdatePos();
+            //UpdatePos();
             //absolutpos = parent == null ? pos : pos + parent.absolutpos;
             //if (parent != null && CanBeSizeRelated)
             //{
