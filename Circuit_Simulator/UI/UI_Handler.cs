@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using Circuit_Simulator.COMP;
 using Circuit_Simulator.UI;
 using Circuit_Simulator.UI.Specific;
-using Circuit_Simulator.UI.TextBox;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -54,8 +53,6 @@ namespace Circuit_Simulator
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf;
 
-        //Code Boxes
-        public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
 
         public UI_Handler(ContentManager Content)
 	    {
@@ -195,10 +192,6 @@ namespace Circuit_Simulator
 
             //EditCompWindow
             editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
-
-            // Code Boxes
-            CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), gen_conf);
-            CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), gen_conf);
 
 
             InitializeUISettings(spriteBatch);

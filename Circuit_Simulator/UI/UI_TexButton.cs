@@ -10,7 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using static Circuit_Simulator.UI.UI_Configs;
 using static Circuit_Simulator.UI.UI_STRUCTS;
 
-namespace Circuit_Simulator
+namespace Circuit_Simulator.UI
 {
     public class UI_TexButton : UI_Button
     {

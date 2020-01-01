@@ -17,6 +17,8 @@ namespace Circuit_Simulator.UI.Specific
         public UI_ValueInput Name;
         public UI_Scrollable<UI_Element> Features;
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
+        //Code Boxes
+        public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
 
         public UI_EditComp_Window(Pos pos, Point size, string title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size, title, minsize, conf, IsResizeable )
         {
@@ -27,15 +29,20 @@ namespace Circuit_Simulator.UI.Specific
             Features.Add_UI_Elements(Code_Sim_Button, Code_AfterSim_Button);
             GetsUpdated = GetsDrawn = false;
             Add_UI_Elements(Name, Features);
-            Resize();
-            Code_Sim_Button.ID_Name = "1234";
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
             Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
+
+            // Code Boxes
+            CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
+            CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
+            Resize();
         }
         public void SetRootComp(CompData comp)
         {
             rootcomp = comp;
             Name.value = comp.name;
+            CodeBox_Sim.t.Text = comp.Code_Sim;
+            CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
         }
 
         public override void ChangedUpdate2True()
@@ -46,12 +53,12 @@ namespace Circuit_Simulator.UI.Specific
 
         public void Code_Sim_Button_Pressed(object sender)
         {
-            UI_Handler.CodeBox_Sim.Show();
+            CodeBox_Sim.Show();
         }
 
         public void Code_AfterSim_Button_Pressed(object sender)
         {
-            UI_Handler.CodeBox_AfterSim.Show();
+            CodeBox_AfterSim.Show();
         }
 
         protected override void Resize()
