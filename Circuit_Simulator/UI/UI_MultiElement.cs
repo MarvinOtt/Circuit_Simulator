@@ -67,7 +67,7 @@ namespace Circuit_Simulator
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
 	    {
-		    for (int i = 0; i < ui_elements.Count; ++i)
+		    for (int i = ui_elements.Count - 1; i >= 0; --i)
 		    {
 			    ui_elements[i].Draw(spritebatch);
 		    }

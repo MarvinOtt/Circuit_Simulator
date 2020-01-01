@@ -178,17 +178,19 @@ namespace Circuit_Simulator
 
 
             //EditLib
-            EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 2)));
+            EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 3)));
             UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
             UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Library", true, componentconf);
-            EditLib.Add_UI_Elements(NewComp, Dellib);
+            UI_StringButton Rename = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, Dellib), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
+            EditLib.Add_UI_Elements(NewComp, Dellib, Rename);
             EditLib.GetsUpdated = EditLib.GetsDrawn = false;
+
+
 
             //Libary Window
             LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
             LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = false;
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
-
 
 
             //EditCompWindow
@@ -290,6 +292,7 @@ namespace Circuit_Simulator
                     
                     EditLib.GetsUpdated = EditLib.GetsDrawn = false;
                 }
+            
             });
            
 

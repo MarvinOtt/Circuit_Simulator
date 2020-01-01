@@ -15,16 +15,35 @@ namespace Circuit_Simulator.UI
     {
         public Generic_Conf conf;
 
+        public int final_value;
         public string value = "";
         bool IsTyping;
         int inputtype;
         Rectangle hitbox;
         Keys[] newkeys;
         Keys[] oldkeys;
+
+        public delegate void Value_Changed_Handler(object sender);
+        public event Value_Changed_Handler ValueChanged = delegate { };
+
         public UI_ValueInput(Pos pos, Point size, Generic_Conf conf, int inputtype) : base(pos, size)
         {
             this.conf = conf;
             this.inputtype = inputtype;
+            ValueChanged += ValueChange;
+        }
+
+        public void ValueChange(object sender)
+        {
+            if (inputtype == 1)
+            {
+                try
+                {
+                    final_value = int.Parse(value);
+                }
+                catch (Exception exp)
+                { }
+            }
         }
 
         protected override void UpdateSpecific()
@@ -40,16 +59,23 @@ namespace Circuit_Simulator.UI
                     IsTyping = true;
                 }
             }
-            else if (!hitbox.Contains(Game1.mo_states.New.Position))
+            else if (!hitbox.Contains(Game1.mo_states.New.Position) && IsTyping)
             {
-                if (Game1.mo_states.IsLeftButtonToggleOn())
+                if (Game1.mo_states.IsLeftButtonToggleOff() || Game1.mo_states.IsRightButtonToggleOff())
                 {
                     IsTyping = false;
+                    ValueChanged(this);
                 }
+            }
+            if (IsTyping && Game1.kb_states.New.IsKeyDown(Keys.Enter))
+            {
+                IsTyping = false;
+                ValueChanged(this);
             }
 
             if (IsTyping)
             {
+                UI_Handler.UI_Active_State = UI_Handler.UI_Active_Main;
                 newkeys = Game1.kb_states.New.GetPressedKeys();
                 oldkeys = Game1.kb_states.Old.GetPressedKeys();
                 for (int i = 0; i < newkeys.Length; i++)
@@ -89,7 +115,9 @@ namespace Circuit_Simulator.UI
                                     value += ((int)newkeys[i] - 48).ToString();
                                 }
                                 break;
-                         
+                            default:
+                                break;
+
                         }
                         if ((int)newkeys[i] == 8 && value.Length > 0)
                         {
