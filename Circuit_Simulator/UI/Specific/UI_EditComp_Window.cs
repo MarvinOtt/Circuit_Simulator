@@ -17,6 +17,8 @@ namespace Circuit_Simulator.UI.Specific
         public UI_ValueInput Box_Name;
         public UI_Scrollable<UI_Element> Features;
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
+        UI_GridPaint gridpaint;
+
         //Code Boxes
         public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
 
@@ -30,9 +32,15 @@ namespace Circuit_Simulator.UI.Specific
             Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero);
             Code_Sim_Button = new UI_StringButton(new Pos(5, 5), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
             Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
-            Features.Add_UI_Elements(spooky, Code_Sim_Button, Code_AfterSim_Button);
-            GetsUpdated = GetsDrawn = false;
-            Add_UI_Elements(Box_Name_Label,Box_Name, Features);
+            gridpaint = new UI_GridPaint(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_AfterSim_Button), new Point(400), 300, new Point(150), new Point(-2, 6));
+            gridpaint.UpdateFunctions.Add(delegate ()
+            {
+                if (new Rectangle(gridpaint.absolutpos, gridpaint.size).Contains(Game1.mo_states.New.Position))
+                    Features.DenyScroll = true;
+            });
+            Features.Add_UI_Elements(spooky, Code_Sim_Button, Code_AfterSim_Button, gridpaint);
+            Add_UI_Elements(Box_Name_Label, Box_Name, Features);
+            
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
             Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
 
@@ -40,6 +48,7 @@ namespace Circuit_Simulator.UI.Specific
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
             CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
             Resize();
+            GetsUpdated = GetsDrawn = false;
         }
         public void SetRootComp(CompData comp)
         {
@@ -47,6 +56,8 @@ namespace Circuit_Simulator.UI.Specific
             Box_Name.value = comp.name;
             CodeBox_Sim.t.Text = comp.Code_Sim;
             CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
+            gridpaint.pixel = rootcomp.data[0];
+            gridpaint.ApplyPixel();
         }
 
         public override void ChangedUpdate2True()

@@ -12,6 +12,7 @@ namespace Circuit_Simulator.UI
     public class UI_Scrollable<T> : UI_MultiElement<T> where T : UI_Element
     {
         private RenderTarget2D target;
+        public bool DenyScroll = false;
 
         public UI_Scrollable(Pos pos, Point size) : base(pos, size)
         {
@@ -26,51 +27,60 @@ namespace Circuit_Simulator.UI
 
         protected override void UpdateSpecific()
         {
+            UI_Handler.IsInScrollable = true;
+            UI_Handler.IsInScrollable_Bounds = new Rectangle(absolutpos, size);
             //if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
             //    ui_elements.ForEach(x => x.GetsUpdated = true);
             //else
             //    ui_elements.ForEach(x => x.GetsUpdated = false);
-            int minpos = ui_elements.Min(x => x.pos.Y_abs - pos.Y_abs);
-            int maxpos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
-            int ysize = maxpos - minpos;
-            if (ysize <= size.Y && minpos != 0)
-                ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= minpos; } });
-            else if(ysize > size.Y)
+            if (!DenyScroll)
             {
-                if(minpos < 0 && maxpos < size.Y)
-                    ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += (size.Y - maxpos); } });
-                if (minpos > 0 && maxpos > size.Y)
-                    ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= (minpos); } });
-                UpdatePos();
-            }
+                int minpos = ui_elements.Min(x => x.pos.Y_abs - pos.Y_abs);
+                int maxpos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
+                int ysize = maxpos - minpos;
+                if (ysize <= size.Y && minpos != 0)
+                    ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= minpos; } });
+                else if (ysize > size.Y)
+                {
+                    if (minpos < 0 && maxpos < size.Y)
+                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += (size.Y - maxpos); } });
+                    if (minpos > 0 && maxpos > size.Y)
+                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= (minpos); } });
+                    UpdatePos();
+                }
 
-            if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && ysize > size.Y)
-            {
-                if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && ysize > size.Y)
                 {
-                    ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
-                    UpdatePos();
-                    int maxypos = 0;
-                    maxypos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
-                    if (maxypos < size.Y)
-                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += size.Y - maxypos; } });
-                }
-                if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
-                {
-                    ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
-                    UpdatePos();
-                    int minypos = ui_elements.Min(x => x.pos.Y_abs - pos.Y_abs);
-                    if(minypos > 0)
-                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= minypos; } });
+                    if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
+                    {
+                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
+                        UpdatePos();
+                        int maxypos = 0;
+                        maxypos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
+                        if (maxypos < size.Y)
+                            ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += size.Y - maxypos; } });
+                    }
+                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
+                    {
+                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
+                        UpdatePos();
+                        int minypos = ui_elements.Min(x => x.pos.Y_abs - pos.Y_abs);
+                        if (minypos > 0)
+                            ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= minypos; } });
+                    }
                 }
             }
+            DenyScroll = false;
             UpdatePos();
             base.UpdateSpecific();
         }
 
         protected override void UpdateAlways()
         {
+            UI_Handler.IsInScrollable = true;
+            UI_Handler.IsInScrollable_Bounds = new Rectangle(absolutpos, size);
             base.UpdateAlways();
+            UI_Handler.IsInScrollable = false;
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
