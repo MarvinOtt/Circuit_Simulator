@@ -50,7 +50,7 @@ namespace Circuit_Simulator.UI
         protected override void UpdateAlways()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed)
+            if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed || (UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)))
                 IsHovered = false;
             if (conf.behav == 2)
                 IsActivated = false;

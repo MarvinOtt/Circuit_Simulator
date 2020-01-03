@@ -14,17 +14,22 @@ namespace Circuit_Simulator.UI.Specific
     {
         int GridSize, zoom;
         Vector2 worldpos;
-        Point Origin;
+        Point Origin, minmaxzoom;
         Effect effect;
         Texture2D tex, logictex;
-        
+        byte[] data;
+        public bool DenyInteraction = false;
+        public List<ComponentPixel> pixel;
 
-        public UI_GridPaint(Pos pos, Point size, int GridSize, Point Origin) : base(pos, size)
+        public UI_GridPaint(Pos pos, Point size, int GridSize, Point Origin, Point minmaxzoom) : base(pos, size)
         {
             this.GridSize = GridSize;
             this.Origin = Origin;
+            this.minmaxzoom = minmaxzoom;
+            pixel = new List<ComponentPixel>();
             tex = new Texture2D(Game1.graphics.GraphicsDevice, size.X, size.Y);
             logictex = new Texture2D(Game1.graphics.GraphicsDevice, GridSize, GridSize, false, SurfaceFormat.Alpha8);
+            data = new byte[logictex.Width * logictex.Height];
             effect = Game1.content.Load<Effect>("UI\\GridPaint_effect");
             effect.Parameters["worldsizex"].SetValue(GridSize);
             effect.Parameters["worldsizey"].SetValue(GridSize);
@@ -40,9 +45,19 @@ namespace Circuit_Simulator.UI.Specific
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, zoom));
         }
 
+        public void ApplyPixel()
+        {
+            Array.Clear(data, 0, data.Length);
+            for(int i = 0; i < pixel.Count; ++i)
+            {
+                data[(pixel[i].pos.X + Origin.X) + (pixel[i].pos.Y + Origin.Y) * logictex.Width] = pixel[i].type;
+            }
+            logictex.SetData(data);
+        }
+
         protected override void UpdateSpecific()
         {
-            if (new Rectangle(pos.pos, size).Contains(Game1.mo_states.New.Position))
+            if (new Rectangle(pos.pos, size).Contains(Game1.mo_states.New.Position) && !DenyInteraction && !(UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)))
             {
                 #region Position and Zoom
 
@@ -60,29 +75,29 @@ namespace Circuit_Simulator.UI.Specific
 
                 if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
                 {
-                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue) // Zooming Out
+                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && zoom > minmaxzoom.X) // Zooming Out
                     {
                         zoom -= 1;
-                        Vector2 diff = worldpos - Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2();
-                        worldpos = Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2() + diff / 2;
+                        Vector2 diff = worldpos - (Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2());
+                        worldpos = (Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2()) + diff / 2;
                     }
-                    else // Zooming In
+                    else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && zoom < minmaxzoom.Y) // Zooming In
                     {
                         zoom += 1;
-                        Vector2 diff = worldpos - Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2();
+                        Vector2 diff = worldpos - (Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2());
                         worldpos += diff;
                     }
                 }
 
                 #endregion
-            }
 
-            int mouse_worldpos_X, mouse_worldpos_Y;
-            Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
+                int mouse_worldpos_X, mouse_worldpos_Y;
+                Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
+                effect.Parameters["mousepos_X"].SetValue(mouse_worldpos_X);
+                effect.Parameters["mousepos_Y"].SetValue(mouse_worldpos_Y);
+            }
             effect.Parameters["zoom"].SetValue((float)Math.Pow(2, zoom));
             effect.Parameters["coos"].SetValue(worldpos);
-            effect.Parameters["mousepos_X"].SetValue(mouse_worldpos_X);
-            effect.Parameters["mousepos_Y"].SetValue(mouse_worldpos_Y);
             base.UpdateSpecific();
         }
 

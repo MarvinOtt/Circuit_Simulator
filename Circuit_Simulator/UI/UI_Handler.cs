@@ -24,6 +24,8 @@ namespace Circuit_Simulator
         public ContentManager Content;
         public static UI_Element ZaWarudo;  //JoJo Reference
 	    private Texture2D Button_tex;
+        public static bool IsInScrollable = false;
+        public static Rectangle IsInScrollable_Bounds;
         public static bool UI_Element_Pressed, UI_IsWindowHide;
         public static int UI_Active_State;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
@@ -93,7 +95,7 @@ namespace Circuit_Simulator
             genbutconf.BorderColor = BorderColor;
             genbutconf.font = toolbarfont;
 
-            gridpaint = new UI_GridPaint(new Pos(0), new Point(200), 500, new Point(250));
+            //gridpaint = new UI_GridPaint(new Pos(100), new Point(200), 200, new Point(25));
 
             //Toolbar
             Toolbar = new UI_MultiElement<UI_Element>(new Pos(0, 0));
@@ -153,16 +155,13 @@ namespace Circuit_Simulator
             
             for(int i = 0; i < Simulator.LAYER_NUM; i++)
             {
-                Generic_Conf curconf = new Generic_Conf(gen_conf);
+                Generic_Conf curconf = new Generic_Conf(behave1conf);
                 curconf.tex_color = layer_colors[i];
                 wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+ Simulator.LAYER_NUM) + i+ Simulator.LAYER_NUM, 0), Button_tex, curconf));
             }
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + Simulator.LAYER_NUM) + Simulator.LAYER_NUM + Simulator.LAYER_NUM, 0), Button_tex, gen_conf));
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + Simulator.LAYER_NUM) + Simulator.LAYER_NUM + 1 + Simulator.LAYER_NUM, 0), Button_tex, gen_conf));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 7) + Simulator.LAYER_NUM + 7, 0), Button_tex, behave1conf));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 7) + Simulator.LAYER_NUM + 1 + 7, 0), Button_tex, behave1conf));
 
-
-
-           
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
 

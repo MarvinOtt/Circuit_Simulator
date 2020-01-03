@@ -45,7 +45,7 @@ float4 getcoloratpos(float x, float y)
 		OUT = compcols[0];
 	else if (type < 2.5f)
 		OUT = compcols[1];
-	else if (type < 3.5f)
+	else
 		OUT = compcols[2];
 
 	if (zoom > 2)
