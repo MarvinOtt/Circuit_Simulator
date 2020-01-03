@@ -115,7 +115,7 @@ namespace Circuit_Simulator
                 ButtonMenu_Config.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ConfigButton_Names[i], toolbarddconf2));
 
             ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Pos(0, 25));
-            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Test" };
+            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Layer Hotbar" };
             for (int i = 0; i < ViewButton_Names.Length; ++i)
             {
                 ButtonMenu_View.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i], toolbarddconf1));
@@ -188,9 +188,9 @@ namespace Circuit_Simulator
             {
                 Generic_Conf curconf = new Generic_Conf(behave1conf);
                 curconf.tex_color = layer_colors[i];
-                LayerSelectHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth * 3 + 2, sqarebuttonwidth * 3 / 4), new Point(0, sqarebuttonwidth * 4 + 3), Button_tex, curconf));
+                LayerSelectHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(buttonwidth, buttonheight), new Point(0, sqarebuttonwidth * 4 + 3), Button_tex, curconf));
             }
-            LayerSelectHotbar.GetsUpdated = LayerSelectHotbar.GetsDrawn = true;
+            (LayerSelectHotbar.ui_elements[0] as UI_TexButton).IsActivated = true;
             
             //EditLib options
             EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 3)));
@@ -303,7 +303,7 @@ namespace Circuit_Simulator
                         cur.IsActivated = false;
                 });
             }
-        
+
             EditLib.UpdateFunctions.Add(delegate ()
             {
                 if(Game1.mo_states.IsLeftButtonToggleOff())
@@ -323,6 +323,10 @@ namespace Circuit_Simulator
 
             });
 
+            for(int i = 0; i < LayerSelectHotbar.ui_elements.Count; ++i)
+            {
+                (LayerSelectHotbar.ui_elements[i] as UI_TexButton).GotToggledLeft += LayerHotBarButton_Pressed;
+            }
 
             // Wire MaskButton
             QuickHotbar.ui_elements[6].UpdateFunctions.Add(delegate ()
@@ -366,6 +370,24 @@ namespace Circuit_Simulator
                     FileHandler.Open();
                 }
             };
+        }
+
+        public void LayerHotBarButton_Pressed(object sender)
+        {
+            UI_TexButton cur = sender as UI_TexButton;
+            Simulator.currentlayer = LayerSelectHotbar.ui_elements.IndexOf(cur);
+            Simulator.sim_effect.Parameters["currentlayer"].SetValue(Simulator.currentlayer);
+            if (cur.IsActivated == false)
+                cur.IsActivated = true;
+            else
+            {
+                for (int i = 0; i < LayerSelectHotbar.ui_elements.Count; ++i)
+                {
+                    UI_TexButton curbut = (LayerSelectHotbar.ui_elements[i] as UI_TexButton);
+                    if (curbut != cur)
+                        curbut.IsActivated = false;
+                }
+            }
         }
 
         // Gets called when something of the Window or Graphics got changed

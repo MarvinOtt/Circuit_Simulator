@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Circuit_Simulator.COMP;
+using Circuit_Simulator.UI;
 
 namespace Circuit_Simulator
 {
@@ -220,7 +221,7 @@ namespace Circuit_Simulator
         public Sim_Component sim_comp;
         public Sim_INF_DLL sim_inf_dll;
 
-        Effect sim_effect, line_effect, iswirerender_effect;
+        public static Effect sim_effect, line_effect, iswirerender_effect;
         RenderTarget2D main_target, WireCalc_target;
         public static RenderTarget2D logic_target, sec_target;
         Network CalcNetwork;
@@ -248,7 +249,7 @@ namespace Circuit_Simulator
 
         #region INPUT
 
-        int currentlayer;
+        public static int currentlayer;
         int mo_worldposx, mo_worldposy;
         bool IsInGrid;
 
@@ -658,9 +659,17 @@ namespace Circuit_Simulator
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Down))
                     simspeed--;
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
+                {
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
                     currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+                }
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
+                {
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
                     currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+                }
 
                 UI_Handler.GeneralInfoBox.ui_elements[0].value = "Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString();
                 UI_Handler.GeneralInfoBox.ui_elements[1].value = "Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")";
