@@ -164,7 +164,7 @@ namespace Circuit_Simulator.UI.Specific
             RenameBox1.value = pressedElement.pos.parent.ID_Name;
             RenameBox1.ID_Name = pressedElement.pos.parent.ID_Name;
             RenameBox1.GetsUpdated = RenameBox1.GetsDrawn = true;
-            RenameBox1.IsTyping = true;
+            RenameBox1.Set2Typing();
         }
 
         public void RenameLib_Finish(object sender)
@@ -214,15 +214,14 @@ namespace Circuit_Simulator.UI.Specific
         {
             UI_StringButton pressedElement = sender as UI_StringButton;
             string[] names = pressedElement.parent.ID_Name.Split('|');
-
             UI_Component curUIcomp = Libraries.ui_elements[0].ui_elements.Find(x => x.cat.ID_Name == names[0]).Components.ui_elements.Find(x => x.ID_Name == pressedElement.parent.ID_Name);
-
 
             RenameBox2.pos = new Pos(Libraries.pos.X, (curUIcomp.absolutpos.Y - this.pos.Y), ORIGIN.DEFAULT, ORIGIN.DEFAULT, this);
             RenameBox2.size = curUIcomp.size;
             RenameBox2.value = names[1];
             RenameBox2.ID_Name = pressedElement.pos.parent.ID_Name;
             RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = true;
+            RenameBox2.Set2Typing();
         }
 
         public void RenameComp_Finish(object sender)
@@ -231,10 +230,7 @@ namespace Circuit_Simulator.UI.Specific
             CompData comp = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
             //UI_Component curcomp = Libraries.ui_elements[0].ui_elements.Find(x => x.cat.ID_Name == names[0]).Components.ui_elements.Find(x => x.ID_Name == UI_Handler.EditComp.ID_Name);
             if (RenameBox2.value.Length > 0)
-            {
                 comp.name = RenameBox2.value;
-                
-            }
             RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = false;
             Reload_UI();
 

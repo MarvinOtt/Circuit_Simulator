@@ -17,7 +17,8 @@ namespace Circuit_Simulator.UI
 
         public int final_value;
         public string value = "";
-        public bool IsTyping;
+        private string oldvalue;
+        private bool IsTyping;
         int inputtype;
         Rectangle hitbox;
         Keys[] newkeys;
@@ -46,6 +47,12 @@ namespace Circuit_Simulator.UI
             }
         }
 
+        public void Set2Typing()
+        {
+            IsTyping = true;
+            oldvalue = value;
+        }
+
         protected override void UpdateSpecific()
         {
             hitbox = new Rectangle(absolutpos, size);
@@ -70,6 +77,12 @@ namespace Circuit_Simulator.UI
             if (IsTyping && Game1.kb_states.New.IsKeyDown(Keys.Enter))
             {
                 IsTyping = false;
+                ValueChanged(this);
+            }
+            if (IsTyping && Game1.kb_states.New.IsKeyDown(Keys.Escape))
+            {
+                IsTyping = false;
+                value = oldvalue;
                 ValueChanged(this);
             }
 
@@ -144,8 +157,8 @@ namespace Circuit_Simulator.UI
                 if (DateTime.Now.Millisecond % 1000 < 500)
                 {
                     int Xsize = (int)conf.font.MeasureString(value).X;
-                    int Ysize = (int)conf.font.MeasureString("Test").Y;
-                    spritebatch.DrawFilledRectangle(new Rectangle(new Point(absolutpos.X + 5 + Xsize, absolutpos.Y + size.Y / 2 - Ysize / 2), new Point(1, Ysize)), Color.White);
+                    //int Ysize = (int)conf.font.MeasureString("Test").Y;
+                    spritebatch.DrawFilledRectangle(new Rectangle(new Point(absolutpos.X + 5 + Xsize, absolutpos.Y + 2), new Point(1, size.Y - 4)), Color.White);
                 }
             }
             spritebatch.DrawString(conf.font, value, (absolutpos + new Point(4, size.Y / 2 - (int)(conf.font.MeasureString(value).Y / 2))).ToVector2(), Color.White);
