@@ -78,14 +78,14 @@ namespace Circuit_Simulator.COMP
             bounds[rotation].Height = data[rotation].Max(x => (x.pos.Y - bounds[rotation].Y) + 1);
         }
 
-        public void addData(ComponentPixel dat)
+        public void addData(ComponentPixel dat, int offset = 0)
         {
             if (dat.type > Sim_Component.PINOFFSET)
                 pin_num++;
-            data[0].Add(dat);
-            data[1].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
-            data[2].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
-            data[3].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
+            data[(0 + offset) % 4].Add(dat);
+            data[(1 + offset) % 4].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
+            data[(2 + offset) % 4].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
+            data[(3 + offset) % 4].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
             for (int i = 0; i < 4; ++i)
                 CalculateBounds(i);
         }

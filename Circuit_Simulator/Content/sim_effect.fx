@@ -21,6 +21,7 @@ int copiedwidth, copiedheight, copiedposx, copiedposy; // Copying
 //int Selection_StartX, Selection_EndX, Selection_StartY, Selection_EndY; // Selecting
 int Screenwidth, Screenheight, worldsizex, worldsizey, mousepos_X, mousepos_Y;
 
+
 static float4 layercols[8] =
 {
 	float4(1, 0, 0, 1),

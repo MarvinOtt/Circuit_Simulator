@@ -13,6 +13,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_GridPaint : UI_Element
     {
         int GridSize, zoom;
+        public int currot;
         Vector2 worldpos;
         Point Origin, minmaxzoom;
         Effect effect;
@@ -41,6 +42,10 @@ namespace Circuit_Simulator.UI.Specific
             effect.Parameters["Screenheight"].SetValue(size.Y);
             effect.Parameters["origin_X"].SetValue(Origin.X);
             effect.Parameters["origin_Y"].SetValue(Origin.Y);
+
+            zoom = 4;
+            worldpos.X = (size.X / 2) - (GridSize / 2 + 0.5f) * (float)Math.Pow(2, zoom);
+            worldpos.Y = (size.Y / 2) - (GridSize / 2 + 0.5f) * (float)Math.Pow(2, zoom);
         }
 
         public void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
