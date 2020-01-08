@@ -26,7 +26,7 @@ namespace Circuit_Simulator.UI
             BorderColor = new Color(new Vector3(0.25f));
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             base.UpdateSpecific();
         }

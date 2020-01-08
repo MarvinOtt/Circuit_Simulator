@@ -93,7 +93,7 @@ namespace Circuit_Simulator.COMP
                 {
                     try
                     {
-                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\LIBRARYS";
+                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\LIBRARIES";
                         System.IO.Directory.CreateDirectory(savepath);
                         dialog.InitialDirectory = savepath;
                     }
@@ -104,7 +104,7 @@ namespace Circuit_Simulator.COMP
                     dialog.CheckPathExists = false;
                     dialog.CheckFileExists = false;
                     dialog.Title = "SaveAs";
-                    dialog.Filter = "CDL files (*.cdl)|*.cdl|All files (*.*)|*.*";
+                    dialog.Filter = "DCL files (*.dcl)|*.dcl|All files (*.*)|*.*";
                     dialog.FilterIndex = 1;
                     dialog.RestoreDirectory = true;
 
@@ -119,7 +119,39 @@ namespace Circuit_Simulator.COMP
             }
         }
 
+        public static CompLibrary LoadFromFile(bool AddToUsedLibraries)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+            try
+            {
+                string savepath = System.IO.Directory.GetCurrentDirectory() + "\\LIBRARIES";
+                System.IO.Directory.CreateDirectory(savepath);
+                dialog.InitialDirectory = savepath;
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("Error while trying to create Save folder: {0}", exp);
+                return null;
+            }
 
+            dialog.Multiselect = false;
+            dialog.CheckFileExists = true;
+            dialog.CheckPathExists = true;
+            dialog.Title = "Select File to Open";
+            dialog.Filter = "DCL files (*.dcl)|*.dcl|All files (*.*)|*.*";
+            dialog.FilterIndex = 1;
+            dialog.RestoreDirectory = false;
+            DialogResult dd = dialog.ShowDialog();
+            CompLibrary lib = null;
+            if (dd == DialogResult.OK)
+            {
+                string filename = dialog.FileName;
+                lib = new CompLibrary(null, filename, AddToUsedLibraries);
+                lib.Load();
+            }
+            dialog.Dispose();
+            return lib;
+        }
         public void Load()
         {
             try

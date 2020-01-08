@@ -53,7 +53,7 @@ namespace Circuit_Simulator.UI.Specific
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
 
             base.UpdateSpecific();

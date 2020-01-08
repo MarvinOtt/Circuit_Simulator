@@ -26,7 +26,7 @@ namespace Circuit_Simulator.UI
             this.conf = conf;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
             IsToggle = false;

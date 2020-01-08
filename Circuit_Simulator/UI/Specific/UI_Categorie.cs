@@ -67,7 +67,7 @@ namespace Circuit_Simulator.UI.Specific
             GotFolded(this);
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, height));
 

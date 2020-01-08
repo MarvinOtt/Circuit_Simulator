@@ -29,7 +29,7 @@ namespace Circuit_Simulator.UI.Specific
             base.ChangedUpdate2False();
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             base.UpdateSpecific();
             //Rectangle hitbox = new Rectangle(absolutpos, size);

@@ -175,7 +175,7 @@ namespace Circuit_Simulator.UI
             form.Show();
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             //t.Size = new System.Drawing.Size(form.Width - (System.Windows.Forms.SystemInformation.VerticalScrollBarWidth - 1), form.Height - (40 - 1));
             //base.UpdateSpecific();

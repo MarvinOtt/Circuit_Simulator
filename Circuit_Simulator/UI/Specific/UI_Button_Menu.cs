@@ -24,7 +24,7 @@ namespace Circuit_Simulator.UI
             this.size = size;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             size.X = parent.size.X;
             base.UpdateSpecific();

@@ -142,7 +142,7 @@ namespace Circuit_Simulator
                     dialog.CheckPathExists = false;
                     dialog.CheckFileExists = false;
                     dialog.Title = "SaveAs";
-                    dialog.Filter = "DCE files (*.dce)|*.dce|All files (*.*)|*.*";
+                    dialog.Filter = "DCE file (*.dce)|*.dce|All files (*.*)|*.*";
                     dialog.FilterIndex = 1;
                     dialog.RestoreDirectory = true;
 
@@ -153,7 +153,6 @@ namespace Circuit_Simulator
                         SaveFile = filename;
                         SaveToPath(filename);
                     }
-                    int breaki = 1;
                 }
             }
         }

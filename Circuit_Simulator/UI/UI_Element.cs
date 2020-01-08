@@ -132,7 +132,7 @@ namespace Circuit_Simulator
 		    }
         }
 
-        protected virtual void UpdateSpecific()
+        public virtual void UpdateSpecific()
         {
             // Should be overridden
         }

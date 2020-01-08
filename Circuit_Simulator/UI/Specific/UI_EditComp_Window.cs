@@ -86,7 +86,7 @@ namespace Circuit_Simulator.UI.Specific
             base.Resize();
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             base.UpdateSpecific();
         }

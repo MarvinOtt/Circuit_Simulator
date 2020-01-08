@@ -20,7 +20,7 @@ namespace Circuit_Simulator.UI.Specific
             GetsUpdated = false;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             pos.pos = Game1.mo_states.New.Position;
             UI_Handler.UI_Active_State = 2;

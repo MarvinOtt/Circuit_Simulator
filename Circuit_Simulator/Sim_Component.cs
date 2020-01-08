@@ -319,11 +319,11 @@ namespace Circuit_Simulator
             CompMayneedoverlay = new List<int>();
             Components_Data = new List<CompData>();
 
-            Sim_INF_DLL.LoadLibrarys(@"LIBRARYS\Main_Library");
+            Sim_INF_DLL.LoadLibrarys(@"LIBRARIES\Main_Library.dcl");
 
             // Basic Components Data
 
-//            CompLibrary compLibrary = new CompLibrary("Main_Library", @"LIBRARYS\Main_Library");
+//            CompLibrary compLibrary = new CompLibrary("Main_Library", @"LIBRARIES\Main_Library");
 //            CompData newcomp = new CompData("AND", "Gates", false, false, false);
 //            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
 //            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
