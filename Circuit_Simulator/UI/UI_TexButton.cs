@@ -51,21 +51,21 @@ namespace Circuit_Simulator.UI
             if (conf.behav == 1)
             {
                 if (!IsHovered && !IsActivated)                                                                                 //PassiveState
-                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), Color.White);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos, size), conf.tex_color);
                 else if (IsHovered && !IsActivated)                                                                             //Hover
                 {
                     spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
-                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), conf.tex_color);
                 }
                 else if (!IsHovered && IsActivated)                                                                             //Click
                 {
                     spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
-                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2 + 2), size), Color.White);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 2 + 2), size), conf.tex_color);
                 }
                 else                                                                                                            //ClickHover
                 {
                     spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
-                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), conf.tex_color);
                 }
             }
             else
@@ -75,12 +75,12 @@ namespace Circuit_Simulator.UI
                 else if(((new Rectangle(absolutpos, size)).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed))
                 {
                         spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
-                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), Color.White);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y * 3 + 3), size), conf.tex_color);
                 }
                 else
                 {
                         spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
-                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), Color.White);
+                    spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), conf.tex_color);
                 }
             }
         }  
