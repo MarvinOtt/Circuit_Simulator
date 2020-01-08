@@ -25,7 +25,7 @@ namespace Circuit_Simulator.UI
             //ui_elements.ForEach(x => x.parent = null);
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             UI_Handler.IsInScrollable = true;
             UI_Handler.IsInScrollable_Bounds = new Rectangle(absolutpos, size);

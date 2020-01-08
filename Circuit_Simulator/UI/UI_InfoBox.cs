@@ -35,7 +35,7 @@ namespace Circuit_Simulator.UI
         }
 
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             base.UpdateSpecific();
         }

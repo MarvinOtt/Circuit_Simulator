@@ -87,7 +87,7 @@ namespace Circuit_Simulator.UI
             GetsUpdated = GetsDrawn = false;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             //if (((UI_TexButton)ui_elements[0]).IsActivated)
             //    GetsUpdated = GetsDrawn = false;

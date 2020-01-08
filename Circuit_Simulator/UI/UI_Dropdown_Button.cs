@@ -22,7 +22,7 @@ namespace Circuit_Simulator.UI
             this.tex_pos = tex_pos;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
 

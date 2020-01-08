@@ -258,7 +258,7 @@ namespace Circuit_Simulator
                     Game1.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
             });
 
-            // Config for opening ComponentBox
+            // ComponentBox UI Toggle
             ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate () 
             {
                 Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[0];
@@ -267,7 +267,7 @@ namespace Circuit_Simulator
                 else
                     current.IsActivated = ComponentBox.GetsUpdated;
             });
-            // Config for opening Library Window
+            // Library Window UI Toggle
             ButtonMenu_Tools.ui_elements[0].UpdateFunctions.Add(delegate ()
             {
                 Button_Menu current = (Button_Menu)ButtonMenu_Tools.ui_elements[0];
@@ -276,6 +276,7 @@ namespace Circuit_Simulator
                 else
                     current.IsActivated = LibaryWindow.GetsUpdated;
             });
+            // QuickHotbar UI Toggle
             ButtonMenu_View.ui_elements[1].UpdateFunctions.Add(delegate ()
             {
                 Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[1];
@@ -283,6 +284,15 @@ namespace Circuit_Simulator
                     QuickHotbar.GetsUpdated = QuickHotbar.GetsDrawn = current.IsActivated;
                 else
                     current.IsActivated = QuickHotbar.GetsUpdated;
+            });
+            // Layer Select UI Toggle
+            ButtonMenu_View.ui_elements[2].UpdateFunctions.Add(delegate ()
+            {
+                Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[2];
+                if (current.IsToggle)
+                    LayerSelectHotbar.GetsUpdated = LayerSelectHotbar.GetsDrawn = current.IsActivated;
+                else
+                    current.IsActivated = LayerSelectHotbar.GetsUpdated;
             });
 
             //Configs for Main Toolbar Buttons

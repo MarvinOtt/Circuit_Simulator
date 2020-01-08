@@ -65,7 +65,7 @@ namespace Circuit_Simulator.UI.Specific
             PixelChanged();
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             if (new Rectangle(pos.pos, size).Contains(Game1.mo_states.New.Position) && !DenyInteraction && !(UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)))
             {

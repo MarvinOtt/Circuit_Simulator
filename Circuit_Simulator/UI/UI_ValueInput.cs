@@ -18,7 +18,7 @@ namespace Circuit_Simulator.UI
         public int final_value;
         public string value = "";
         private string oldvalue;
-        private bool IsTyping;
+        public bool IsTyping;
         int inputtype;
         Rectangle hitbox;
         Keys[] newkeys;
@@ -53,7 +53,7 @@ namespace Circuit_Simulator.UI
             oldvalue = value;
         }
 
-        protected override void UpdateSpecific()
+        public override void UpdateSpecific()
         {
             hitbox = new Rectangle(absolutpos, size);
 
