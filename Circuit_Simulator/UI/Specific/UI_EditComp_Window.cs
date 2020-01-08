@@ -38,6 +38,7 @@ namespace Circuit_Simulator.UI.Specific
                 if (new Rectangle(gridpaint.absolutpos, gridpaint.size).Contains(Game1.mo_states.New.Position))
                     Features.DenyScroll = true;
             });
+            gridpaint.PixelChanged += PixelChanged;
             Features.Add_UI_Elements(spooky, Code_Sim_Button, Code_AfterSim_Button, gridpaint);
             Add_UI_Elements(Box_Name_Label, Box_Name, Features);
             
@@ -56,8 +57,18 @@ namespace Circuit_Simulator.UI.Specific
             Box_Name.value = comp.name;
             CodeBox_Sim.t.Text = comp.Code_Sim;
             CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
-            gridpaint.pixel = rootcomp.data[0];
+            gridpaint.pixel.Clear();
+            gridpaint.pixel.AddRange(rootcomp.data[0]);
             gridpaint.ApplyPixel();
+        }
+
+        public void PixelChanged()
+        {
+            rootcomp.ClearAllPixel();
+            for(int i = 0; i < gridpaint.pixel.Count; ++i)
+            {
+                rootcomp.addData(gridpaint.pixel[i]);
+            }
         }
 
         public override void ChangedUpdate2True()

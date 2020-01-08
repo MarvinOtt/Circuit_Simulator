@@ -20,6 +20,10 @@ namespace Circuit_Simulator.UI.Specific
         byte[] data;
         public bool DenyInteraction = false;
         public List<ComponentPixel> pixel;
+        public int curplacetype = 0;
+
+        public delegate void PixelChanged_Handler();
+        public event PixelChanged_Handler PixelChanged = delegate { };
 
         public UI_GridPaint(Pos pos, Point size, int GridSize, Point Origin, Point minmaxzoom) : base(pos, size)
         {
@@ -53,6 +57,7 @@ namespace Circuit_Simulator.UI.Specific
                 data[(pixel[i].pos.X + Origin.X) + (pixel[i].pos.Y + Origin.Y) * logictex.Width] = pixel[i].type;
             }
             logictex.SetData(data);
+            PixelChanged();
         }
 
         protected override void UpdateSpecific()
@@ -88,11 +93,25 @@ namespace Circuit_Simulator.UI.Specific
                         worldpos += diff;
                     }
                 }
+                int mouse_worldpos_X, mouse_worldpos_Y;
+                Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
+                if (mouse_worldpos_X >= 0 && mouse_worldpos_X < GridSize && mouse_worldpos_Y >= 0 && mouse_worldpos_Y < GridSize)
+                {
+                    if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+                    {
+
+                    }
+                    if (Game1.mo_states.New.RightButton == ButtonState.Pressed)
+                    {
+                        int index = pixel.FindIndex(x => x.pos.X == (mouse_worldpos_X - Origin.X) && x.pos.Y == (mouse_worldpos_Y - Origin.Y));
+                        if (index >= 0)
+                            pixel.RemoveAt(index);
+                        ApplyPixel();
+                    }
+                }
 
                 #endregion
 
-                int mouse_worldpos_X, mouse_worldpos_Y;
-                Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
                 effect.Parameters["mousepos_X"].SetValue(mouse_worldpos_X);
                 effect.Parameters["mousepos_Y"].SetValue(mouse_worldpos_Y);
             }

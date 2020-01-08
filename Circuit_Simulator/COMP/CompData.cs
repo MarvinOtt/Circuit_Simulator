@@ -90,6 +90,12 @@ namespace Circuit_Simulator.COMP
                 CalculateBounds(i);
         }
 
+        public void ClearAllPixel()
+        {
+            for (int i = 0; i < 4; ++i)
+                data[i].Clear();
+        }
+
         public void addOverlayLine(Line line, float layers)
         {
             VertexPositionLine Vline1, Vline2;
