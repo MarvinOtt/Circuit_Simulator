@@ -126,6 +126,8 @@ namespace Circuit_Simulator.UI.Specific
         public void OpenLib(object sender)
         {
             CompLibrary.LoadFromFile(false);
+            CompLibrary.LibraryWindow_LoadedLibrarys.RemoveAll(x => x.STATE == CompLibrary.LOAD_FAILED);
+            Reload_UI();
         }
         public void AddLib(object sender)
         {

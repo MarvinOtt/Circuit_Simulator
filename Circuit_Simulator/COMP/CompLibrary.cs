@@ -11,9 +11,9 @@ namespace Circuit_Simulator.COMP
 {
     public class CompLibrary
     {
-        private const int NOT_LOADED = 0;
-        private const int LOAD_FAILED = 1;
-        private const int LOADED = 2;
+        public const int NOT_LOADED = 0;
+        public const int LOAD_FAILED = 1;
+        public const int LOADED = 2;
 
         public static List<CompLibrary> AllUsedLibraries = new List<CompLibrary>();
         public static List<CompLibrary> LibraryWindow_LoadedLibrarys = new List<CompLibrary>();
@@ -25,7 +25,7 @@ namespace Circuit_Simulator.COMP
 
         public CompLibrary(string name, string SaveFile, bool AddToUsedLibraries = true)
         {
-            STATE = 0;
+            STATE = NOT_LOADED;
             this.name = name;
             this.SaveFile = SaveFile;
             Components = new List<CompData>();
@@ -121,6 +121,7 @@ namespace Circuit_Simulator.COMP
 
         public static CompLibrary LoadFromFile(bool AddToUsedLibraries)
         {
+           
             OpenFileDialog dialog = new OpenFileDialog();
             try
             {
@@ -145,14 +146,17 @@ namespace Circuit_Simulator.COMP
             CompLibrary lib = null;
             if (dd == DialogResult.OK)
             {
+
                 string filename = dialog.FileName;
+               
                 lib = new CompLibrary(null, filename, AddToUsedLibraries);
-                lib.Load();
+                lib.Load(AddToUsedLibraries);
+               
             }
             dialog.Dispose();
             return lib;
         }
-        public void Load()
+        public void Load(bool AddToUsedLibraries = true)
         {
             try
             {
@@ -162,6 +166,11 @@ namespace Circuit_Simulator.COMP
                 StreamReader streamreader = new StreamReader(stream);
                 string libraryname = stream.ReadNullTerminated();
                 name = libraryname;
+                if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == name) && !AddToUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == name) && !AddToUsedLibraries))
+                {
+                    STATE = LOAD_FAILED;
+                    throw new Exception("Library already loaded");
+                }
 
                 stream.Read(intbuffer, 0, 4);
                 int compcount = BitConverter.ToInt32(intbuffer, 0);
@@ -234,7 +243,7 @@ namespace Circuit_Simulator.COMP
             {
                 STATE = LOAD_FAILED;
                 Console.WriteLine("Loading Library failed: {0}", exp);
-                System.Windows.Forms.MessageBox.Show("Loading Library failed", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Windows.Forms.MessageBox.Show("Loading Library failed: " + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
