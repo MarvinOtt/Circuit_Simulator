@@ -131,7 +131,7 @@ namespace Circuit_Simulator.COMP
             }
             catch (Exception exp)
             {
-                Console.WriteLine("Error while trying to create Save folder: {0}", exp);
+                Console.WriteLine("Error: File could not be found {0}", exp);
                 return null;
             }
 
