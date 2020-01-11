@@ -165,12 +165,12 @@ namespace Circuit_Simulator.COMP
                 FileStream stream = new FileStream(SaveFile, FileMode.Open);
                 StreamReader streamreader = new StreamReader(stream);
                 string libraryname = stream.ReadNullTerminated();
-                name = libraryname;
-                if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == name) && !AddToUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == name) && !AddToUsedLibraries))
+                if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == libraryname) && !AddToUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == libraryname) && AddToUsedLibraries))
                 {
                     STATE = LOAD_FAILED;
                     throw new Exception("Library already loaded");
                 }
+                name = libraryname;
 
                 stream.Read(intbuffer, 0, 4);
                 int compcount = BitConverter.ToInt32(intbuffer, 0);

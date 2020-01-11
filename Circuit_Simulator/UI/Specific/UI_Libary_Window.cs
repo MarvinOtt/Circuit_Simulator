@@ -92,8 +92,8 @@ namespace Circuit_Simulator.UI.Specific
                 int index = CompLibrary.LibraryWindow_LoadedLibrarys.FindIndex(x => x.name == CompLibrary.AllUsedLibraries[i].name);
                 if(index == -1)
                 {
-                    CompLibrary newlib = new CompLibrary(CompLibrary.AllUsedLibraries[i].name, CompLibrary.AllUsedLibraries[i].SaveFile, false);
-                    newlib.Load();
+                    CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
+                    newlib.Load(false);
                 }
             }
 
