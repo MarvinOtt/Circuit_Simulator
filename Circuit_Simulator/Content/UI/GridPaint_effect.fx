@@ -26,11 +26,11 @@ struct VertexShaderOutput
 	float2 TextureCoordinates : TEXCOORD0;
 };
 
-static float4 compcols[3] =
+static float4 compcols[4] =
 {
 	float4(0.5f, 0.5f, 0.5f, 1),
 	float4(0.25f, 0.25f, 0.25f, 1),
-	//float4(0.8f, 0.8f, 0.8f, 1),
+	float4(0.8f, 0.8f, 0.8f, 1),
 	float4(1, 1, 0, 1)
 };
 
@@ -45,8 +45,10 @@ float4 getcoloratpos(float x, float y)
 		OUT = compcols[0];
 	else if (type < 2.5f)
 		OUT = compcols[1];
-	else
+	else if (type < 3.5f)
 		OUT = compcols[2];
+	else
+		OUT = compcols[3];
 
 
 	if (zoom > 2)

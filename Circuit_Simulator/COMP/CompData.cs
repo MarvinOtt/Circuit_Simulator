@@ -80,8 +80,8 @@ namespace Circuit_Simulator.COMP
 
         public void addData(ComponentPixel dat, int offset = 0)
         {
-            if (dat.type > Sim_Component.PINOFFSET)
-                pin_num++;
+            if (dat.type > Sim_Component.PINOFFSET && dat.type - Sim_Component.PINOFFSET > pin_num)
+                pin_num = dat.type - Sim_Component.PINOFFSET;
             data[(0 + offset) % 4].Add(dat);
             data[(1 + offset) % 4].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
             data[(2 + offset) % 4].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));

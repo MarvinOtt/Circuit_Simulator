@@ -18,7 +18,10 @@ namespace Circuit_Simulator.UI.Specific
         public UI_Scrollable<UI_Element> Features;
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
         UI_StringButton[] rotbuttons;
+        UI_TexButton[] paintbuttons;
         UI_GridPaint gridpaint;
+
+        Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
 
         //Code Boxes
         public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
@@ -44,16 +47,30 @@ namespace Circuit_Simulator.UI.Specific
                 rotbuttons[i].GotToggledLeft += RotButtonPressed;
             }
             rotbuttons[0].IsActivated = true;
-            gridpaint = new UI_GridPaint(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, rotbuttons[0]), new Point(450), 300, new Point(150), new Point(-2, 6));
+            gridpaint = new UI_GridPaint(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, rotbuttons[0]), new Point(450), 300, new Point(150), new Point(-2, 6), UI_Handler.gridpaintbuttonconf);
             gridpaint.UpdateFunctions.Add(delegate ()
             {
                 if (new Rectangle(gridpaint.absolutpos, gridpaint.size).Contains(Game1.mo_states.New.Position))
                     Features.DenyScroll = true;
             });
             gridpaint.PixelChanged += PixelChanged;
+            paintbuttons = new UI_TexButton[4];
+            for (int i = 0; i < 4; ++i)
+            {
+                Generic_Conf curconf = new Generic_Conf(UI_Handler.gridpaintbuttonconf);
+                curconf.tex_color = paintbuttoncols[i];
+                if (i == 0)
+                    paintbuttons[i] = new UI_TexButton(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, gridpaint), new Point(25, 25), new Point(364, 0), UI_Handler.Button_tex, curconf);
+                else
+                    paintbuttons[i] = new UI_TexButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, paintbuttons[i - 1]), new Point(25, 25), new Point(364, 0), UI_Handler.Button_tex, curconf);
+                paintbuttons[i].GotToggledLeft += PaintButtonPressed;
+            }
+            paintbuttons[0].IsActivated = true;
+            gridpaint.curplacetype = 1;
             Features.Add_UI_Elements(spooky, Code_Sim_Button, Code_AfterSim_Button);
             Features.Add_UI_Elements(rotbuttons);
             Features.Add_UI_Elements(gridpaint);
+            Features.Add_UI_Elements(paintbuttons);
             Add_UI_Elements(Box_Name_Label, Box_Name, Features);
             
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
@@ -96,6 +113,23 @@ namespace Circuit_Simulator.UI.Specific
             gridpaint.pixel.Clear();
             gridpaint.pixel.AddRange(rootcomp.data[index]);
             gridpaint.ApplyPixel();
+        }
+        public void PaintButtonPressed(object sender)
+        {
+            UI_TexButton cur = sender as UI_TexButton;
+            int index = Array.IndexOf(paintbuttons, cur);
+            if (cur.IsActivated == false)
+                cur.IsActivated = true;
+            else
+            {
+                for (int i = 0; i < paintbuttons.Length; ++i)
+                {
+                    UI_TexButton curbut = paintbuttons[i];
+                    if (i != index)
+                        curbut.IsActivated = false;
+                }
+            }
+            gridpaint.curplacetype = index + 1;
         }
 
         public void PixelChanged()

@@ -23,7 +23,7 @@ namespace Circuit_Simulator
 
         public ContentManager Content;
         public static UI_Element ZaWarudo;  //JoJo Reference
-	    private Texture2D Button_tex;
+	    public static Texture2D Button_tex;
         public static bool IsInScrollable = false;
         public static Rectangle IsInScrollable_Bounds;
         public static bool UI_Element_Pressed, UI_IsWindowHide;
@@ -55,7 +55,7 @@ namespace Circuit_Simulator
         public static UI_ComponentBox ComponentBox;
         public static UI_List<UI_Dropdown_Button> wire_ddbl;
         public static Generic_Conf componentconf,genbutconf, gen_conf;
-        public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf;
+        public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf, gridpaintbuttonconf;
 
         UI_GridPaint gridpaint;
 
@@ -94,7 +94,8 @@ namespace Circuit_Simulator
             genbutconf = new Generic_Conf(gen_conf);
             genbutconf.BorderColor = BorderColor;
             genbutconf.font = toolbarfont;
-
+            gridpaintbuttonconf = new Generic_Conf(behave1conf);
+            gridpaintbuttonconf.BorderColor = BorderColor;
             //gridpaint = new UI_GridPaint(new Pos(100), new Point(200), 200, new Point(25));
 
             //Toolbar

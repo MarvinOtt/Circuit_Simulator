@@ -83,6 +83,7 @@ namespace Circuit_Simulator.UI
                     spritebatch.Draw(tex, absolutpos.ToVector2(), new Rectangle(tex_pos + new Point(0, size.Y + 1), size), conf.tex_color);
                 }
             }
+            spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), conf.BorderColor, 1);
         }  
     }
 }
