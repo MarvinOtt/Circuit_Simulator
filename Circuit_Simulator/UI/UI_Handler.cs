@@ -74,7 +74,7 @@ namespace Circuit_Simulator
             SpriteFont catfont = Content.Load<SpriteFont>("UI\\cat_font");
 
             // CONFIGS
-            gen_conf = new Generic_Conf(font_color: Color.White, behav: 2, BGColor: BackgroundColor, HoverColor: HoverColor, ActiveColor: ActivColor, ActiveHoverColor: ActivHoverColor, tex_color: Color.White);
+            gen_conf = new Generic_Conf(font_color: Color.White, behav: 2, BGColor: BackgroundColor, HoverColor: HoverColor, ActiveColor: ActivColor, ActiveHoverColor: ActivHoverColor, tex_color: Color.White, font: componentfont);
             cat_conf = new Generic_Conf(gen_conf);
             cat_conf.font = catfont;
             toolbarbuttonconf = new Generic_Conf(gen_conf);
@@ -215,7 +215,7 @@ namespace Circuit_Simulator
 
 
             //EditCompWindow
-            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.3)), "EditComponent", new Point(300, 300), componentconf, true);
+            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.6)), "EditComponent", new Point(300, 300), componentconf, true);
 
 
             InitializeUISettings(spriteBatch);

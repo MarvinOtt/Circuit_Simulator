@@ -48,6 +48,7 @@ float4 getcoloratpos(float x, float y)
 	else
 		OUT = compcols[2];
 
+
 	if (zoom > 2)
 	{
 		float factor = 0.8f / zoom;
