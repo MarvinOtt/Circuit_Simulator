@@ -48,6 +48,7 @@ namespace Circuit_Simulator.UI.Specific
             RenameBox2.ValueChanged += RenameComp_Finish;
             Open.GotActivatedLeft += OpenLib;
             AddButton.GotActivatedLeft += AddLib;
+            SaveAll.GotActivatedLeft += SaveAllChanges;
 
 
         }
@@ -123,6 +124,11 @@ namespace Circuit_Simulator.UI.Specific
         //    FileHandler.OpenCurrent();
 
         //}
+        public void SaveAllChanges( object sender)
+        {
+            for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibrarys.Count; i++)
+                CompLibrary.LibraryWindow_LoadedLibrarys[i].Save();
+        }
         public void OpenLib(object sender)
         {
             CompLibrary.LoadFromFile(false);
