@@ -234,13 +234,13 @@ float4 getcoloratpos(float x, float y)
 		if (comptype_int > PINOFF)
 		{
 			edgewidth = 0.3f;
-			if (((comptype_p10 > PINOFF || !comptype_p10) || !(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0))) && x % 1 > 1.0f - edgewidth)
+			if ((((comptype_p10 > PINOFF && comptype_int != comptype_p10) || !comptype_p10) || !(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0))) && x % 1 > 1.0f - edgewidth)
 			{IsValid = 1;}
-			if (((comptype_m10 > PINOFF || !comptype_m10) || !(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2))) && x % 1 < edgewidth)
+			if ((((comptype_m10 > PINOFF && comptype_int != comptype_m10) || !comptype_m10) || !(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2))) && x % 1 < edgewidth)
 			{IsValid = 1;}
-			if (((comptype_0p1 > PINOFF || !comptype_0p1) || !(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1))) && y % 1 > 1.0f - edgewidth)
+			if ((((comptype_0p1 > PINOFF && comptype_int != comptype_0p1) || !comptype_0p1) || !(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1))) && y % 1 > 1.0f - edgewidth)
 			{IsValid = 1;}
-			if (((comptype_0m1 > PINOFF || !comptype_0m1) || !(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3))) && y % 1 < edgewidth)
+			if ((((comptype_0m1 > PINOFF && comptype_int != comptype_0m1) || !comptype_0m1) || !(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3))) && y % 1 < edgewidth)
 			{IsValid = 1;}
 		}
 
@@ -262,18 +262,12 @@ float4 getcoloratpos(float x, float y)
 		//if (!(((uint)(isedgetex[uint2(ux - 1, uy + 1)].a * 255.5f)) & (6)) && comptype_m1p1 <= 2 && comptype_m1p1 && x % 1 < edgewidth && y % 1 > 1.0f - edgewidth && !(comptype_int > 2 && comptype_m1p1 > 2))
 		//	IsValid = 0;
 
-		if (IsValid)
+		if (IsValid == 2)
 		{
-			if (IsValid == 1)
-			{
-			}
+			if (comptype_int <= PINOFF)
+				OUT = compcols[comptype_int - 1];
 			else
-			{
-				if (comptype_int <= PINOFF)
-					OUT = compcols[comptype_int - 1];
-				else
-					OUT = compcols[3];
-			}
+				OUT = compcols[3];
 		}
 		
 	}
