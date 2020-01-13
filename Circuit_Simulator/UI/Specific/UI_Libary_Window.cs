@@ -139,7 +139,7 @@ namespace Circuit_Simulator.UI.Specific
         {
 
             string startname = "New Library";
-            string finalname;
+            string finalname = "";
             for(int i = 1; ; ++i)
             {
                 bool state = Libraries.ui_elements[0].ui_elements.Exists(x => x.cat.ID_Name == startname + i.ToString());

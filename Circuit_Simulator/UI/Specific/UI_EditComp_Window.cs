@@ -79,6 +79,8 @@ namespace Circuit_Simulator.UI.Specific
             // Code Boxes
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
             CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
+            CodeBox_Sim.LostFocus += Code_Sim_LostFocus;
+            CodeBox_AfterSim.LostFocus += Code_AfterSim_LostFocus;
             Resize();
             GetsUpdated = GetsDrawn = false;
         }
@@ -159,6 +161,15 @@ namespace Circuit_Simulator.UI.Specific
         public void Code_AfterSim_Button_Pressed(object sender)
         {
             CodeBox_AfterSim.Show();
+        }
+
+        public void Code_Sim_LostFocus(object sender)
+        {
+            rootcomp.Code_Sim = CodeBox_Sim.t.Text;
+        }
+        public void Code_AfterSim_LostFocus(object sender)
+        {
+            rootcomp.Code_AfterSim = CodeBox_AfterSim.t.Text;
         }
 
         protected override void Resize()

@@ -33,7 +33,7 @@ namespace Circuit_Simulator
         public static int[] CompID;
         public static int[] IntStatesMap;
         public static int comp_num;
-        public static int[] Comp2UpdateAfterSim;
+        public static int[] Comp2UpdateAfterSim, Comp2UpdateAfterSim_ID;
         public static int Comp2UpdateAfterSim_count;
 
         public static IntPtr SimDLL_Handle = IntPtr.Zero;
@@ -64,6 +64,7 @@ namespace Circuit_Simulator
             CompID = new int[5000000];
             IntStatesMap = new int[10000000];
             Comp2UpdateAfterSim = new int[1000000];
+            Comp2UpdateAfterSim_ID = new int[1000000];
 
             InitSimulation(8);
 
@@ -170,7 +171,7 @@ namespace Circuit_Simulator
         public void GenerateSimulationData()
         {
             Comp2UpdateAfterSim_count = 0;
-            int count = 0;
+            int count = 1;
             for(int i = 0; i <= Simulator.highestNetworkID; ++i)
             {
                 if (Simulator.networks[i] != null)
@@ -193,10 +194,13 @@ namespace Circuit_Simulator
                     CompInfos[infocount++] = curcomp.dataID;
                     CompData compdata = Sim_Component.Components_Data[curcomp.dataID];
                     if (compdata.IsUpdateAfterSim)
+                    {
+                        Comp2UpdateAfterSim_ID[Comp2UpdateAfterSim_count] = infocount - 1;
                         Comp2UpdateAfterSim[Comp2UpdateAfterSim_count++] = i;
+                    }
                     for (int j = 0; j < compdata.pin_num; ++j)
                     {
-                        CompInfos[infocount++] = WireMap[curcomp.pinNetworkIDs[j]];
+                        CompInfos[infocount++] = WireMap[curcomp.pinNetworkIDs[j]] - 1;
                     }
                     if(compdata.internalstate_length > 0)
                     {
@@ -231,13 +235,16 @@ namespace Circuit_Simulator
                     Simulator.simspeed_count = 0;
                 }
             }
-            for(int i = 0; i < Comp2UpdateAfterSim_count; ++i)
+            fixed (int* p = CompInfos)
             {
-                Component comp = Sim_Component.components[Comp2UpdateAfterSim[i]];
+                for (int i = 0; i < Comp2UpdateAfterSim_count; ++i)
+                {
+                    Component comp = Sim_Component.components[Comp2UpdateAfterSim[i]];
 
 
 
-                Sim_Component.Components_Data[comp.dataID].AfterSimAction(comp.internalstates, CompInfos, IntStatesMap[comp.ID]);
+                    Sim_Component.Components_Data[comp.dataID].AfterSimAction(comp.internalstates, (IntPtr)p, IntStatesMap[comp.ID]);
+                }
             }
         }
     }
