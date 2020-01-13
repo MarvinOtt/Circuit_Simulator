@@ -31,7 +31,7 @@ namespace Circuit_Simulator.UI.Specific
 
             UI_String spooky = new UI_String(new Pos(0), Point.Zero, conf, "");
             UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name: ");
-            Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 4, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
+            Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
             Box_Name.ValueChanged += BoxName_ValueChange;
             Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero);
             Code_Sim_Button = new UI_StringButton(new Pos(5, 5), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
@@ -180,9 +180,42 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void UpdateSpecific()
         {
+
+            if (paintbuttons[0].IsHovered)
+            {
+                UI_Handler.info.values.ui_elements[0].setValue("Place Mid-Gray Body");
+                UI_Handler.info.ShowInfo();
+            }
+            else if (paintbuttons[1].IsHovered)
+            {
+                UI_Handler.info.values.ui_elements[0].setValue("Place Dark-Gray Body");
+                UI_Handler.info.ShowInfo();
+            }
+            else if (paintbuttons[2].IsHovered)
+            {
+                UI_Handler.info.values.ui_elements[0].setValue("Place MidGray Body");
+                UI_Handler.info.ShowInfo();
+            }
+            else if (paintbuttons[3].IsHovered)
+            {
+                UI_Handler.info.values.ui_elements[0].setValue("Place Pin");
+                UI_Handler.info.ShowInfo();
+            }
+
+
+
             base.UpdateSpecific();
         }
-        
+
+        protected override void UpdateAlways()
+        {
+            bool AllPaintButtonsNotHovered = paintbuttons.All(x => x.IsHovered == false);
+            if(AllPaintButtonsNotHovered)
+                UI_Handler.info.HideInfo();
+
+            base.UpdateAlways();
+        }
+
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             base.DrawSpecific(spritebatch);

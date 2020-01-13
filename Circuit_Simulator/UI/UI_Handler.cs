@@ -172,6 +172,7 @@ namespace Circuit_Simulator
             info = new UI_InfoBox(new Pos(500,500), new Point(300, 300));
             info.values.Add_UI_Elements(new UI_String(new Pos(0, 0), new Point(0, 0), componentconf));
 
+
             //input Box
             //input = new UI_Window(new Point(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.10)), "Value", new Point((int)(Game1.Screenwidth * 0.2), (int)(Game1.Screenheight * 0.1)), componentconf, false);
             //input.Add_UI_Elements(new UI_ValueInput(new Point(input.size.X / 2 - input.size.X / 4, 20 + input.size.Y / 2 - input.size.Y / 4), new Point(input.size.X / 2, input.size.Y / 2 -20 -1), componentconf, 1));
@@ -216,7 +217,7 @@ namespace Circuit_Simulator
 
 
             //EditCompWindow
-            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.3), (int)(Game1.Screenheight * 0.6)), "EditComponent", new Point(300, 300), componentconf, true);
+            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.5), (int)(Game1.Screenheight * 0.6)), "EditComponent", new Point(300, 300), componentconf, true);
 
 
             InitializeUISettings(spriteBatch);

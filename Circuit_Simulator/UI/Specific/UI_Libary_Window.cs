@@ -142,7 +142,8 @@ namespace Circuit_Simulator.UI.Specific
             string finalname = "";
             for(int i = 1; ; ++i)
             {
-                bool state = Libraries.ui_elements[0].ui_elements.Exists(x => x.cat.ID_Name == startname + i.ToString());
+                bool state = CompLibrary.LibraryWindow_LoadedLibrarys.Exists(x => x.name == startname + i.ToString());
+                //bool state = Libraries.ui_elements[0].ui_elements.Exists(x => x.cat.ID_Name == startname + i.ToString());
                 if(!state)
                 {
                     finalname = startname + i.ToString();
@@ -181,10 +182,46 @@ namespace Circuit_Simulator.UI.Specific
         public void AddComp(object sender)
         {
             UI_StringButton pressedElement = sender as UI_StringButton;
-            UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
-            UI_Window.All_Highlight(UI_Handler.editcompwindow);
+            string startname = "New Component";
+            string finalname = "";
+            for (int y = 1; ; y++)
+            {
+                bool DoesExist = false;
+                for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibrarys.Count; ++i)
+                {
+                    bool state = CompLibrary.LibraryWindow_LoadedLibrarys[i].Components.Exists(x => x.name == startname + y.ToString());
+                    if (state)
+                        DoesExist = true;
+                }
+                //bool state = //Libraries.ui_elements[0].ui_elements[i].Components.ui_elements.Exists(x => x.ID_Name == startname + y.ToString());
+                if (!DoesExist)
+                {
+                    finalname = startname + y.ToString();
+                    break;
+                }
+            }
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == pressedElement.parent.ID_Name);
+            CompData newComp = new CompData(finalname, "", false, false, false);
+            curlib.AddComponent(newComp);
 
 
+            Reload_UI();
+            Libraries.ui_elements.ForEach(x => { if (x.pos.parent == Libraries) { x.pos.Y -= 1000000; } });
+            Libraries.UpdatePos();
+            Libraries.UpdateSpecific();
+            UpdatePos();
+            //RenameLib(Libraries.ui_elements[0].ui_elements.Last().cat);
+            UI_Component curUIcomp;
+            int libindex_UI = Libraries.ui_elements[0].ui_elements.FindIndex(x => x.cat.ID_Name == pressedElement.parent.ID_Name);
+
+            curUIcomp = Libraries.ui_elements[0].ui_elements[libindex_UI].Components.ui_elements.Last();
+            RenameBox2.pos = new Pos(Libraries.pos.X, (curUIcomp.absolutpos.Y - this.pos.Y), ORIGIN.DEFAULT, ORIGIN.DEFAULT, this);
+            RenameBox2.size = curUIcomp.size;
+            RenameBox2.value = finalname;
+            RenameBox2.ID_Name = finalname;
+            RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = true;
+            RenameBox2.Set2Typing();
+            UI_Handler.EditComp.ID_Name = curlib.name + "|" + finalname;
         }
         public void EditCompWindow(object sender)
         {
