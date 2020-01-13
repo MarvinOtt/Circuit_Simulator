@@ -219,7 +219,7 @@ namespace Circuit_Simulator.UI.Specific
             RenameBox2.size = curUIcomp.size;
             RenameBox2.value = finalname;
             RenameBox2.ID_Name = finalname;
-            RenameBox2.GetsUpdated = RenameBox1.GetsDrawn = true;
+            RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = true;
             RenameBox2.Set2Typing();
             UI_Handler.EditComp.ID_Name = curlib.name + "|" + finalname;
         }

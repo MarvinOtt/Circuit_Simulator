@@ -192,6 +192,7 @@ namespace Circuit_Simulator.UI.Specific
             }
 
 
+
             base.UpdateSpecific();
         }
 
