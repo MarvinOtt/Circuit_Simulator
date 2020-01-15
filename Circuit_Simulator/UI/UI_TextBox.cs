@@ -18,6 +18,8 @@ namespace Circuit_Simulator.UI
         Generic_Conf conf;
         System.Windows.Forms.Form form;
         public Scintilla t;
+        public delegate void LostFocus_Handler(object sender);
+        public event LostFocus_Handler LostFocus = delegate { };
 
         public UI_TextBox(Pos pos, Point size, Generic_Conf conf) : base(new Pos(-10), new Point(-1))
         {
@@ -168,6 +170,7 @@ namespace Circuit_Simulator.UI
             form.BringToFront();
             form.Activate();
             form.Hide();
+            LostFocus(this);
         }
 
         public void Show()

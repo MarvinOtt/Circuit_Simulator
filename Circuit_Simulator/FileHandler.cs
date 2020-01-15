@@ -168,32 +168,34 @@ namespace Circuit_Simulator
         {
             if (!Simulator.IsSimulating)
             {
-                OpenFileDialog dialog = new OpenFileDialog();
-                try
+                using (OpenFileDialog dialog = new OpenFileDialog())
                 {
-                    string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
-                    System.IO.Directory.CreateDirectory(savepath);
-                    dialog.InitialDirectory = savepath;
-                }
-                catch (Exception exp)
-                {
-                    Console.WriteLine("Error while trying to create Save folder: {0}", exp);
+                    try
+                    {
+                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
+                        System.IO.Directory.CreateDirectory(savepath);
+                        dialog.InitialDirectory = savepath;
+                    }
+                    catch (Exception exp)
+                    {
+                        Console.WriteLine("Error while trying to create Save folder: {0}", exp);
+                    }
+                    dialog.Multiselect = false;
+                    dialog.CheckFileExists = true;
+                    dialog.CheckPathExists = true;
+                    dialog.Title = "Select File to Open";
+                    dialog.Filter = "DCE files (*.dce)|*.dce|All files (*.*)|*.*";
+                    dialog.FilterIndex = 1;
+                    //dialog.RestoreDirectory = false;
+                    if (dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        string filename = dialog.FileName;
+                        OpenAs(filename);
+                    }
+                    dialog.Dispose();
                 }
 
-                dialog.Multiselect = false;
-                dialog.CheckFileExists = true;
-                dialog.CheckPathExists = true;
-                dialog.Title = "Select File to Open";
-                dialog.Filter = "DCE files (*.dce)|*.dce|All files (*.*)|*.*";
-                dialog.FilterIndex = 1;
-                dialog.RestoreDirectory = false;
-                DialogResult dd = dialog.ShowDialog();
-                if (dd == DialogResult.OK)
-                {
-                    string filename = dialog.FileName;
-                    OpenAs(filename);
-                }
-                dialog.Dispose();
+
             }
         }
 
@@ -201,8 +203,8 @@ namespace Circuit_Simulator
         {
             if (!Simulator.IsSimulating)
             {
-                try
-                {
+                //try
+                //{
                     FileStream stream = new FileStream(filename, FileMode.Open);
 
                     byte[] intbuffer = new byte[4];
@@ -378,8 +380,8 @@ namespace Circuit_Simulator
                         int posY = BitConverter.ToInt32(intbuffer, 0);
                         stream.Read(intbuffer, 0, 4);
                         int rotation = BitConverter.ToInt32(intbuffer, 0);
-                        buffercomp.Place(new Point(posX, posY), rotation);
                         Sim_Component.components[i] = buffercomp;
+                        buffercomp.Place(new Point(posX, posY), rotation);
                     }
                     Network.Delete(Simulator.FoundNetworks);
                     Simulator.FoundNetworks.Clear();
@@ -392,12 +394,12 @@ namespace Circuit_Simulator
                     Console.WriteLine("Loading suceeded. Filename: {0}", filename);
                     IsUpToDate = true;
                     SaveFile = filename;
-                }
-                catch (Exception exp)
-                {
-                    Console.WriteLine("Loading failed:\n{0}", exp);
-                    System.Windows.Forms.MessageBox.Show("Loading failed:\n" + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                //}
+                //catch (Exception exp)
+                //{
+                //    Console.WriteLine("Loading failed:\n{0}", exp);
+                //    System.Windows.Forms.MessageBox.Show("Loading failed:\n" + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //}
             }
         }
     }

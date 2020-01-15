@@ -93,7 +93,7 @@ namespace Circuit_Simulator.UI.Specific
                 if(index == -1)
                 {
                     CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
-                    newlib.Load(false);
+                    newlib.Load();
                 }
             }
 
@@ -139,7 +139,7 @@ namespace Circuit_Simulator.UI.Specific
         {
 
             string startname = "New Library";
-            string finalname;
+            string finalname = "";
             for(int i = 1; ; ++i)
             {
                 bool state = CompLibrary.LibraryWindow_LoadedLibrarys.Exists(x => x.name == startname + i.ToString());

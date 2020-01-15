@@ -14,8 +14,8 @@ namespace Circuit_Simulator.COMP
         public List<ComponentPixel>[] data;
         public string name;
         public string catagory = "Other";
-        public string Code_AfterSim, Code_Sim;
-        public string Code_Sim_FuncName, Code_AfterSim_FuncName;
+        public string Code_AfterSim = "", Code_Sim = "";
+        public string Code_Sim_FuncName = "", Code_AfterSim_FuncName = "";
         public Rectangle[] bounds;
         public int currentrotation;
         public int pin_num, OverlayStateID, internalstate_length;
@@ -24,7 +24,7 @@ namespace Circuit_Simulator.COMP
         public Point overlaysize;
         public int ClickAction_Type;
         public Action<Component> ClickAction;
-        public delegate void AfterSimAction_Prototype(int[] internalstates, int[] CompInfos, int compindex);
+        public delegate void AfterSimAction_Prototype(int[] internalstates, IntPtr CompInfos, int compindex);
         public AfterSimAction_Prototype AfterSimAction;
         public List<Line>[] overlaylines;
         public List<VertexPositionLine>[] overlaylines_vertices;
@@ -42,7 +42,10 @@ namespace Circuit_Simulator.COMP
                 if (!Simulator.IsSimulating)
                 {
                     for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
-                        Simulator.networks[comp.pinNetworkIDs[i]].state = state;
+                    {
+                        if(Simulator.networks[comp.pinNetworkIDs[i]] != null)
+                            Simulator.networks[comp.pinNetworkIDs[i]].state = state;
+                    }
                 }
                 else
                     Sim_INF_DLL.SetIntState(comp.ID, 0);
@@ -69,6 +72,7 @@ namespace Circuit_Simulator.COMP
             overlay_bounds = new FRectangle[4];
             overlaysize = Game1.basefont.MeasureString(name).ToPoint();
         }
+
 
         public void CalculateBounds(int rotation)
         {

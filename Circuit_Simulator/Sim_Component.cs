@@ -70,6 +70,25 @@ namespace Circuit_Simulator
             }
         }
 
+        public void CheckAndUpdatePins()
+        {
+            List<ComponentPixel> curpixel = Sim_Component.Components_Data[dataID].data[rotation];
+            Array.Clear(pinNetworkIDs, 0, pinNetworkIDs.Length);
+            for (int i = 0; i < Sim_Component.Components_Data[dataID].data[0].Count; ++i)
+            {
+                Point curpos = curpixel[i].pos + pos;
+                for(int j = 0; j < 7; ++j)
+                {
+                    int wireID = Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, j];
+                    if (wireID != 0 && (Simulator.IsWire[curpos.X, curpos.Y] & (1 << j)) != 0)
+                    {
+                        if (pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - 4] == 0)
+                            pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - 4] = wireID;
+                    }
+                }
+            }
+        }
+
         public static bool IsValidPlacement(int dataID, Point pos)
         {
             //Check if component can be placed
@@ -112,7 +131,7 @@ namespace Circuit_Simulator
                 Sim_Component.IsEdgeTex.SetPixel(datapixel[i].IsEdge, currentcoo);
                 if (datapixel[i].type > Sim_Component.PINOFFSET)
                 {
-                    Point datapos = datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
+                    Point datapos = currentcoo - area.Location;// datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
                     data2place[datapos.X, datapos.Y] |= 128;
 
                 }
@@ -629,7 +648,7 @@ namespace Circuit_Simulator
             Game1.simulator.ChangeToolmode(Simulator.oldtoolmode);
         }
 
-        public int GetComponentID(Point pos)
+        public static int GetComponentID(Point pos)
         {
             Point gridpos = new Point(pos.X / 32, pos.Y / 32);
             int gridid = CompNetwork[pos.X, pos.Y];
@@ -660,18 +679,20 @@ namespace Circuit_Simulator
                 {
                     Point pos = pins2check[i];
                     Component cur_comp = components[CompGrid[pos.X / 32, pos.Y / 32][CompNetwork[pos.X, pos.Y]]];
-                    bool IsNetwork = false;
-                    int wireID = 0;
-                    for(int j = 0; j < 7; ++j)
-                    {
-                        int wireID2 = Simulator.WireIDs[pos.X / 2, pos.Y / 2, j];
-                        if (wireID2 != 0 && (Simulator.IsWire[pos.X, pos.Y] & (1 << j)) != 0)
-                        {
-                            IsNetwork = true;
-                            wireID = wireID2;
-                        }
-                    }
-                    cur_comp.pinNetworkIDs[CompType[pos.X, pos.Y] - (PINOFFSET + 1)] = wireID;
+                    //if(cur_comp != null)
+                        cur_comp.CheckAndUpdatePins();
+                    //bool IsNetwork = false;
+                    //int wireID = 0;
+                    //for(int j = 0; j < 7; ++j)
+                    //{
+                    //    int wireID2 = Simulator.WireIDs[pos.X / 2, pos.Y / 2, j];
+                    //    if (wireID2 != 0 && (Simulator.IsWire[pos.X, pos.Y] & (1 << j)) != 0)
+                    //    {
+                    //        IsNetwork = true;
+                    //        wireID = wireID2;
+                    //    }
+                    //}
+                    //cur_comp.pinNetworkIDs[CompType[pos.X, pos.Y] - (PINOFFSET + 1)] = wireID;
                 }
 
                 pins2check_length = 0;
