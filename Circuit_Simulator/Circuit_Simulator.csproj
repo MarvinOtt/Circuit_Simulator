@@ -58,11 +58,12 @@
     <Compile Include="Sim_Component.cs" />
     <Compile Include="Sim_INF_DLL.cs" />
     <Compile Include="UI\Specific\UI_GridPaint.cs" />
+    <Compile Include="UI\Specific\UI_ProjectLibrary_Window.cs" />
     <Compile Include="UI\UI_TextBox.cs" />
     <Compile Include="UI\Specific\UI_EditComp_Window.cs" />
     <Compile Include="UI\UI_STRUCTS.cs" />
     <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
-    <Compile Include="UI\Specific\UI_Libary_Window.cs" />
+    <Compile Include="UI\Specific\UI_LibraryEdit_Window.cs" />
     <Compile Include="UI\UI_Box.cs" />
     <Compile Include="UI\UI_Button.cs" />
     <Compile Include="UI\UI_Dropdown_Button.cs" />

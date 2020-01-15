@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_EditComp_Window : UI_Window
     {
         public CompData rootcomp;
-        public UI_ValueInput Box_Name, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length;
+        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length;
         public UI_Scrollable<UI_Element> Features;
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
         UI_StringButton[] rotbuttons;
@@ -31,10 +31,13 @@ namespace Circuit_Simulator.UI.Specific
 
             UI_String spooky = new UI_String(new Pos(0), Point.Zero, conf, "");
             UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name: ");
+            UI_String Box_Category_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero, UI_Handler.genbutconf, "Category: ");
             Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
             Box_Name.ValueChanged += BoxName_ValueChange;
+            Box_Category = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Category_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
+            Box_Category.ValueChanged += BoxCategory_ValueChange;
 
-            Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero);
+            Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Category_Label), Point.Zero);
             UI_String SimCode_FuncName_Label = new UI_String(new Pos(5, 5), Point.Zero, UI_Handler.genbutconf, "Sim Code Func. Name: ");
             Box_SimCode_FuncName = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, SimCode_FuncName_Label), new Point(size.X / 2, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
             UI_String AfterSimCode_FuncName_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "After-Sim Code Func. Name: ");
@@ -79,7 +82,7 @@ namespace Circuit_Simulator.UI.Specific
             Features.Add_UI_Elements(rotbuttons);
             Features.Add_UI_Elements(gridpaint);
             Features.Add_UI_Elements(paintbuttons);
-            Add_UI_Elements(Box_Name_Label, Box_Name, Features);
+            Add_UI_Elements(Box_Name_Label, Box_Name, Box_Category_Label, Box_Category, Features);
             
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
             Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
@@ -100,6 +103,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             rootcomp = comp;
             Box_Name.value = comp.name;
+            Box_Category.value = comp.catagory;
             Box_SimCode_FuncName.value = comp.Code_Sim_FuncName;
             Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
             Box_InternalState_Length.value = comp.internalstate_length.ToString();
@@ -165,7 +169,12 @@ namespace Circuit_Simulator.UI.Specific
         public void BoxName_ValueChange(object sender)
         {
             rootcomp.name = Box_Name.value;
-            UI_Handler.LibaryWindow.Reload_UI();
+            UI_Handler.LibraryEditWindow.Reload_UI();
+        }
+        public void BoxCategory_ValueChange(object sender)
+        {
+            rootcomp.catagory = Box_Category.value;
+            
         }
         public void Box_SimCode_FuncName_ValueChange(object sender)
         {

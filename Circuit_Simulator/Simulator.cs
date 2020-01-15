@@ -657,7 +657,11 @@ namespace Circuit_Simulator
             Point mo_worldpos = new Point(mo_worldposx, mo_worldposy);
             IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
-            if(UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+
+            ((UI_String)UI_Handler.GeneralInfoBox.ui_elements[0]).setValue("Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString());
+            ((UI_String)UI_Handler.GeneralInfoBox.ui_elements[3]).setValue("Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")");
+
+            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
                 #region INPUT
                 if (Game1.kb_states.New.IsKeyDown(Keys.W))
@@ -685,8 +689,6 @@ namespace Circuit_Simulator
                     (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
 
-                UI_Handler.GeneralInfoBox.ui_elements[0].value = "Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString();
-                UI_Handler.GeneralInfoBox.ui_elements[1].value = "Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")";
 
                 if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
                 {

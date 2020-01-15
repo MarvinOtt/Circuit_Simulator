@@ -35,7 +35,17 @@ namespace Circuit_Simulator.COMP
             else
                 LibraryWindow_LoadedLibrarys.Add(this);
         }
-
+        public static void ReloadComponentData()
+        {
+            Sim_Component.Components_Data.Clear();
+            for(int i = 0; i < AllUsedLibraries.Count; i++)
+            {
+                for(int j = 0; j < AllUsedLibraries[i].Components.Count; j++)
+                {
+                    Sim_Component.Components_Data.Add(AllUsedLibraries[i].Components[j]);
+                }
+            }
+        }
         public void AddComponent(CompData comp)
         {
             comp.library = this;
