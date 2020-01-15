@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_EditComp_Window : UI_Window
     {
         public CompData rootcomp;
-        public UI_ValueInput Box_Name;
+        public UI_ValueInput Box_Name, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length;
         public UI_Scrollable<UI_Element> Features;
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
         UI_StringButton[] rotbuttons;
@@ -33,8 +33,16 @@ namespace Circuit_Simulator.UI.Specific
             UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name: ");
             Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
             Box_Name.ValueChanged += BoxName_ValueChange;
+
             Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero);
-            Code_Sim_Button = new UI_StringButton(new Pos(5, 5), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
+            UI_String SimCode_FuncName_Label = new UI_String(new Pos(5, 5), Point.Zero, UI_Handler.genbutconf, "Sim Code Func. Name: ");
+            Box_SimCode_FuncName = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, SimCode_FuncName_Label), new Point(size.X / 2, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
+            UI_String AfterSimCode_FuncName_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "After-Sim Code Func. Name: ");
+            Box_AfterSimCode_FuncName = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
+            UI_String InternalState_Length_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "Internal State Length: ");
+            Box_InternalState_Length = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1);
+
+            Code_Sim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InternalState_Length_Label), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
             Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
 
             rotbuttons = new UI_StringButton[4];
@@ -67,7 +75,7 @@ namespace Circuit_Simulator.UI.Specific
             }
             paintbuttons[0].IsActivated = true;
             gridpaint.curplacetype = 1;
-            Features.Add_UI_Elements(spooky, Code_Sim_Button, Code_AfterSim_Button);
+            Features.Add_UI_Elements(spooky, SimCode_FuncName_Label, Box_SimCode_FuncName, AfterSimCode_FuncName_Label, Box_AfterSimCode_FuncName, InternalState_Length_Label, Box_InternalState_Length, Code_Sim_Button, Code_AfterSim_Button);
             Features.Add_UI_Elements(rotbuttons);
             Features.Add_UI_Elements(gridpaint);
             Features.Add_UI_Elements(paintbuttons);
@@ -75,6 +83,9 @@ namespace Circuit_Simulator.UI.Specific
             
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
             Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
+            Box_SimCode_FuncName.ValueChanged += Box_SimCode_FuncName_ValueChange;
+            Box_AfterSimCode_FuncName.ValueChanged += Box_AfterSimCode_FuncName_ValueChange;
+            Box_InternalState_Length.ValueChanged += Box_InternalState_Length_ValueChange;
 
             // Code Boxes
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
@@ -89,6 +100,9 @@ namespace Circuit_Simulator.UI.Specific
         {
             rootcomp = comp;
             Box_Name.value = comp.name;
+            Box_SimCode_FuncName.value = comp.Code_Sim_FuncName;
+            Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
+            Box_InternalState_Length.value = comp.internalstate_length.ToString();
             CodeBox_Sim.t.Text = comp.Code_Sim;
             CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
             gridpaint.pixel.Clear();
@@ -152,6 +166,18 @@ namespace Circuit_Simulator.UI.Specific
         {
             rootcomp.name = Box_Name.value;
             UI_Handler.LibaryWindow.Reload_UI();
+        }
+        public void Box_SimCode_FuncName_ValueChange(object sender)
+        {
+            rootcomp.Code_Sim_FuncName = Box_SimCode_FuncName.value;
+        }
+        public void Box_AfterSimCode_FuncName_ValueChange(object sender)
+        {
+            rootcomp.Code_AfterSim_FuncName = Box_AfterSimCode_FuncName.value;
+        }
+        public void Box_InternalState_Length_ValueChange(object sender)
+        {
+            rootcomp.internalstate_length = int.Parse("0" + Box_InternalState_Length.value);
         }
 
         public void Code_Sim_Button_Pressed(object sender)

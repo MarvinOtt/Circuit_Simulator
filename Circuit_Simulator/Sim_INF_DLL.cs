@@ -66,7 +66,7 @@ namespace Circuit_Simulator
             Comp2UpdateAfterSim = new int[1000000];
             Comp2UpdateAfterSim_ID = new int[1000000];
 
-            InitSimulation(8);
+            InitSimulation(Sim_Component.Components_Data.Count);
 
         }
 

@@ -131,7 +131,7 @@ namespace Circuit_Simulator
                 Sim_Component.IsEdgeTex.SetPixel(datapixel[i].IsEdge, currentcoo);
                 if (datapixel[i].type > Sim_Component.PINOFFSET)
                 {
-                    Point datapos = datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
+                    Point datapos = currentcoo - area.Location;// datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
                     data2place[datapos.X, datapos.Y] |= 128;
 
                 }
@@ -648,7 +648,7 @@ namespace Circuit_Simulator
             Game1.simulator.ChangeToolmode(Simulator.oldtoolmode);
         }
 
-        public int GetComponentID(Point pos)
+        public static int GetComponentID(Point pos)
         {
             Point gridpos = new Point(pos.X / 32, pos.Y / 32);
             int gridid = CompNetwork[pos.X, pos.Y];
@@ -679,7 +679,8 @@ namespace Circuit_Simulator
                 {
                     Point pos = pins2check[i];
                     Component cur_comp = components[CompGrid[pos.X / 32, pos.Y / 32][CompNetwork[pos.X, pos.Y]]];
-                    cur_comp.CheckAndUpdatePins();
+                    //if(cur_comp != null)
+                        cur_comp.CheckAndUpdatePins();
                     //bool IsNetwork = false;
                     //int wireID = 0;
                     //for(int j = 0; j < 7; ++j)

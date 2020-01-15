@@ -91,6 +91,7 @@ namespace Circuit_Simulator.UI
                 UI_Handler.UI_Active_State = UI_Handler.UI_Active_Main;
                 newkeys = Game1.kb_states.New.GetPressedKeys();
                 oldkeys = Game1.kb_states.Old.GetPressedKeys();
+                bool IsShift = Game1.kb_states.New.AreKeysDown(Keys.LeftShift) || Game1.kb_states.New.AreKeysDown(Keys.RightShift);
                 for (int i = 0; i < newkeys.Length; i++)
                 {
                     if (!oldkeys.Contains(newkeys[i]))
@@ -102,7 +103,7 @@ namespace Circuit_Simulator.UI
                                 {
                                     value += ((int)newkeys[i] - 48).ToString();
                                 }
-                                
+
                                 break;
 
                             case 2: //binary only
@@ -113,15 +114,21 @@ namespace Circuit_Simulator.UI
                                 break;
 
                             case 3: //Text
-                                if((int)newkeys[i] >= 65 && (int)newkeys[i] <= 90 && value.Length <= 42)
+                                if (value.Length <= 42)
                                 {
-                                    if(Game1.kb_states.New.AreKeysDown(Keys.LeftShift) || Game1.kb_states.New.AreKeysDown(Keys.RightShift))
+                                    char key_char;
+                                    bool IsValid = Extensions.TryConvertKeyboardInput(newkeys[i], IsShift, out key_char);
+                                    if(IsValid)
                                     {
-                                        value += ((char)newkeys[i]);
+                                        value += key_char;
                                     }
-                                    else
-                                        value += (char)(((int)newkeys[i]) + 32);
-                                   
+                                    //if (((int)newkeys[i] >= 65 && (int)newkeys[i] <= 90))
+                                    //{
+                                    //    if (IsShift)
+                                    //        value += ((char)newkeys[i]);
+                                    //    else
+                                    //        value += (char)(((int)newkeys[i]) + 32);
+                                    //}
                                 }
                                 else if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 57 && value.Length <= 10)
                                 {
@@ -136,10 +143,10 @@ namespace Circuit_Simulator.UI
                         {
                             value = value.Remove(value.Length - 1, 1);
                         }
-                    }       
-                    
-                    
-                    
+                    }
+
+
+
                 }
 
                 base.UpdateSpecific();

@@ -328,13 +328,18 @@ namespace Circuit_Simulator
             byte finalval = (byte)(curval & nextval & 0x7F);
             //if (nextval >= 128 && finalval != 0)
             //finalval = nextval;
-            if (curval > 128)
+            if (nextval > 128)
             {
                 byte comptype_next = Sim_Component.CompType[x, y];
                 byte gridid = Sim_Component.CompNetwork[x, y];
                 int[] arr = Sim_Component.CompGrid[x / 32, y / 32];
-                int compid_next = arr[gridid];
-                if (curcomptype == comptype_next && curcompid == compid_next)
+                if (arr != null)
+                {
+                    int compid_next = arr[gridid];
+                    if (curcomptype == comptype_next && curcompid == compid_next)
+                        finalval |= 0x80;
+                }
+                else
                     finalval |= 0x80;
             }
             if (finalval > 0 && ((CalcGridData[x, y] ^ finalval) & finalval) > 0)
@@ -350,12 +355,11 @@ namespace Circuit_Simulator
                 curval = IsWire[x, y];
             CalcGridData[x, y] |= curval;
             byte comptype_cur = Sim_Component.CompType[x, y];
-            byte gridid = Sim_Component.CompNetwork[x, y];
-            int compid_cur = Sim_Component.CompGrid[x / 32, y / 32][gridid];
+            int compid_cur = Sim_Component.GetComponentID(new Point(x, y));
 
             if (curval != 0)
             {
-                if (Sim_Component.CompType[x, y] > 1)
+                if (Sim_Component.CompType[x, y] > 3)
                     Sim_Component.pins2check[Sim_Component.pins2check_length++] = new Point(x, y);
 
                 DoFFIfValid(x - 1, y, curval, comptype_cur, compid_cur);
@@ -529,6 +533,7 @@ namespace Circuit_Simulator
                     finaldata[(x - Brec.Left), (y - Brec.Top)] = IsWire[x, y];
                 }
             }
+            //return;
             for (int x = rec.Left; x < rec.Right; ++x)
             {
                 for (int y = rec.Top; y < rec.Bottom; ++y)
@@ -580,7 +585,7 @@ namespace Circuit_Simulator
                 for (int y = Brec.Top; y < Brec.Bottom; ++y)
                 {
                     if (IsWire[x, y] > 128)
-                        CalculateNetworkAt(x, y, IsWire[x, y]);
+                        CalculateNetworkAt(x, y, (byte)(IsWire[x, y] & 0x7F));
                     else
                     {
                         for (int i = 0; i < LAYER_NUM; ++i)
@@ -922,7 +927,10 @@ namespace Circuit_Simulator
                 else
                 {
                     int id = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
-                    state = networks[id].state;
+                    if (networks[id] == null)
+                        state = -1;
+                    else
+                        state = networks[id].state;
                 }
                 spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 160), Color.Red);
             }

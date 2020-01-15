@@ -20,16 +20,17 @@ namespace Circuit_Simulator.COMP
         public List<CompData> Components;
         public string name;
         public string SaveFile;
-        public bool IsFold = true;
+        public bool IsFold = true, IsInUsedLibraries;
         public int STATE;
 
         public CompLibrary(string name, string SaveFile, bool AddToUsedLibraries = true)
         {
+            IsInUsedLibraries = AddToUsedLibraries;
             STATE = NOT_LOADED;
             this.name = name;
             this.SaveFile = SaveFile;
             Components = new List<CompData>();
-            if (AddToUsedLibraries)
+            if (IsInUsedLibraries)
                 AllUsedLibraries.Add(this);
             else
                 LibraryWindow_LoadedLibrarys.Add(this);
@@ -39,7 +40,8 @@ namespace Circuit_Simulator.COMP
         {
             comp.library = this;
             Components.Add(comp);
-            Sim_Component.Components_Data.Add(comp);
+            if(IsInUsedLibraries)
+                Sim_Component.Components_Data.Add(comp);
         }
 
         public void Save()
@@ -150,13 +152,13 @@ namespace Circuit_Simulator.COMP
                 string filename = dialog.FileName;
                
                 lib = new CompLibrary(null, filename, AddToUsedLibraries);
-                lib.Load(AddToUsedLibraries);
+                lib.Load();
                
             }
             dialog.Dispose();
             return lib;
         }
-        public void Load(bool AddToUsedLibraries = true)
+        public void Load()
         {
             try
             {
@@ -165,7 +167,7 @@ namespace Circuit_Simulator.COMP
                 FileStream stream = new FileStream(SaveFile, FileMode.Open);
                 StreamReader streamreader = new StreamReader(stream);
                 string libraryname = stream.ReadNullTerminated();
-                if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == libraryname) && !AddToUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == libraryname) && AddToUsedLibraries))
+                if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == libraryname) && !IsInUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == libraryname) && IsInUsedLibraries))
                 {
                     STATE = LOAD_FAILED;
                     throw new Exception("Library already loaded");

@@ -93,7 +93,7 @@ namespace Circuit_Simulator.UI.Specific
                 if(index == -1)
                 {
                     CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
-                    newlib.Load(false);
+                    newlib.Load();
                 }
             }
 
