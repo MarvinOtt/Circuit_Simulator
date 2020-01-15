@@ -13,7 +13,7 @@ namespace Circuit_Simulator.COMP
     {
         public List<ComponentPixel>[] data;
         public string name;
-        public string catagory;
+        public string catagory = "Other";
         public string Code_AfterSim, Code_Sim;
         public string Code_Sim_FuncName, Code_AfterSim_FuncName;
         public Rectangle[] bounds;
