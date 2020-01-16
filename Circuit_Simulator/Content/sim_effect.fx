@@ -7,7 +7,7 @@
 	#define PS_SHADERMODEL ps_5_0
 #endif
 
-#define PINOFF 3
+#define PINOFF 4
 
 texture2D logictex, wirecalctex, isedgetex;
 texture2D placementtex;
@@ -33,11 +33,12 @@ static float4 layercols[8] =
 	float4(1, 0.5f, 0, 1),
 	float4(1, 1, 0, 1)
 };
-static float4 compcols[4] =
+static float4 compcols[5] =
 {
 	float4(0.5f, 0.5f, 0.5f, 1),
 	float4(0.25f, 0.25f, 0.25f, 1),
-	float4(0.8f, 0.8f, 0.8f, 1),
+	float4(0.9f, 0.9f, 0.9f, 1),
+	float4(0.1f, 0.1f, 0.1f, 1),
 	float4(1, 1, 0, 1)
 };
 
@@ -267,7 +268,7 @@ float4 getcoloratpos(float x, float y)
 			if (comptype_int <= PINOFF)
 				OUT = compcols[comptype_int - 1];
 			else
-				OUT = compcols[3];
+				OUT = compcols[4];
 		}
 		
 	}
@@ -291,10 +292,10 @@ float4 getcoloratpos(float x, float y)
 					OUT = float4(1, 0, 0, 1);
 				else
 				{
-					if (type2 <= 3)
+					if (type2 <= 4)
 						OUT = compcols[type2 - 1];
 					else
-						OUT = compcols[3];
+						OUT = compcols[4];
 				}
 			}
 		}
@@ -538,7 +539,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
 	OUT.a = 1.0f;
 
-	return OUT + tex2D(SpriteTextureSampler, input.TextureCoordinates);// +tex2D(SpriteTextureSampler, input.TextureCoordinates);
+	return OUT + tex2D(SpriteTextureSampler, input.TextureCoordinates) * 0.00001f;// +tex2D(SpriteTextureSampler, input.TextureCoordinates);
 }
 
 technique BasicColorDrawing

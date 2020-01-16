@@ -160,50 +160,55 @@ namespace Circuit_Simulator.COMP
         }
         public void Load()
         {
-            try
+            //try
+            //{
+            byte[] intbuffer = new byte[4];
+
+            FileStream stream = new FileStream(SaveFile, FileMode.Open);
+            StreamReader streamreader = new StreamReader(stream);
+            string libraryname = stream.ReadNullTerminated();
+            if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == libraryname) && !IsInUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == libraryname) && IsInUsedLibraries))
             {
-                byte[] intbuffer = new byte[4];
+                STATE = LOAD_FAILED;
+                throw new Exception("Library already loaded");
+            }
+            name = libraryname;
 
-                FileStream stream = new FileStream(SaveFile, FileMode.Open);
-                StreamReader streamreader = new StreamReader(stream);
-                string libraryname = stream.ReadNullTerminated();
-                if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == libraryname) && !IsInUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == libraryname) && IsInUsedLibraries))
-                {
-                    STATE = LOAD_FAILED;
-                    throw new Exception("Library already loaded");
-                }
-                name = libraryname;
+            stream.Read(intbuffer, 0, 4);
+            int compcount = BitConverter.ToInt32(intbuffer, 0);
+            for (int j = 0; j < compcount; ++j)
+            {
+                string name = stream.ReadNullTerminated();
+                string category = stream.ReadNullTerminated();
+                stream.Read(intbuffer, 0, 1);
+                bool IsOverlay = BitConverter.ToBoolean(intbuffer, 0);
+                stream.Read(intbuffer, 0, 1);
+                bool IsClickable = BitConverter.ToBoolean(intbuffer, 0);
+                stream.Read(intbuffer, 0, 1);
+                bool IsUpdateAfterSim = BitConverter.ToBoolean(intbuffer, 0);
+                stream.Read(intbuffer, 0, 1);
+                bool ShowOverlay = BitConverter.ToBoolean(intbuffer, 0);
 
+                CompData newcomp = new CompData(name, category, IsOverlay, IsClickable, IsUpdateAfterSim);
+                newcomp.ShowOverlay = ShowOverlay;
                 stream.Read(intbuffer, 0, 4);
-                int compcount = BitConverter.ToInt32(intbuffer, 0);
-                for (int j = 0; j < compcount; ++j)
+                int Pixel_Num = BitConverter.ToInt32(intbuffer, 0);
+                for (int k = 0; k < Pixel_Num; ++k)
                 {
-                    string name = stream.ReadNullTerminated();
-                    string category = stream.ReadNullTerminated();
-                    stream.Read(intbuffer, 0, 1);
-                    bool IsOverlay = BitConverter.ToBoolean(intbuffer, 0);
-                    stream.Read(intbuffer, 0, 1);
-                    bool IsClickable = BitConverter.ToBoolean(intbuffer, 0);
-                    stream.Read(intbuffer, 0, 1);
-                    bool IsUpdateAfterSim = BitConverter.ToBoolean(intbuffer, 0);
-                    stream.Read(intbuffer, 0, 1);
-                    bool ShowOverlay = BitConverter.ToBoolean(intbuffer, 0);
-
-                    CompData newcomp = new CompData(name, category, IsOverlay, IsClickable, IsUpdateAfterSim);
-                    newcomp.ShowOverlay = ShowOverlay;
+                    Point pos = Point.Zero;
                     stream.Read(intbuffer, 0, 4);
-                    int Pixel_Num = BitConverter.ToInt32(intbuffer, 0);
-                    for (int k = 0; k < Pixel_Num; ++k)
-                    {
-                        Point pos = Point.Zero;
-                        stream.Read(intbuffer, 0, 4);
-                        pos.X = BitConverter.ToInt32(intbuffer, 0);
-                        stream.Read(intbuffer, 0, 4);
-                        pos.Y = BitConverter.ToInt32(intbuffer, 0);
-                        stream.Read(intbuffer, 0, 1);
-                        byte type = intbuffer[0];
-                        newcomp.addData(new ComponentPixel(pos, type));
-                    }
+                    pos.X = BitConverter.ToInt32(intbuffer, 0);
+                    stream.Read(intbuffer, 0, 4);
+                    pos.Y = BitConverter.ToInt32(intbuffer, 0);
+                    stream.Read(intbuffer, 0, 1);
+                    byte type = intbuffer[0];
+                    newcomp.addData(new ComponentPixel(pos, type));
+                }
+                stream.Read(intbuffer, 0, 4);
+                int OverlayLine_SegmentNum = BitConverter.ToInt32(intbuffer, 0);
+                newcomp.InitializeLineOverlays(OverlayLine_SegmentNum);
+                for (int i = 0; i < OverlayLine_SegmentNum; ++i)
+                {
                     stream.Read(intbuffer, 0, 4);
                     int OverlayLine_Num = BitConverter.ToInt32(intbuffer, 0);
                     for (int k = 0; k < OverlayLine_Num; ++k)
@@ -221,32 +226,36 @@ namespace Circuit_Simulator.COMP
                         pos2.Y = BitConverter.ToInt32(intbuffer, 0);
                         stream.Read(intbuffer, 0, 4);
                         float layers = BitConverter.ToSingle(intbuffer, 0);
-                        newcomp.addOverlayLine(new Line(pos, pos2), layers);
+                        newcomp.addOverlayLine(new Line(pos, pos2), layers, i);
                     }
-                    stream.Read(intbuffer, 0, 4);
-                    newcomp.internalstate_length = BitConverter.ToInt32(intbuffer, 0);
-                    stream.Read(intbuffer, 0, 4);
-                    newcomp.ClickAction_Type = BitConverter.ToInt32(intbuffer, 0);
-                    if(IsUpdateAfterSim)
-                        newcomp.Code_AfterSim = stream.ReadNullTerminated();
-                    newcomp.Code_Sim = stream.ReadNullTerminated();
-                    if (IsUpdateAfterSim)
-                        newcomp.Code_AfterSim_FuncName = stream.ReadNullTerminated();
-                    newcomp.Code_Sim_FuncName = stream.ReadNullTerminated();
-
-                    newcomp.Finish();
-                    AddComponent(newcomp);
                 }
-                stream.Close();
-                stream.Dispose();
-                STATE = LOADED;
+
+                stream.Read(intbuffer, 0, 4);
+                newcomp.internalstate_length = BitConverter.ToInt32(intbuffer, 0);
+                stream.Read(intbuffer, 0, 4);
+                newcomp.OverlaySeg_length = BitConverter.ToInt32(intbuffer, 0);
+                stream.Read(intbuffer, 0, 4);
+                newcomp.ClickAction_Type = BitConverter.ToInt32(intbuffer, 0);
+                if (IsUpdateAfterSim)
+                    newcomp.Code_AfterSim = stream.ReadNullTerminated();
+                newcomp.Code_Sim = stream.ReadNullTerminated();
+                if (IsUpdateAfterSim)
+                    newcomp.Code_AfterSim_FuncName = stream.ReadNullTerminated();
+                newcomp.Code_Sim_FuncName = stream.ReadNullTerminated();
+
+                newcomp.Finish();
+                AddComponent(newcomp);
             }
-            catch (Exception exp)
-            {
-                STATE = LOAD_FAILED;
-                Console.WriteLine("Loading Library failed: {0}", exp);
-                System.Windows.Forms.MessageBox.Show("Loading Library failed: " + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            stream.Close();
+            stream.Dispose();
+            STATE = LOADED;
+            //}
+            //catch (Exception exp)
+            //{
+            //    STATE = LOAD_FAILED;
+            //    Console.WriteLine("Loading Library failed: {0}", exp);
+            //    System.Windows.Forms.MessageBox.Show("Loading Library failed: " + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
         }
     }
 }

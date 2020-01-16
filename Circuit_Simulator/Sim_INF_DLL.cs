@@ -48,7 +48,7 @@ namespace Circuit_Simulator
 
         public static void SetIntState(int compID, int stateID)
         {
-            CompInfos[IntStatesMap[compID]] = Sim_Component.components[compID].internalstates[stateID];
+            CompInfos[IntStatesMap[compID] + stateID] = Sim_Component.components[compID].internalstates[stateID];
         }
         public static byte GetWireState(int index)
         {
@@ -202,10 +202,10 @@ namespace Circuit_Simulator
                     {
                         CompInfos[infocount++] = WireMap[curcomp.pinNetworkIDs[j]] - 1;
                     }
-                    if(compdata.internalstate_length > 0)
+                    if(compdata.totalstate_length > 0)
                     {
                         IntStatesMap[i] = infocount;
-                        for(int j = 0; j < compdata.internalstate_length; ++j)
+                        for(int j = 0; j < compdata.totalstate_length; ++j)
                         {
                             CompInfos[infocount++] = curcomp.internalstates[j];
                         }

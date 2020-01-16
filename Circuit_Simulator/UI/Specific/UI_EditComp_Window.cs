@@ -21,7 +21,7 @@ namespace Circuit_Simulator.UI.Specific
         UI_TexButton[] paintbuttons;
         UI_GridPaint gridpaint;
 
-        Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
+        Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(0.1f, 0.1f, 0.1f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
 
         //Code Boxes
         public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
@@ -41,6 +41,7 @@ namespace Circuit_Simulator.UI.Specific
             Box_AfterSimCode_FuncName = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
             UI_String InternalState_Length_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "Internal State Length: ");
             Box_InternalState_Length = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1);
+            //Box_IsAfterSim = new UI_ValueInput(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
 
             Code_Sim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InternalState_Length_Label), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
             Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
@@ -62,8 +63,8 @@ namespace Circuit_Simulator.UI.Specific
                     Features.DenyScroll = true;
             });
             gridpaint.PixelChanged += PixelChanged;
-            paintbuttons = new UI_TexButton[4];
-            for (int i = 0; i < 4; ++i)
+            paintbuttons = new UI_TexButton[5];
+            for (int i = 0; i < 5; ++i)
             {
                 Generic_Conf curconf = new Generic_Conf(UI_Handler.gridpaintbuttonconf);
                 curconf.tex_color = paintbuttoncols[i];
@@ -86,6 +87,7 @@ namespace Circuit_Simulator.UI.Specific
             Box_SimCode_FuncName.ValueChanged += Box_SimCode_FuncName_ValueChange;
             Box_AfterSimCode_FuncName.ValueChanged += Box_AfterSimCode_FuncName_ValueChange;
             Box_InternalState_Length.ValueChanged += Box_InternalState_Length_ValueChange;
+            //Box_IsAfterSim.ValueChanged += Box_IsAfterSim_ValueChange;
 
             // Code Boxes
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
@@ -100,6 +102,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             rootcomp = comp;
             Box_Name.value = comp.name;
+            //Box_IsAfterSim.value = (comp.IsUpdateAfterSim ? 1 : 0).ToString();
             Box_SimCode_FuncName.value = comp.Code_Sim_FuncName;
             Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
             Box_InternalState_Length.value = comp.internalstate_length.ToString();
@@ -107,6 +110,22 @@ namespace Circuit_Simulator.UI.Specific
             CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
             gridpaint.pixel.Clear();
             gridpaint.pixel.AddRange(rootcomp.data[0]);
+            gridpaint.ledsegmentpixel.Clear();
+            gridpaint.ledsegmentpixel_pos.Clear();
+            for (int i = 0; i < rootcomp.overlaylines.Length; ++i)
+            {
+                for (int j = 0; j < rootcomp.overlaylines[i][0].Count; ++j)
+                {
+                    Point dir = rootcomp.overlaylines[i][0][j].end - rootcomp.overlaylines[i][0][j].start;
+                    int length = 1;
+                    Point curpos = rootcomp.overlaylines[i][0][j].start;
+                    for(int k = 0; k < length; ++k)
+                    {
+                        gridpaint.ledsegmentpixel.Add((byte)i);
+                        gridpaint.ledsegmentpixel_pos.Add(curpos + gridpaint.Origin);
+                    }
+                }
+            }
             gridpaint.ApplyPixel();
         }
 
@@ -151,9 +170,26 @@ namespace Circuit_Simulator.UI.Specific
         public void PixelChanged()
         {
             rootcomp.ClearAllPixel();
+            int max = 0;
+            if (gridpaint.ledsegmentpixel.Count > 0)
+            {
+                max = gridpaint.ledsegmentpixel.Max();
+                rootcomp.IsOverlay = true;
+            }
+            else
+            {
+                rootcomp.IsOverlay = false;
+            }
+            rootcomp.InitializeLineOverlays(1 + max);
+            bool[,] IsCalc = new bool[gridpaint.GridSize, gridpaint.GridSize];
             for(int i = 0; i < gridpaint.pixel.Count; ++i)
             {
                 rootcomp.addData(gridpaint.pixel[i], gridpaint.currot);
+            }
+            for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
+            {
+                Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
+                rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
             }
         }
 
@@ -174,11 +210,16 @@ namespace Circuit_Simulator.UI.Specific
         public void Box_AfterSimCode_FuncName_ValueChange(object sender)
         {
             rootcomp.Code_AfterSim_FuncName = Box_AfterSimCode_FuncName.value;
+            rootcomp.IsUpdateAfterSim = rootcomp.Code_AfterSim_FuncName.Length > 0;
         }
         public void Box_InternalState_Length_ValueChange(object sender)
         {
             rootcomp.internalstate_length = int.Parse("0" + Box_InternalState_Length.value);
         }
+        //public void Box_IsAfterSim_ValueChange(object sender)
+        //{
+        //    rootcomp.IsUpdateAfterSim = int.Parse("0" + Box_IsAfterSim.value) > 0 ? true : false;
+        //}
 
         public void Code_Sim_Button_Pressed(object sender)
         {
@@ -223,6 +264,11 @@ namespace Circuit_Simulator.UI.Specific
                 UI_Handler.info.ShowInfo();
             }
             else if (paintbuttons[3].IsHovered)
+            {
+                UI_Handler.info.values.ui_elements[0].setValue("Place Led Segment");
+                UI_Handler.info.ShowInfo();
+            }
+            else if (paintbuttons[4].IsHovered)
             {
                 UI_Handler.info.values.ui_elements[0].setValue("Place Pin");
                 UI_Handler.info.ShowInfo();
