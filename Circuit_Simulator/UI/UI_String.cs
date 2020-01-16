@@ -24,7 +24,7 @@ namespace Circuit_Simulator.UI
             setValue(value);
         }
 
-        public void setValue(string value)
+        public void setValue(string value)  
         {
             this.value = value;
             size.X = conf.font.MeasureString(value).ToPoint().X;

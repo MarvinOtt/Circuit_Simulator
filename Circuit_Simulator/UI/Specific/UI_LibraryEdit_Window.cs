@@ -11,29 +11,28 @@ using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.Specific
 {
-    public class UI_Libary_Window : UI_Window
+    public class UI_LibraryEdit_Window : UI_Window
     {
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Libraries;
         public static Rectangle libhitbox;
         //UI_String NeedSavingString;
-        UI_StringButton AddButton, Open, SaveAll, Reload;
+        UI_StringButton AddButton, Open, SaveAll;
         UI_ValueInput RenameBox1, RenameBox2;
         public static bool IsChange;
 
-        public UI_Libary_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable = true) : base(pos, size, Title, minsize, conf, IsResizeable)
+        public UI_LibraryEdit_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable = true) : base(pos, size, Title, minsize, conf, IsResizeable)
         {
             Libraries = new UI_Scrollable<UI_List<UI_Categorie<UI_Component>>>(new Pos(bezelsize, 50), Point.Zero);
             Libraries.Add_UI_Elements(new UI_List<UI_Categorie<UI_Component>>(Pos.Zero, false));
             AddButton = new UI_StringButton(new Pos(-bezelsize, ORIGIN.BR, ORIGIN.BR), new Point(UI_Handler.buttonwidth, UI_Handler.buttonheight), "Add", true, UI_Handler.genbutconf);
             Open = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, AddButton), new Point((int)(UI_Handler.buttonwidth), UI_Handler.buttonheight), "Open", true, UI_Handler.genbutconf);
             SaveAll = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, Open), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Save All", true, UI_Handler.genbutconf);
-            Reload = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, SaveAll), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Reload", true, UI_Handler.genbutconf);
             RenameBox1 = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.genbutconf, 3);
             RenameBox2 = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.componentconf, 3);
 
             //NeedSavingString = new UI_String(new Pos(10, 10 + headheight), Point.Zero, conf, "In order to edit Librarys, the circuit has to be saved.");
 
-            Add_UI_Elements(RenameBox1, RenameBox2, AddButton, Open, SaveAll, Reload);
+            Add_UI_Elements(RenameBox1, RenameBox2, AddButton, Open, SaveAll);
             Add_UI_Elements(Libraries);
 
            
@@ -201,7 +200,7 @@ namespace Circuit_Simulator.UI.Specific
                 }
             }
             CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == pressedElement.parent.ID_Name);
-            CompData newComp = new CompData(finalname, "", false, false, false);
+            CompData newComp = new CompData(finalname, "Other", false, false, false);
             curlib.AddComponent(newComp);
 
 
@@ -324,19 +323,6 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void UpdateSpecific()
         {
-            //if(FileHandler.IsUpToDate)
-            //{
-            //    Libraries.GetsUpdated = AddButton.GetsUpdated = Open.GetsUpdated = SaveAll.GetsUpdated = Reload.GetsUpdated = true;
-            //    Libraries.GetsDrawn = AddButton.GetsDrawn = Open.GetsDrawn = SaveAll.GetsDrawn = Reload.GetsDrawn = true;
-            //    NeedSavingString.GetsUpdated = NeedSavingString.GetsDrawn = false;
-            //}
-            //else
-            //{
-            //    Libraries.GetsUpdated = AddButton.GetsUpdated = Open.GetsUpdated = SaveAll.GetsUpdated = Reload.GetsUpdated = false;
-            //    Libraries.GetsDrawn = AddButton.GetsDrawn = Open.GetsDrawn = SaveAll.GetsDrawn = Reload.GetsDrawn = false;
-            //    NeedSavingString.GetsUpdated = NeedSavingString.GetsDrawn = true;
-            //}
-
             
             base.UpdateSpecific();
             Libraries.size = new Point(size.X - bezelsize * 2, size.Y - bezelsize * 2 - Libraries.pos.Y - UI_Handler.buttonheight);

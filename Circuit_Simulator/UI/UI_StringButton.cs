@@ -18,6 +18,7 @@ namespace Circuit_Simulator.UI
         {
             this.text = text;
             text_dim = conf.font.MeasureString(text);
+            
     
         }
 
@@ -28,13 +29,15 @@ namespace Circuit_Simulator.UI
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            base.DrawSpecific(spritebatch);
+            spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.BGColor);
             if (IsHovered && !IsActivated)
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.HoverColor);
             if (IsActivated)
                 spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, size), conf.ActiveColor);
 
             spritebatch.DrawString(conf.font, text, new Vector2(absolutpos.X + size.X / 2 - text_dim.X / 2 , absolutpos.Y + size.Y / 2 - text_dim.Y / 2), conf.font_color);
+            if (DrawBorder)
+                spritebatch.DrawHollowRectangle(new Rectangle(absolutpos, size), conf.BorderColor, 1);
         }
     }
 }

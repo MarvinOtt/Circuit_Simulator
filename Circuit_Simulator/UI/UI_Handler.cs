@@ -44,10 +44,11 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public static UI_InfoBox info;
         public UI_Window input;
-        public static UI_Libary_Window LibaryWindow;
+        public static UI_LibraryEdit_Window LibraryEditWindow;
+        public static UI_ProjectLibrary_Window ProjectLibWindow;
         public static UI_EditComp_Window editcompwindow;
-        public static UI_Box<UI_String> GeneralInfoBox;
-        public static UI_Box<UI_StringButton> EditLib;
+        public static UI_Box<UI_Element> GeneralInfoBox;
+        public static UI_Box<UI_StringButton> EditLib, EditProjectLib;
         public static UI_Box<UI_StringButton> EditComp;
         public static UI_QuickHBElement QuickHotbar;
         public static UI_QuickHBElement LayerSelectHotbar;
@@ -123,7 +124,7 @@ namespace Circuit_Simulator
                 //((Button_Menu)ButtonMenu_View.ui_elements[i]).conf.behav = 2;
             }
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Pos(0, 25));
-            string[] ToolsButton_Names = new string[] { "Libaries", "Test", "Test" };
+            string[] ToolsButton_Names = new string[] { "Libary Editor", "Project Libararies", "Test" };
             for (int i = 0; i < ToolsButton_Names.Length; ++i)
                 ButtonMenu_Tools.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf1));
 
@@ -179,10 +180,11 @@ namespace Circuit_Simulator
             //input.GetsDrawn = input.GetsUpdated = false;
 
             //GeneralInfo Box
-            GeneralInfoBox = new UI_Box<UI_String>(new Pos(-1, Game1.Screenheight - 25 + 1), new Point(Game1.Screenwidth + 2, 25));
-            GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos( 10, 0), Point.Zero, componentconf));
-            GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(150, 0), Point.Zero, componentconf));
-
+            GeneralInfoBox = new UI_Box<UI_Element>(new Pos(-1, Game1.Screenheight - 24 + 1), new Point(Game1.Screenwidth + 2, 24));
+            GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos( 10, 2), Point.Zero, componentconf));
+            GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(150, 0), new Point(24, 24), "+", true, behave2conf));
+            GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[1]), new Point(24, 24), "-", true, behave2conf));
+            GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(0, 2, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[2]), Point.Zero, componentconf));
             //Layer Select Hotbar
             LayerSelectHotbar = new UI_QuickHBElement(new Pos(0, 0, ORIGIN.DEFAULT, ORIGIN.BL, GeneralInfoBox));
 
@@ -210,27 +212,33 @@ namespace Circuit_Simulator
             EditComp.Add_UI_Elements(RenameComp, DelComp);
             EditComp.GetsUpdated = EditComp.GetsDrawn = false;
 
-            //Libary Window
-            LibaryWindow = new UI_Libary_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
-            LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = false;
+            //Libary Edit Window
+            LibraryEditWindow = new UI_LibraryEdit_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
+            LibraryEditWindow.GetsUpdated = LibraryEditWindow.GetsDrawn = false;
             //LibaryWindow.Add_UI_Elements(new UI_StringButton(new Point(2, LibaryWindow.Libaries.size.Y), new Point(buttonwidth, buttonheight), "test", toolbarbuttonconf));
 
 
             //EditCompWindow
             editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.5), (int)(Game1.Screenheight * 0.6)), "EditComponent", new Point(300, 300), componentconf, true);
 
+            //Project Lib options
+            EditProjectLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight)));
+            UI_StringButton RemoveLib = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Remove Library", true, componentconf);
+            EditProjectLib.Add_UI_Elements(RemoveLib);
+            EditProjectLib.GetsUpdated = EditProjectLib.GetsDrawn = false;
 
+            //ProjectLibraryWindow
+            ProjectLibWindow = new UI_ProjectLibrary_Window(new Pos(200), new Point(500, 500), "Project Libraries", new Point(300), componentconf, true);
+            ProjectLibWindow.GetsUpdated = ProjectLibWindow.GetsDrawn = false;
+
+            
             InitializeUISettings(spriteBatch);
+            
         }
 
         public static void InitComponents()
         {
-            //LibaryWindow.Libraries.ui_elements[0].ui_elements.Clear();
-            //for(int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
-            //{
-            //    LibaryWindow.Add_Library(CompLibrary.AllUsedLibraries[i]);
-            //}
-
+          
             HashSet<string> categorys = new HashSet<string>();
             List<CompData> comps = Sim_Component.Components_Data;
             for (int i = 0; i < comps.Count; ++i)
@@ -274,9 +282,17 @@ namespace Circuit_Simulator
             {
                 Button_Menu current = (Button_Menu)ButtonMenu_Tools.ui_elements[0];
                 if (current.IsToggle)
-                    LibaryWindow.GetsUpdated = LibaryWindow.GetsDrawn = current.IsActivated;
+                    LibraryEditWindow.GetsUpdated = LibraryEditWindow.GetsDrawn = current.IsActivated;
                 else
-                    current.IsActivated = LibaryWindow.GetsUpdated;
+                    current.IsActivated = LibraryEditWindow.GetsUpdated;
+            });
+            ButtonMenu_Tools.ui_elements[1].UpdateFunctions.Add(delegate ()
+            {
+                Button_Menu current = (Button_Menu)ButtonMenu_Tools.ui_elements[1];
+                if (current.IsToggle)
+                    ProjectLibWindow.GetsUpdated = ProjectLibWindow.GetsDrawn = current.IsActivated;
+                else
+                    current.IsActivated = ProjectLibWindow.GetsUpdated;
             });
             // QuickHotbar UI Toggle
             ButtonMenu_View.ui_elements[1].UpdateFunctions.Add(delegate ()
@@ -325,6 +341,15 @@ namespace Circuit_Simulator
                 }
             
             });
+            EditProjectLib.UpdateFunctions.Add(delegate ()
+            {
+                if (Game1.mo_states.IsLeftButtonToggleOff())
+                {
+
+                    EditProjectLib.GetsUpdated = EditProjectLib.GetsDrawn = false;
+                }
+
+            });
             EditComp.UpdateFunctions.Add(delegate ()
             {
                 if (Game1.mo_states.IsLeftButtonToggleOff())
@@ -339,6 +364,10 @@ namespace Circuit_Simulator
             {
                 (LayerSelectHotbar.ui_elements[i] as UI_TexButton).GotToggledLeft += LayerHotBarButton_Pressed;
             }
+
+            //Changin Simspeed int the UI
+            (GeneralInfoBox.ui_elements[1] as UI_StringButton).GotToggledLeft += inreaseSimSpeed;
+            (GeneralInfoBox.ui_elements[2] as UI_StringButton).GotToggledLeft += decreaseSimSpeed;
 
             // Wire MaskButton
             QuickHotbar.ui_elements[6].UpdateFunctions.Add(delegate ()
@@ -383,7 +412,14 @@ namespace Circuit_Simulator
                 }
             };
         }
-
+        public void inreaseSimSpeed(object sender)
+        {
+            Simulator.simspeed ++;
+        }
+        public void decreaseSimSpeed(object sender)
+        {
+            Simulator.simspeed --;
+        }
         public void LayerHotBarButton_Pressed(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
@@ -427,6 +463,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].UpdateMain();
             EditLib.UpdateMain();
+            EditProjectLib.UpdateMain();
             EditComp.UpdateMain();
             wire_ddbl.UpdateMain();
             UI_Window.All_Update();
@@ -450,6 +487,7 @@ namespace Circuit_Simulator
             info.Draw(spritebatch);
             wire_ddbl.Draw(spritebatch);
             EditComp.Draw(spritebatch);
+            EditProjectLib.Draw(spritebatch);
             EditLib.Draw(spritebatch);
 
             
