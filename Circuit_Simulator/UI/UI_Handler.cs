@@ -11,6 +11,7 @@ using Circuit_Simulator.UI.Specific;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using static Circuit_Simulator.UI.UI_Configs;
 using static Circuit_Simulator.UI.UI_STRUCTS;
 
@@ -50,11 +51,12 @@ namespace Circuit_Simulator
         public static UI_Box<UI_Element> GeneralInfoBox;
         public static UI_Box<UI_StringButton> EditLib, EditProjectLib;
         public static UI_Box<UI_StringButton> EditComp;
-        public static UI_QuickHBElement QuickHotbar;
-        public static UI_QuickHBElement LayerSelectHotbar;
+        public static UI_QuickHBElement<UI_Element> QuickHotbar;
+        public static UI_QuickHBElement<UI_Element> LayerSelectHotbar;
+        public static UI_QuickHBElement<UI_TexButton> WireMaskHotbar;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
-        public static UI_List<UI_Dropdown_Button> wire_ddbl;
+        public static UI_List<UI_TexButton> wire_ddbl;
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf, gridpaintbuttonconf;
 
@@ -137,35 +139,14 @@ namespace Circuit_Simulator
                 ButtonMenu_Help.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), HelpButton_Names[i], toolbarddconf2));
 
             //QuickHotbar
-            QuickHotbar = new UI_QuickHBElement(new Pos(0, Toolbar.size.Y));
+            QuickHotbar = new UI_QuickHBElement<UI_Element>(new Pos(0, Toolbar.size.Y));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, behave1conf));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, behave2conf));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, behave2conf));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, behave2conf));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, behave1conf));         
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, behave1conf));
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 6 + 6, 0), Button_tex, behave1conf));
-
-            //Assigning Colors to the layers
-            Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
-            layer_colors = new Color[7];
-            for(int i = 0; i < 7; i++)
-            {
-                layer_colors[i] = all_layer_colors[i];
-            }
-            wire_ddbl = new UI_List<UI_Dropdown_Button>(new Pos(0, sqarebuttonwidth), false); 
-            QuickHotbar.ui_elements[6].child = wire_ddbl;
-            wire_ddbl.parent = QuickHotbar.ui_elements[6];
-            wire_ddbl.GetsUpdated = wire_ddbl.GetsDrawn = false;
-            
-            for(int i = 0; i < 7; i++)
-            {
-                Generic_Conf curconf = new Generic_Conf(behave1conf);
-                curconf.tex_color = layer_colors[i];
-                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i + 7) + i + 7, 0), Button_tex, curconf));
-            }
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 7) + 7 + 7, 0), Button_tex, behave1conf));
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 1 + 7) + 7 + 1 + 7, 0), Button_tex, behave1conf));
+            //QuickHotbar.Add_UI_Element(new UI_TeBxutton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 6 + 6, 0), Button_tex, behave1conf));
 
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
@@ -188,8 +169,18 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(150, 0), new Point(24, 24), "+", true, behave2conf));
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[1]), new Point(24, 24), "-", true, behave2conf));
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(0, 2, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[2]), Point.Zero, componentconf));
+
+            //Assigning Colors to the layers
+            Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
+            layer_colors = new Color[7];
+            for (int i = 0; i < 7; i++)
+            {
+                layer_colors[i] = all_layer_colors[i];
+            }
+
+
             //Layer Select Hotbar
-            LayerSelectHotbar = new UI_QuickHBElement(new Pos(0, 0, ORIGIN.DEFAULT, ORIGIN.BL, GeneralInfoBox));
+            LayerSelectHotbar = new UI_QuickHBElement<UI_Element>(new Pos(0, 0, ORIGIN.DEFAULT, ORIGIN.BL, GeneralInfoBox));
 
             for(int i = 0; i < 7; i++)
             {
@@ -198,7 +189,22 @@ namespace Circuit_Simulator
                 LayerSelectHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(buttonwidth, buttonheight), new Point(0, sqarebuttonwidth * 4 + 3), Button_tex, curconf));
             }
             (LayerSelectHotbar.ui_elements[0] as UI_TexButton).IsActivated = true;
-            
+
+
+            WireMaskHotbar = new UI_QuickHBElement<UI_TexButton>(new Pos(100, 0, ORIGIN.TR, ORIGIN.DEFAULT, LayerSelectHotbar));
+           
+
+
+
+            for (int i = 0; i < 7; i++)
+            {
+                Generic_Conf curconf = new Generic_Conf(behave1conf);
+                curconf.tex_color = layer_colors[i];
+                WireMaskHotbar.Add_UI_Element(new UI_TexButton(new Pos(0, 0), new Point(sqarebuttonwidth), new Point(sqarebuttonwidth * (i + 7) + i + 7, 0), Button_tex, curconf));
+            }
+            WireMaskHotbar.Add_UI_Element(new UI_TexButton(new Pos(0, 0), new Point(sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 7) + 7 + 7, 0), Button_tex, behave1conf));
+            WireMaskHotbar.Add_UI_Element(new UI_TexButton(new Pos(0, 0), new Point(sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 1 + 7) + 7 + 1 + 7, 0), Button_tex, behave1conf));
+
             //EditLib options
             EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 3)));
             UI_StringButton RenameLib = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
@@ -375,17 +381,21 @@ namespace Circuit_Simulator
             {
                 (LayerSelectHotbar.ui_elements[i] as UI_TexButton).GotToggledLeft += LayerHotBarButton_Pressed;
             }
+            for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
+            {
+                (WireMaskHotbar.ui_elements[i]).GotToggledLeft += WireMaskBar_Pressed;
+            }
 
             //Changin Simspeed int the UI
             (GeneralInfoBox.ui_elements[1] as UI_StringButton).GotToggledLeft += inreaseSimSpeed;
             (GeneralInfoBox.ui_elements[2] as UI_StringButton).GotToggledLeft += decreaseSimSpeed;
 
             // Wire MaskButton
-            QuickHotbar.ui_elements[6].UpdateFunctions.Add(delegate ()
-            {
-                UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
-                current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
-            });
+            //QuickHotbar.UpdateFunctions.Add(delegate ()
+            //{
+            //    UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
+            //    current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
+            //});
             ((UI_TexButton)QuickHotbar.ui_elements[5]).GotActivatedLeft += delegate (object sender)
             {
                 ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = false;
@@ -448,6 +458,31 @@ namespace Circuit_Simulator
                 }
             }
         }
+        public void WireMaskBar_Pressed(object sender)
+        {
+            UI_TexButton cur = sender as UI_TexButton;
+            Simulator.currentlayer = WireMaskHotbar.ui_elements.IndexOf(cur);
+            Simulator.sim_effect.Parameters["currentlayer"].SetValue(Simulator.currentlayer);
+            if (cur.IsActivated == false)
+            {
+                if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
+                    cur.IsActivated = true;
+            }   
+            else
+            {
+              
+                if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
+                {
+                    for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
+                    {
+                        UI_TexButton curbut = (WireMaskHotbar.ui_elements[i] as UI_TexButton);
+                        if (curbut != cur)
+                            curbut.IsActivated = false;
+                    }
+                }
+               
+            }
+        }
 
         // Gets called when something of the Window or Graphics got changed
         public void Window_Graphics_Changed(object sender, EventArgs e)
@@ -477,13 +512,13 @@ namespace Circuit_Simulator
             EditLib.UpdateMain();
             EditProjectLib.UpdateMain();
             EditComp.UpdateMain();
-            wire_ddbl.UpdateMain();
             UI_Window.All_Update();
             info.UpdateMain();
             QuickHotbar.UpdateMain();
             Toolbar.UpdateMain();
             GeneralInfoBox.UpdateMain();
             LayerSelectHotbar.UpdateMain();
+            WireMaskHotbar.UpdateMain();
 
 
 
@@ -491,13 +526,13 @@ namespace Circuit_Simulator
 
 	    public void Draw(SpriteBatch spritebatch)
 	    {
+            WireMaskHotbar.Draw(spritebatch);
             LayerSelectHotbar.Draw(spritebatch);
             GeneralInfoBox.Draw(spritebatch);
             Toolbar.Draw(spritebatch);
             QuickHotbar.Draw(spritebatch);
             UI_Window.All_Draw(spritebatch);
             info.Draw(spritebatch);
-            wire_ddbl.Draw(spritebatch);
             EditComp.Draw(spritebatch);
             EditProjectLib.Draw(spritebatch);
             EditLib.Draw(spritebatch);

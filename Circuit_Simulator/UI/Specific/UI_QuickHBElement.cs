@@ -9,7 +9,7 @@ using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI.Specific
 {
-    public class UI_QuickHBElement : UI_MultiElement<UI_Element>
+    public class UI_QuickHBElement<T> : UI_MultiElement<T> where T : UI_Element
     {
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
@@ -19,7 +19,7 @@ namespace Circuit_Simulator.UI.Specific
             
         }
 
-        public void Add_UI_Element(UI_Element element)
+        public void Add_UI_Element(T element)
         {
             int currentSizeX = ui_elements.Sum(x => x.size.X);
             element.pos = new Pos(currentSizeX, 0);
