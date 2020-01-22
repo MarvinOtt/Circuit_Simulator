@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -77,16 +78,20 @@ namespace Circuit_Simulator
             Array.Clear(pinNetworkIDs, 0, pinNetworkIDs.Length);
             for (int i = 0; i < Sim_Component.Components_Data[dataID].data[0].Count; ++i)
             {
-                Point curpos = curpixel[i].pos + pos;
-                for(int j = 0; j < 7; ++j)
+                if (curpixel[i].type > Sim_Component.PINOFFSET)
                 {
-                    int wireID = Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, j];
-                    if (wireID != 0 && (Simulator.IsWire[curpos.X, curpos.Y] & (1 << j)) != 0)
-                    {
-                        if (pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] == 0)
-                            pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = wireID;
-                    }
+                    Point curpos = curpixel[i].pos + pos;
+                    pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = Simulator.WireIDPs[curpos.X, curpos.Y];
                 }
+                //for (int j = 0; j < 7; ++j)
+                //{
+                //    int wireID = Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, j];
+                //    if (wireID != 0 && (Simulator.IsWire[curpos.X, curpos.Y] & (1 << j)) != 0)
+                //    {
+                //        if (pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] == 0)
+                //            pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = wireID;
+                //    }
+                //}
             }
         }
 
@@ -118,7 +123,7 @@ namespace Circuit_Simulator
             return IsPlacementValid;
         }
 
-        public void Place(Point pos, int newrotation)
+        public void Place(Point pos, int newrotation, bool SkipNetworkRouting = false)
         {
             FileHandler.IsUpToDate = false;
             Stopwatch watch = new Stopwatch();
@@ -171,7 +176,7 @@ namespace Circuit_Simulator
                         Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = (byte)Index;
                 }
             }
-            Game1.simulator.PlaceArea(area, data2place);
+            Game1.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
             watch.Stop();
             double milis = (1000.0 * watch.ElapsedTicks) / (double)Stopwatch.Frequency;
             //Console.WriteLine(milis);
@@ -345,8 +350,8 @@ namespace Circuit_Simulator
             emptyComponentID = new int[1000000];
             CompMayneedoverlay = new List<int>();
             Components_Data = new List<CompData>();
-
-            Sim_INF_DLL.LoadLibrarys(@"LIBRARIES\Main_Library.dcl");
+            string[] Libraries2Load = Directory.GetFiles(@"LIBRARIES\", "*.dcl");
+            Sim_INF_DLL.LoadLibrarys(Libraries2Load);
 
             // Basic Components Data
 
@@ -670,20 +675,8 @@ namespace Circuit_Simulator
                 return -1;
         }
 
-        public void Update()
+        public void CheckPins()
         {
-            if(DropComponent)
-            {
-                DropComponent = false;
-                ComponentDrop(UI_Handler.dragcomp.comp.ID);
-                //InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
-            }
-
-            if (IsCompDrag)
-            {
-                IsDrag();
-            }
-
             if (pins2check_length > 0)
             {
                 for (int i = 0; i < pins2check_length; ++i)
@@ -691,7 +684,7 @@ namespace Circuit_Simulator
                     Point pos = pins2check[i];
                     Component cur_comp = components[CompGrid[pos.X / 32, pos.Y / 32][CompNetwork[pos.X, pos.Y]]];
                     //if(cur_comp != null)
-                        cur_comp.CheckAndUpdatePins();
+                    cur_comp.CheckAndUpdatePins();
                     //bool IsNetwork = false;
                     //int wireID = 0;
                     //for(int j = 0; j < 7; ++j)
@@ -708,6 +701,23 @@ namespace Circuit_Simulator
 
                 pins2check_length = 0;
             }
+        }
+
+        public void Update()
+        {
+            if(DropComponent)
+            {
+                DropComponent = false;
+                ComponentDrop(UI_Handler.dragcomp.comp.ID);
+                //InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
+            }
+
+            if (IsCompDrag)
+            {
+                IsDrag();
+            }
+            CheckPins();
+            
         }
 
         public void Draw(SpriteBatch spritebatch)
@@ -731,7 +741,7 @@ namespace Circuit_Simulator
                     for (int j = 0; j < CompOverlaylines.Count; ++j)
                     {
                         overlaylines[count] = CompOverlaylines[j];
-                        overlaylines[count].layers = 2 + ovstate;
+                        overlaylines[count].layers = 4 - ovstate;
                         overlaylines[count].Position += new Vector3(components[compID].pos.X, components[compID].pos.Y, 0);
                         count++;
                     }

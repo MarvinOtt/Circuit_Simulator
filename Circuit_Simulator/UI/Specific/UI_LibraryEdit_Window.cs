@@ -74,6 +74,7 @@ namespace Circuit_Simulator.UI.Specific
                 int ID = i;
                 UI_Component cur_comp = new UI_Component(new Pos(0), new Point(20, 20), libs.Components[i].name, ID, 20, UI_Handler.componentconf);
                 cur_comp.ID_Name = libs.name + "|" + libs.Components[i].name;
+                cur_comp.Sort_Name = libs.Components[i].catagory + "|" + libs.Components[i].name;
                 cur_comp.GotActivatedLeft += EditCompWindow;
                 cur_comp.GotActivatedRight += EditComp;
 

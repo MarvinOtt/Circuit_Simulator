@@ -39,6 +39,13 @@ namespace Circuit_Simulator.UI.Specific
                 }
             }
             Catagories.ui_elements[0].Add_UI_Elements(cats);
+            Catagories.ui_elements[0].ui_elements.Sort(delegate (UI_Categorie<UI_Component> x, UI_Categorie<UI_Component> y)
+            {
+                if (x.title == null && y.title == null) return 0;
+                else if (x.title == null) return -1;
+                else if (y.title == null) return 1;
+                else return x.title.CompareTo(y.title);
+            });
         }
 
         public void PlaceComp(object sender)

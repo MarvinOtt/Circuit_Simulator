@@ -30,8 +30,8 @@ static float4 compcols[5] =
 {
 	float4(0.5f, 0.5f, 0.5f, 1),
 	float4(0.25f, 0.25f, 0.25f, 1),
-	float4(0.9f, 0.9f, 0.9f, 1),
-	float4(0.1f, 0.1f, 0.1f, 1),
+	float4(0.95f, 0.95f, 0.95f, 1),
+	float4(0.15f, 0.15f, 0.15f, 1),
 	float4(1, 1, 0, 1)
 };
 

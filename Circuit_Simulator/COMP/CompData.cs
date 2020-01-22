@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -39,9 +40,30 @@ namespace Circuit_Simulator.COMP
         {
             delegate (Component comp)
             {
+                if(Game1.mo_states.IsLeftButtonToggleOn())
+                {
+                    int segid = Sim_Component.Components_Data[comp.dataID].internalstate_length;
+                    comp.internalstates[segid] ^= 1;
+
+                    byte state = (byte)comp.internalstates[segid];
+
+                    if (!Simulator.IsSimulating)
+                    {
+                        for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
+                        {
+                            if(Simulator.networks[comp.pinNetworkIDs[i]] != null)
+                                Simulator.networks[comp.pinNetworkIDs[i]].state = state;
+                        }
+                    }
+                    else
+                        Sim_INF_DLL.SetIntState(comp.ID, segid);
+                }
+            },
+            delegate (Component comp)
+            {
                 int segid = Sim_Component.Components_Data[comp.dataID].internalstate_length;
-                comp.internalstates[segid] ^= 1;
-                
+                comp.internalstates[segid] = (Game1.mo_states.New.LeftButton == ButtonState.Pressed) ? 1 : 0;
+
                 byte state = (byte)comp.internalstates[segid];
 
                 if (!Simulator.IsSimulating)

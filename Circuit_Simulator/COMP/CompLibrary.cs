@@ -173,10 +173,12 @@ namespace Circuit_Simulator.COMP
             //try
             //{
             byte[] intbuffer = new byte[4];
-
+            SaveFile = Path.GetFullPath(SaveFile);
             FileStream stream = new FileStream(SaveFile, FileMode.Open);
             StreamReader streamreader = new StreamReader(stream);
             string libraryname = stream.ReadNullTerminated();
+            name = null;
+            Components.Clear();
             if ((LibraryWindow_LoadedLibrarys.Exists(x => x.name == libraryname) && !IsInUsedLibraries) || (AllUsedLibraries.Exists(x => x.name == libraryname) && IsInUsedLibraries))
             {
                 STATE = LOAD_FAILED;

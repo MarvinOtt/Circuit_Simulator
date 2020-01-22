@@ -16,6 +16,7 @@ namespace Circuit_Simulator
         public Point size;
 	    public Point absolutpos;
         public string ID_Name;
+        public string Sort_Name;
         private bool _GetsDrawn = true, _GetsUpdated = true;
         public bool GetsDrawn { get { return _GetsDrawn; } set { _GetsDrawn = value; } }
         public bool GetsUpdated

@@ -70,7 +70,7 @@ namespace Circuit_Simulator
 
         }
 
-        public static void LoadLibrarys(params string[] paths)
+        public static bool LoadLibrarys(params string[] paths)
         {
             Sim_Component.Components_Data.Clear();
             CompLibrary.AllUsedLibraries.Clear();
@@ -82,9 +82,18 @@ namespace Circuit_Simulator
                     CompLibrary newlibrary = new CompLibrary(null, paths[i]);
                     newlibrary.Load();
                 }
+                else
+                {
+                    System.Windows.Forms.MessageBox.Show("Library not found: \n" + paths[i], null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Sim_Component.Components_Data.Clear();
+                    CompLibrary.AllUsedLibraries.Clear();
+                    UI_Handler.InitComponents();
+                    return false;
+                }
             }
             UI_Handler.InitComponents();
             GenerateDllCodeAndCompile();
+            return true;
         }
 
         public static void GenerateDllCodeAndCompile()
@@ -149,15 +158,23 @@ namespace Circuit_Simulator
 
             string pathtoexe = Directory.GetCurrentDirectory();
             SimDLL_Handle = DLL_Methods.LoadLibrary(pathtoexe + @"\SIM_CODE\maincode.dll");
-            for(int i = 0; i < Sim_Component.Components_Data.Count; ++i)
+            try
             {
-                CompData curdata = Sim_Component.Components_Data[i];
-                if (curdata.IsUpdateAfterSim)
+                for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
                 {
-                    IntPtr AddressOfFunc_AfterSimUpdate = DLL_Methods.GetProcAddress(SimDLL_Handle, curdata.Code_AfterSim_FuncName);
+                    CompData curdata = Sim_Component.Components_Data[i];
+                    if (curdata.IsUpdateAfterSim)
+                    {
+                        IntPtr AddressOfFunc_AfterSimUpdate = DLL_Methods.GetProcAddress(SimDLL_Handle, curdata.Code_AfterSim_FuncName);
 
-                    curdata.AfterSimAction = (CompData.AfterSimAction_Prototype)Marshal.GetDelegateForFunctionPointer(AddressOfFunc_AfterSimUpdate, typeof(CompData.AfterSimAction_Prototype));
+                        curdata.AfterSimAction = (CompData.AfterSimAction_Prototype)Marshal.GetDelegateForFunctionPointer(AddressOfFunc_AfterSimUpdate, typeof(CompData.AfterSimAction_Prototype));
+                    }
                 }
+            }
+            catch (Exception exp)
+            {
+                Console.WriteLine("Loading Libraries failed:\n{0}", exp);
+                System.Windows.Forms.MessageBox.Show("Loading Libraries failed:\n" + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             IntPtr AddressOfFunc_InitSimulation = DLL_Methods.GetProcAddress(SimDLL_Handle, "InitSimulation");
@@ -170,6 +187,7 @@ namespace Circuit_Simulator
 
         public void GenerateSimulationData()
         {
+            InitSimulation(Sim_Component.Components_Data.Count);
             Comp2UpdateAfterSim_count = 0;
             int count = 1;
             for(int i = 0; i <= Simulator.highestNetworkID; ++i)

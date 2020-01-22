@@ -37,6 +37,13 @@ namespace Circuit_Simulator.UI.Specific
         public void AddComponents(params T[] components)
         {
             Components.Add_UI_Elements(components);
+            Components.ui_elements.Sort(delegate (T x, T y)
+            {
+                if (x.Sort_Name == null && y.Sort_Name == null) return 0;
+                else if (x.Sort_Name == null) return -1;
+                else if (y.Sort_Name == null) return 1;
+                else return x.Sort_Name.CompareTo(y.Sort_Name);
+            });
         }
 
         public void SetXSize(int Xsize)

@@ -58,6 +58,9 @@ namespace Circuit_Simulator
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf, gridpaintbuttonconf;
 
+        public static UI_ValueInput netbox;
+        public static int netboxval = 70;
+
         UI_GridPaint gridpaint;
 
         public UI_Handler(ContentManager Content)
@@ -145,8 +148,8 @@ namespace Circuit_Simulator
 
             //Assigning Colors to the layers
             Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
-            layer_colors = new Color[Simulator.LAYER_NUM];
-            for(int i = 0; i < Simulator.LAYER_NUM; i++)
+            layer_colors = new Color[7];
+            for(int i = 0; i < 7; i++)
             {
                 layer_colors[i] = all_layer_colors[i];
             }
@@ -155,14 +158,14 @@ namespace Circuit_Simulator
             wire_ddbl.parent = QuickHotbar.ui_elements[6];
             wire_ddbl.GetsUpdated = wire_ddbl.GetsDrawn = false;
             
-            for(int i = 0; i < Simulator.LAYER_NUM; i++)
+            for(int i = 0; i < 7; i++)
             {
                 Generic_Conf curconf = new Generic_Conf(behave1conf);
                 curconf.tex_color = layer_colors[i];
-                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i+ Simulator.LAYER_NUM) + i+ Simulator.LAYER_NUM, 0), Button_tex, curconf));
+                wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0,0),new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (i + 7) + i + 7, 0), Button_tex, curconf));
             }
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 7) + Simulator.LAYER_NUM + 7, 0), Button_tex, behave1conf));
-            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (Simulator.LAYER_NUM + 1 + 7) + Simulator.LAYER_NUM + 1 + 7, 0), Button_tex, behave1conf));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 7) + 7 + 7, 0), Button_tex, behave1conf));
+            wire_ddbl.Add_UI_Elements(new UI_Dropdown_Button(new Pos(0, 0), new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 1 + 7) + 7 + 1 + 7, 0), Button_tex, behave1conf));
 
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
@@ -188,7 +191,7 @@ namespace Circuit_Simulator
             //Layer Select Hotbar
             LayerSelectHotbar = new UI_QuickHBElement(new Pos(0, 0, ORIGIN.DEFAULT, ORIGIN.BL, GeneralInfoBox));
 
-            for(int i = 0; i < Simulator.LAYER_NUM; i++)
+            for(int i = 0; i < 7; i++)
             {
                 Generic_Conf curconf = new Generic_Conf(behave1conf);
                 curconf.tex_color = layer_colors[i];
@@ -231,9 +234,16 @@ namespace Circuit_Simulator
             ProjectLibWindow = new UI_ProjectLibrary_Window(new Pos(200), new Point(500, 500), "Project Libraries", new Point(300), componentconf, true);
             ProjectLibWindow.GetsUpdated = ProjectLibWindow.GetsDrawn = false;
 
+            //netbox = new UI_ValueInput(new Pos(200), new Point(200, 40), gen_conf, 1);
+            //netbox.ValueChanged += netbox_ValueChange;
             
             InitializeUISettings(spriteBatch);
             
+        }
+
+        public void netbox_ValueChange(object sender)
+        {
+            netboxval = int.Parse(netbox.value);
         }
 
         public static void InitComponents()
@@ -253,6 +263,7 @@ namespace Circuit_Simulator
             List<string> categorys_list = categorys.ToList();
             for(int i = 0; i < comps.Count; ++i)
             {
+
                 comp_cats[categorys_list.IndexOf(comps[i].catagory)].AddComponents(new UI_Component(new Pos(0), new Point(0, 20), comps[i].name, i, 20, componentconf));
             }
             ComponentBox.Catagories.ui_elements[0].ui_elements.Clear();
@@ -456,6 +467,7 @@ namespace Circuit_Simulator
                 //return;
             }
 
+            //netbox.UpdateMain();
             //textbox.UpdateMain();
             //gridpaint.UpdateMain();
 
@@ -494,6 +506,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
 
+            //netbox.Draw(spritebatch);
             //gridpaint.Draw(spritebatch);
             //textbox.Draw(spritebatch);
             //input.Draw(spritebatch);
