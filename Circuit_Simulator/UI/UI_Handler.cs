@@ -169,7 +169,7 @@ namespace Circuit_Simulator
 
 
 
-            //Wire Info Box
+            //Hover Info Box
             info = new UI_InfoBox(new Pos(500,500), new Point(300, 300));
             info.values.Add_UI_Elements(new UI_String(new Pos(0, 0), new Point(0, 0), componentconf));
 
@@ -179,7 +179,7 @@ namespace Circuit_Simulator
             //input.Add_UI_Elements(new UI_ValueInput(new Point(input.size.X / 2 - input.size.X / 4, 20 + input.size.Y / 2 - input.size.Y / 4), new Point(input.size.X / 2, input.size.Y / 2 -20 -1), componentconf, 1));
             //input.GetsDrawn = input.GetsUpdated = false;
 
-            //GeneralInfo Box
+            //GeneralInfo Box (Bottom Left)
             GeneralInfoBox = new UI_Box<UI_Element>(new Pos(-1, Game1.Screenheight - 24 + 1), new Point(Game1.Screenwidth + 2, 24));
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos( 10, 2), Point.Zero, componentconf));
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(150, 0), new Point(24, 24), "+", true, behave2conf));
