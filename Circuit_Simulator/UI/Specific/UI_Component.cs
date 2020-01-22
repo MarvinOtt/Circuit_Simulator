@@ -19,6 +19,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             this.ID = ID;
             this.text_offset = text_offset;
+            this.Sort_Name = name;
             //Vector2 textsize = conf.font.MeasureString(name);
             //text_pos = new Vector2(20, (int)(size.Y / 2 - textsize.Y / 2));
         }

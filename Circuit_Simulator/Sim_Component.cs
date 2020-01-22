@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -55,11 +56,12 @@ namespace Circuit_Simulator
         {
             this.dataID = dataID;
             this.ID = ID;
-            if (Sim_Component.Components_Data[dataID].IsOverlay)
+            CompData compdata = Sim_Component.Components_Data[dataID];
+            if (compdata.IsOverlay)
                 Sim_Component.CompMayneedoverlay.Add(ID);
-            if(Sim_Component.Components_Data[dataID].internalstate_length > 0)
-                internalstates = new int[Sim_Component.Components_Data[dataID].internalstate_length];
-            pinNetworkIDs = new int[Sim_Component.Components_Data[dataID].pin_num];
+            if(compdata.totalstate_length > 0)
+                internalstates = new int[compdata.totalstate_length];
+            pinNetworkIDs = new int[compdata.pin_num];
         }
 
         public void Clicked()
@@ -76,16 +78,20 @@ namespace Circuit_Simulator
             Array.Clear(pinNetworkIDs, 0, pinNetworkIDs.Length);
             for (int i = 0; i < Sim_Component.Components_Data[dataID].data[0].Count; ++i)
             {
-                Point curpos = curpixel[i].pos + pos;
-                for(int j = 0; j < 7; ++j)
+                if (curpixel[i].type > Sim_Component.PINOFFSET)
                 {
-                    int wireID = Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, j];
-                    if (wireID != 0 && (Simulator.IsWire[curpos.X, curpos.Y] & (1 << j)) != 0)
-                    {
-                        if (pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - 4] == 0)
-                            pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - 4] = wireID;
-                    }
+                    Point curpos = curpixel[i].pos + pos;
+                    pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = Simulator.WireIDPs[curpos.X, curpos.Y];
                 }
+                //for (int j = 0; j < 7; ++j)
+                //{
+                //    int wireID = Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, j];
+                //    if (wireID != 0 && (Simulator.IsWire[curpos.X, curpos.Y] & (1 << j)) != 0)
+                //    {
+                //        if (pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] == 0)
+                //            pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = wireID;
+                //    }
+                //}
             }
         }
 
@@ -101,8 +107,15 @@ namespace Circuit_Simulator
                 Point currentcoo = pos + datapixel[i].pos;
                 if (currentcoo.X >= Simulator.MINCOO && currentcoo.Y >= Simulator.MINCOO && currentcoo.X < Simulator.MAXCOO && currentcoo.Y < Simulator.MAXCOO)
                 {
-                    if (Simulator.IsWire[currentcoo.X, currentcoo.Y] != 0 || Sim_Component.CompType[currentcoo.X, currentcoo.Y] != 0)
+                    if(Sim_Component.CompType[currentcoo.X, currentcoo.Y] != 0)
                         IsPlacementValid = false;
+                    else
+                    {
+                        if (datapixel[i].type < Sim_Component.PINOFFSET + 1 && Simulator.IsWire[currentcoo.X, currentcoo.Y] != 0)
+                            IsPlacementValid = false;
+                        if (datapixel[i].type >= Sim_Component.PINOFFSET + 1 && Simulator.IsWire[currentcoo.X, currentcoo.Y] >= 128)
+                            IsPlacementValid = false;
+                    }
                 }
                 else
                     IsPlacementValid = false;
@@ -110,7 +123,7 @@ namespace Circuit_Simulator
             return IsPlacementValid;
         }
 
-        public void Place(Point pos, int newrotation)
+        public void Place(Point pos, int newrotation, bool SkipNetworkRouting = false)
         {
             FileHandler.IsUpToDate = false;
             Stopwatch watch = new Stopwatch();
@@ -163,7 +176,7 @@ namespace Circuit_Simulator
                         Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = (byte)Index;
                 }
             }
-            Game1.simulator.PlaceArea(area, data2place);
+            Game1.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
             watch.Stop();
             double milis = (1000.0 * watch.ElapsedTicks) / (double)Stopwatch.Frequency;
             //Console.WriteLine(milis);
@@ -191,7 +204,7 @@ namespace Circuit_Simulator
                 if (datapixel[i].type > Sim_Component.PINOFFSET)
                 {
                     Point datapos = datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[rotation].Location;
-                    data2place[datapos.X, datapos.Y] = 0;
+                    data2place[datapos.X, datapos.Y] &= 127;
                 }
             }
             Game1.simulator.PlaceArea(area, data2place);
@@ -297,7 +310,7 @@ namespace Circuit_Simulator
 
     public class Sim_Component
     {
-        public static int PINOFFSET = 3;
+        public static int PINOFFSET = 4;
 
         Simulator sim;
         Effect sim_effect;
@@ -337,12 +350,12 @@ namespace Circuit_Simulator
             emptyComponentID = new int[1000000];
             CompMayneedoverlay = new List<int>();
             Components_Data = new List<CompData>();
-
-            Sim_INF_DLL.LoadLibrarys(@"LIBRARIES\Main_Library.dcl");
+            string[] Libraries2Load = Directory.GetFiles(@"LIBRARIES\", "*.dcl");
+            Sim_INF_DLL.LoadLibrarys(Libraries2Load);
 
             // Basic Components Data
 
-//            CompLibrary compLibrary = new CompLibrary("Main_Library", @"LIBRARIES\Main_Library");
+//            CompLibrary compLibrary = new CompLibrary("Main_Library", @"LIBRARIES\Main_Library.dcl");
 //            CompData newcomp = new CompData("AND", "Gates", false, false, false);
 //            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
 //            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
@@ -467,8 +480,9 @@ namespace Circuit_Simulator
 //            newcomp.addData(new ComponentPixel(new Point(1, -1), 5));
 //            newcomp.addData(new ComponentPixel(new Point(1, 1), 6));
 //            newcomp.addData(new ComponentPixel(new Point(-1, 1), 7));
-//            newcomp.addOverlayLine(new Line(new Point(-1, 0), new Point(1, 0)), 200);
-//            newcomp.addOverlayLine(new Line(new Point(0, -1), new Point(0, 1)), 200);
+//            newcomp.InitializeLineOverlays(1);
+//            newcomp.addOverlayLine(new Line(new Point(-1, 0), new Point(1, 0)), 200, 0);
+//            newcomp.addOverlayLine(new Line(new Point(0, -1), new Point(0, 1)), 200, 0);
 //            newcomp.internalstate_length = 1;
 //            newcomp.ClickAction_Type = 0;
 //            newcomp.OverlayStateID = 0;
@@ -490,8 +504,9 @@ namespace Circuit_Simulator
 //            newcomp.addData(new ComponentPixel(new Point(1, 1), 2));
 //            newcomp.addData(new ComponentPixel(new Point(0, -1), 4));
 //            newcomp.addData(new ComponentPixel(new Point(1, -1), 5));
-//            newcomp.addOverlayLine(new Line(new Point(0, 0), new Point(1, 0)), 200);
-//            newcomp.addOverlayLine(new Line(new Point(0, 1), new Point(1, 1)), 200);
+//            newcomp.InitializeLineOverlays(1);
+//            newcomp.addOverlayLine(new Line(new Point(0, 0), new Point(1, 0)), 200, 0);
+//            newcomp.addOverlayLine(new Line(new Point(0, 1), new Point(1, 1)), 200, 0);
 //            newcomp.internalstate_length = 1;
 //            newcomp.OverlayStateID = 0;
 //            newcomp.Code_Sim = @"void CF_LED2x2(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
@@ -499,15 +514,16 @@ namespace Circuit_Simulator
 //	CompInfo[3] =  WireStatesIN[CompInfo[1]];
 //}";
 //            newcomp.Code_Sim_FuncName = "CF_LED2x2";
-//            newcomp.Code_AfterSimAction = @"void DLL_EXPORT ASA_LED2x2(int* internalstates, int* CompInfos, int intstatesindex)
+//            newcomp.Code_AfterSim = @"void DLL_EXPORT ASA_LED2x2(int* internalstates, int* CompInfos, int intstatesindex)
 //{
 //    internalstates[0] = CompInfos[intstatesindex];
 //}";
-//            newcomp.Code_AfterSimAction_FuncName = "ASA_LED2x2";
+//            newcomp.Code_AfterSim_FuncName = "ASA_LED2x2";
 //            newcomp.Finish();
 //            compLibrary.AddComponent(newcomp);
 
 //            compLibrary.Save();
+            int breaki = 1;
 
             //Components_Data = new List<CompData>();
             //Components_Data.Add(new CompData("Button", "Input", true, true, false));
@@ -659,20 +675,8 @@ namespace Circuit_Simulator
                 return -1;
         }
 
-        public void Update()
+        public void CheckPins()
         {
-            if(DropComponent)
-            {
-                DropComponent = false;
-                ComponentDrop(UI_Handler.dragcomp.comp.ID);
-                //InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
-            }
-
-            if (IsCompDrag)
-            {
-                IsDrag();
-            }
-
             if (pins2check_length > 0)
             {
                 for (int i = 0; i < pins2check_length; ++i)
@@ -680,7 +684,7 @@ namespace Circuit_Simulator
                     Point pos = pins2check[i];
                     Component cur_comp = components[CompGrid[pos.X / 32, pos.Y / 32][CompNetwork[pos.X, pos.Y]]];
                     //if(cur_comp != null)
-                        cur_comp.CheckAndUpdatePins();
+                    cur_comp.CheckAndUpdatePins();
                     //bool IsNetwork = false;
                     //int wireID = 0;
                     //for(int j = 0; j < 7; ++j)
@@ -699,6 +703,23 @@ namespace Circuit_Simulator
             }
         }
 
+        public void Update()
+        {
+            if(DropComponent)
+            {
+                DropComponent = false;
+                ComponentDrop(UI_Handler.dragcomp.comp.ID);
+                //InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
+            }
+
+            if (IsCompDrag)
+            {
+                IsDrag();
+            }
+            CheckPins();
+            
+        }
+
         public void Draw(SpriteBatch spritebatch)
         {
             sim_effect.Parameters["comptex"].SetValue(CompTex);
@@ -710,17 +731,22 @@ namespace Circuit_Simulator
             for(int i = 0; i < CompMayneedoverlay.Count; ++i)
             {
                 int compID = CompMayneedoverlay[i];
-                int ovstateID = Components_Data[components[compID].dataID].OverlayStateID;
-                int ovstate = components[compID].internalstates[ovstateID];
-                Component comp = components[compID];
-                List<VertexPositionLine> CompOverlaylines = Components_Data[comp.dataID].overlaylines_vertices[comp.rotation];
-                for (int j = 0; j < CompOverlaylines.Count; ++j)
+                CompData compdata = Components_Data[components[compID].dataID];
+                int ovstateID = compdata.internalstate_length;
+                for(int k = 0; k < compdata.OverlaySeg_length; ++k)
                 {
-                    overlaylines[count] = CompOverlaylines[j];
-                    overlaylines[count].layers = 2 + ovstate;
-                    overlaylines[count].Position += new Vector3(components[compID].pos.X, components[compID].pos.Y, 0);
-                    count++;
+                    int ovstate = components[compID].internalstates[ovstateID + k];
+                    Component comp = components[compID];
+                    List<VertexPositionLine> CompOverlaylines = Components_Data[comp.dataID].overlaylines_vertices[k][comp.rotation];
+                    for (int j = 0; j < CompOverlaylines.Count; ++j)
+                    {
+                        overlaylines[count] = CompOverlaylines[j];
+                        overlaylines[count].layers = 4 - ovstate;
+                        overlaylines[count].Position += new Vector3(components[compID].pos.X, components[compID].pos.Y, 0);
+                        count++;
+                    }
                 }
+                
             }
             
             if(count > 0)

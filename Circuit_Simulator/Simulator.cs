@@ -94,6 +94,7 @@ namespace Circuit_Simulator
         public List<Line_Netw> lines;
         public int ID;
         public byte state;
+        public static bool HasRealWires;
 
         public Network(int ID)
         {
@@ -108,7 +109,35 @@ namespace Circuit_Simulator
             foreach(int net in nets)
             {
                 if (Simulator.networks[net] != null)
+                {
+                    Network curnet = Simulator.networks[net];
+                    for (int i = 0; i < curnet.lines.Count; ++i)
+                    {
+                        Point curpos = curnet.lines[i].start;
+                        for (int j = 0; j < curnet.lines[i].length; ++j)
+                        {
+                            byte linelayers = curnet.lines[i].layers;
+                            for(int k = 0; k < 7; ++k)
+                            {
+                                if (((linelayers >> k) & 1) > 0)
+                                    Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, k] = 0;
+                            }
+                            if(linelayers >= 128)
+                                Simulator.WireIDPs[curpos.X, curpos.Y] = 0;
+
+
+                            //for (int b = 0; b < 7; ++b)
+                            //    if (((linelayers >> b) & 1) != 0)
+                            //        Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, b] = ID;
+                            //if (linelayers >= 128)
+                            //    Simulator.WireIDPs[curpos.X, curpos.Y] = ID;
+
+                            curpos += curnet.lines[i].dir;
+                        }
+
+                    }
                     Simulator.emptyNetworkID[Simulator.emptyNetworkID_count++] = net;
+                }
                 Simulator.networks[net] = null;
             }
         }
@@ -122,8 +151,8 @@ namespace Circuit_Simulator
                     int x = lines[i].start.X + lines[i].dir.X * l;
                     int y = lines[i].start.Y + lines[i].dir.Y * l;
                     Simulator.CalcGridData[x, y] = Simulator.CalcGridStat[x, y] = 0;
-                    if (Simulator.IsChange[x, y] > 0)
-                        Simulator.IsWire[x, y] &= (byte)~(lines[i].layers);
+                    //if (Simulator.IsChange[x, y] > 0)
+                    //    Simulator.IsWire[x, y] &= (byte)~(lines[i].layers);
                 }
             }
         }
@@ -141,11 +170,14 @@ namespace Circuit_Simulator
                     for (int b = 0; b < 7; ++b)
                         if (((linelayers >> b) & 1) != 0)
                             Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, b] = ID;
+                    if (linelayers >= 128)
+                        Simulator.WireIDPs[curpos.X, curpos.Y] = ID;
 
                     curpos += lines[i].dir;
                 }
+                
             }
-
+            //Simulator.CalculateNetworkAt(lines[0].start.X, lines[0].start.Y, lines[0].layers);
             Draw();
         }
 
@@ -159,7 +191,7 @@ namespace Circuit_Simulator
                 //    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].end + lines[i].dir, 255);
                 //    continue;
                 //}
-                for (int j = 0; j < Simulator.LAYER_NUM + 1; ++j) // Iterating all Layers
+                for (int j = 0; j < Simulator.LAYER_NUM; ++j) // Iterating all Layers
                 {
                     if ((lines[i].layers & (1 << j)) > 0)
                     {
@@ -169,6 +201,14 @@ namespace Circuit_Simulator
                         Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line1;// new VertexPositionLine(lines[i].start, (1 << j));
                         Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line2;// new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
                     }
+                }
+                if ((lines[i].layers & (1 << 7)) > 0)
+                {
+                    Line line = new Line(lines[i].start, lines[i].end);
+                    VertexPositionLine line1, line2;
+                    line.Convert2LineVertices(128, out line1, out line2);
+                    Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line1;// new VertexPositionLine(lines[i].start, (1 << j));
+                    Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line2;// new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
                 }
             }
         }
@@ -224,7 +264,7 @@ namespace Circuit_Simulator
         public static Effect sim_effect, line_effect, iswirerender_effect;
         RenderTarget2D main_target, WireCalc_target;
         public static RenderTarget2D logic_target, sec_target;
-        Network CalcNetwork;
+        public static Network CalcNetwork;
 
         public static Network[] networks;
         public static VertexPositionLine[][] lines2draw;
@@ -236,10 +276,11 @@ namespace Circuit_Simulator
         public static byte[,] IsWire, CalcGridData, CalcGridStat, IsChange;
 
         public static HashSet<int> FoundNetworks;
-        int[] CalcOccurNetw;
-        byte[] revshiftarray;
-        int CalcOccurNetw_Pos;
+        public static int[] CalcOccurNetw;
+        public static byte[] revshiftarray;
+        public static int CalcOccurNetw_Pos;
         public static int[,,] WireIDs;
+        public static int[,] WireIDPs;
 
         public static Point worldpos;
         public static int worldzoom = 0;
@@ -282,6 +323,7 @@ namespace Circuit_Simulator
             IsChange = new byte[SIZEX, SIZEY];
             CalcOccurNetw = new int[10000];
             WireIDs = new int[SIZEX / 2, SIZEY / 2, LAYER_NUM];
+            WireIDPs = new int[SIZEX, SIZEY];
             networks = new Network[10000000];
             //networks[0] = new Network(0);
             emptyNetworkID = new int[10000000];
@@ -322,25 +364,24 @@ namespace Circuit_Simulator
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, worldzoom));
         }
 
-        public void DoFFIfValid(int x, int y, byte curval, byte curcomptype, int curcompid)
+        public static void DoFFIfValid(int x, int y, byte curval, byte curcomptype, int curcompid)
         {
             byte nextval = IsWire[x, y];
             byte finalval = (byte)(curval & nextval & 0x7F);
             //if (nextval >= 128 && finalval != 0)
             //finalval = nextval;
-            if (nextval > 128)
+            if (nextval >= 128 && curval >= 128)
             {
                 byte comptype_next = Sim_Component.CompType[x, y];
                 byte gridid = Sim_Component.CompNetwork[x, y];
                 int[] arr = Sim_Component.CompGrid[x / 32, y / 32];
+                int compid_next = -1;
                 if (arr != null)
-                {
-                    int compid_next = arr[gridid];
-                    if (curcomptype == comptype_next && curcompid == compid_next)
-                        finalval |= 0x80;
-                }
-                else
+                    compid_next = arr[gridid];
+                if (curcomptype == comptype_next && curcompid == compid_next && curcomptype > 0)
                     finalval |= 0x80;
+                //else
+                //    finalval |= 0x80;
             }
             if (finalval > 0 && ((CalcGridData[x, y] ^ finalval) & finalval) > 0)
                 FloodFillCellAndNeighbours(x, y, finalval);
@@ -348,18 +389,21 @@ namespace Circuit_Simulator
             //if (((curval & nextval) == nextval || nextval == 255) && CalcGridData[x, y] != nextval)
             //    FloodFillCellAndNeighbours(x, y, (nextval == 255) ? 255 : (curval & nextval));
         }
-        public void FloodFillCellAndNeighbours(int x, int y, int mask)
+        public static void FloodFillCellAndNeighbours(int x, int y, int mask)
         {
             byte curval = (byte)(IsWire[x, y] & mask);
             if (IsWire[x, y] >= 128)
                 curval = IsWire[x, y];
+            if (IsWire[x, y] != 128 || (IsWire[x, y] == 128 && Sim_Component.CompType[x, y] == 0))
+                Network.HasRealWires = true;
+
             CalcGridData[x, y] |= curval;
             byte comptype_cur = Sim_Component.CompType[x, y];
             int compid_cur = Sim_Component.GetComponentID(new Point(x, y));
 
             if (curval != 0)
             {
-                if (Sim_Component.CompType[x, y] > 3)
+                if (Sim_Component.CompType[x, y] > Sim_Component.PINOFFSET)
                     Sim_Component.pins2check[Sim_Component.pins2check_length++] = new Point(x, y);
 
                 DoFFIfValid(x - 1, y, curval, comptype_cur, compid_cur);
@@ -372,15 +416,24 @@ namespace Circuit_Simulator
                 DoFFIfValid(x + 1, y + 1, curval, comptype_cur, compid_cur);
                 if(true)
                 {
-                    int netID = WireIDs[x / 2, y / 2, revshiftarray[curval & 0x7F]];
-                    if ((CalcOccurNetw_Pos == 0 || CalcOccurNetw[CalcOccurNetw_Pos - 1] != netID) && netID > 3)
-                        CalcOccurNetw[CalcOccurNetw_Pos++] = netID;
+                    if (curval >= 128)// && Sim_Component.CompType[x, y] == 0)
+                    {
+                        int netID = WireIDPs[x, y];
+                        if ((CalcOccurNetw_Pos == 0 || CalcOccurNetw[CalcOccurNetw_Pos - 1] != netID) && netID > 3)
+                            CalcOccurNetw[CalcOccurNetw_Pos++] = netID;
+                    }
+                    else
+                    {
+                        int netID = WireIDs[x / 2, y / 2, revshiftarray[curval]];
+                        if ((CalcOccurNetw_Pos == 0 || CalcOccurNetw[CalcOccurNetw_Pos - 1] != netID) && netID > 3)
+                            CalcOccurNetw[CalcOccurNetw_Pos++] = netID;
+                    }
                 }
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public int MakeLineDir(int x, int y)
+        public static int MakeLineDir(int x, int y)
         {
             byte curval = CalcGridData[x, y];
             if (CalcGridData[x, y - 1] == curval && CalcGridData[x, y + 1] == curval)
@@ -403,7 +456,7 @@ namespace Circuit_Simulator
 
             return 0;
         }
-        public void Check4NewLine(int x, int y, Point dirvec)
+        public static void Check4NewLine(int x, int y, Point dirvec)
         {
             for(int xx = -1; xx < 2; ++xx)
             {
@@ -418,7 +471,7 @@ namespace Circuit_Simulator
                 }
             }
         }
-        public void CalculateLine(int x, int y)
+        public static void CalculateLine(int x, int y)
         {
             int dir = MakeLineDir(x, y);
             byte linelayers = CalcGridData[x, y];
@@ -446,6 +499,8 @@ namespace Circuit_Simulator
                     for (int b = 0; b < 7; ++b)
                         if (((linelayers >> b) & 1) != 0)
                             WireIDs[xx / 2, yy / 2, b] = CalcNetwork.ID;
+                    if(linelayers >= 128)
+                        WireIDPs[xx, yy] = CalcNetwork.ID;
                 }
                 else
                     break;
@@ -460,6 +515,8 @@ namespace Circuit_Simulator
                     for (int b = 0; b < 7; ++b)
                         if (((linelayers >> b) & 1) != 0)
                             WireIDs[xx / 2, yy / 2, b] = CalcNetwork.ID;
+                    if (linelayers >= 128)
+                        WireIDPs[xx, yy] = CalcNetwork.ID;
                 }
                 else
                     break;
@@ -478,38 +535,69 @@ namespace Circuit_Simulator
             CalcNetwork.lines.Add(new Line_Netw(start, end, dirvec, i + j + 1, linelayers));
 
         }
-        public int CalculateNewNetwork(int x, int y, int layermask)
+        public static int CalculateNewNetwork(int x, int y, int layermask)
         {
             int curvalue = CalcGridData[x, y] & layermask;
             if (curvalue == 0)
                 return -1;
-            int ID = highestNetworkID + 1;
+            if(!Network.HasRealWires)
+            {
+                //Line line = new Line(new Point(x, y), new Point(x, y));
+                //VertexPositionLine line1, line2;
+                //line.Convert2LineVertices(128, out line1, out line2);
+
+                //lines2draw[LAYER_NUM - 1][lines2draw_count[LAYER_NUM - 1]++] = line1;
+                //lines2draw[LAYER_NUM - 1][lines2draw_count[LAYER_NUM - 1]++] = line2;
+                //return -1;
+            }
+            int ID = 0;
             if (emptyNetworkID_count > 0)
                 ID = emptyNetworkID[--emptyNetworkID_count];
+            else
+                ID = highestNetworkID + 1;
+            if(networks[ID] != null)
+            {
+                int breaki = 1;
+            }
+            //return 0;
             CalcNetwork = new Network(ID);
             CalculateLine(x, y);
             networks[ID] = CalcNetwork;
             return ID;
         }
 
-        public void CalculateNetworkAt(int x, int y, byte layermask)
+        public static void CalculateNetworkAt(int x, int y, byte layermask)
         {
+            //return;
             CalcOccurNetw_Pos = 0;
+            Network.HasRealWires = false;
             Array.Clear(CalcOccurNetw, 0, CalcOccurNetw.Length);
 
             // Flood Fill CalcGrid
             FloodFillCellAndNeighbours(x, y, layermask);
 
             // Delete previous networks
-            for(int i = 0; i < CalcOccurNetw_Pos; ++i)
+            for (int i = 0; i < CalcOccurNetw_Pos; ++i)
             {
-                FoundNetworks.Add(CalcOccurNetw[i]);
-            }   
+                if (/*CalcOccurNetw[i] != netID && */networks[CalcOccurNetw[i]] != null)
+                {
+                    if (CalcOccurNetw[i] == 70)
+                    {
+                        int breaki = 1;
+                    }
+                    FoundNetworks.Add(CalcOccurNetw[i]);
+                }
+            }
+            Network.Delete(FoundNetworks);
+            FoundNetworks.Clear();
 
             // Main Line Algorithm
             int netID = CalculateNewNetwork(x, y, layermask);
             if (netID == -1)
                 return;
+
+            //Network.Delete(FoundNetworks);
+            //FoundNetworks.Clear();
 
             // Clear Calc Grid
             networks[netID].ClearCalcGrid();
@@ -518,7 +606,7 @@ namespace Circuit_Simulator
 
         
 
-        public void PlaceArea(Rectangle rec, byte[,] data)
+        public void PlaceArea(Rectangle rec, byte[,] data, bool SkipNetworkDeletion = false)
         {
             HashSet<int> nets = new HashSet<int>();
             Rectangle Brec = rec;
@@ -543,35 +631,70 @@ namespace Circuit_Simulator
             }
 
             // Removing the Networks
-            for (int x = Brec.Left; x < Brec.Right; ++x)
+            //for (int x = Brec.Left; x < Brec.Right; ++x)
+            //{
+            //    for (int y = Brec.Top; y < Brec.Bottom; ++y)
+            //    {
+            //        for (int i = 0; i < LAYER_NUM; ++i)
+            //        {
+            //            if (WireIDs[x / 2, y / 2, i] != 0)
+            //            {
+            //                nets.Add(WireIDs[x / 2, y / 2, i]);
+            //            }
+            //            WireIDs[x / 2, y / 2, i] = 0;
+            //        }
+            //    }
+            //}
+
+            for (int x = rec.Left; x < rec.Right; ++x)
             {
-                for (int y = Brec.Top; y < Brec.Bottom; ++y)
+                for (int y = rec.Top; y < rec.Bottom; ++y)
                 {
                     for (int i = 0; i < LAYER_NUM; ++i)
                     {
-                        if (WireIDs[x / 2, y / 2, i] != 0 && (IsWire[x, y] & (1 << i)) > 0)
+                        if (WireIDs[x / 2, y / 2, i] != 0)
                         {
-                            nets.Add(WireIDs[x / 2, y / 2, i]);
-                            WireIDs[x / 2, y / 2, i] = 0;
+                            int xx = (x / 2) * 2;
+                            int yy = (y / 2) * 2;
+                            int xxx = xx - Brec.Left;
+                            int yyy = yy - Brec.Top;
+                            if (true) // (finaldata[xxx, yyy] & (1 << i)) == 0 && (finaldata[xxx + 1, yyy] & (1 << i)) == 0 && (finaldata[xxx, yyy + 1] & (1 << i)) == 0 && (finaldata[xxx + 1, yyy + 1] & (1 << i)) == 0)
+                            {
+                                nets.Add(WireIDs[x / 2, y / 2, i]);
+                                WireIDs[x / 2, y / 2, i] = 0;
+                            }
+                        }
+                    }
+                    if(WireIDPs[x, y] != 0)
+                    {
+                        int xx = x - Brec.Left;
+                        int yy = y - Brec.Top;
+                        if (true)//(finaldata[xx, yy] & 128) == 0)
+                        {
+                            nets.Add(WireIDPs[x, y]);
+                            WireIDPs[x, y] = 0;
                         }
                     }
                 }
             }
 
+            Network.Delete(nets);
             // Placing Data
             for (int x = Brec.Left; x < Brec.Right; ++x)
             {
                 for (int y = Brec.Top; y < Brec.Bottom; ++y)
                 {
+                    if (Sim_Component.CompType[x, y] > Sim_Component.PINOFFSET)
+                        Sim_Component.pins2check[Sim_Component.pins2check_length++] = new Point(x, y);
                     IsWire[x, y] = finaldata[(x - Brec.Left), (y - Brec.Top)];
-                    IsChange[x, y] = 255;
+                    //IsChange[x, y] = 255;
                 }
             }
 
             //Drawing Area Black
-            for (int y = 0; y < rec.Height; ++y)
+            for (int y = 0; y < Brec.Height; ++y)
             {
-                Line line = new Line(new Point(rec.Left, rec.Top + y), new Point(rec.Right - 1, rec.Top + y));
+                Line line = new Line(new Point(Brec.Left, Brec.Top + y), new Point(Brec.Right - 1, Brec.Top + y));
                 VertexPositionLine line1, line2;
                 line.Convert2LineVertices(0, out line1, out line2);
 
@@ -584,8 +707,8 @@ namespace Circuit_Simulator
             {
                 for (int y = Brec.Top; y < Brec.Bottom; ++y)
                 {
-                    if (IsWire[x, y] > 128)
-                        CalculateNetworkAt(x, y, (byte)(IsWire[x, y] & 0x7F));
+                    if (IsWire[x, y] >= 128)
+                        CalculateNetworkAt(x, y, IsWire[x, y]);
                     else
                     {
                         for (int i = 0; i < LAYER_NUM; ++i)
@@ -594,6 +717,17 @@ namespace Circuit_Simulator
                                 CalculateNetworkAt(x, y, (byte)(1 << i));
                         }
                     }
+
+                    //if (IsWire[x, y] > 128)
+                    //    CalculateNetworkAt(x, y, (byte)(IsWire[x, y]));
+                    //else
+                    //{
+                    //    for (int i = 0; i < LAYER_NUM; ++i)
+                    //    {
+                    //        if ((IsWire[x, y] & (1 << i)) > 0)
+                    //            CalculateNetworkAt(x, y, (byte)(1 << i));
+                    //    }
+                    //}
                 }
             }
 
@@ -602,15 +736,16 @@ namespace Circuit_Simulator
             {
                 for (int y = Brec.Top; y < Brec.Bottom; ++y)
                 {
-                    IsWire[x, y] = finaldata[(x - Brec.Left), (y - Brec.Top)];
-                    IsChange[x, y] = 0;
+                    //IsWire[x, y] = finaldata[(x - Brec.Left), (y - Brec.Top)];
+                    //IsChange[x, y] = 0;
                 }
             }
 
-            Network.Delete(nets);
-
-            Network.Delete(FoundNetworks);
-            FoundNetworks.Clear();
+            if (!SkipNetworkDeletion || true)
+            {
+                Network.Delete(FoundNetworks);
+                FoundNetworks.Clear();
+            }
         }
 
         public bool IsValidPlacementCoo(Point pos)
@@ -632,8 +767,8 @@ namespace Circuit_Simulator
             {
                 OUT |= (byte)(Convert.ToByte(UI_Handler.wire_ddbl.ui_elements[i].IsActivated) << i);
             }
-            if (UI_Handler.wire_ddbl.ui_elements[7].IsActivated)
-                return 255;
+            //if (UI_Handler.wire_ddbl.ui_elements[7].IsActivated)
+            //    return 128;
             return OUT;
         }
 
@@ -678,15 +813,15 @@ namespace Circuit_Simulator
                     simspeed--;
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
                 {
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
+                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
                     currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
                 {
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
+                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
                     currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
 
 
@@ -741,17 +876,22 @@ namespace Circuit_Simulator
                 {
                     FileHandler.IsUpToDate = false;
                     byte layers = GetUILayers();
-                    IsWire[mo_worldposx, mo_worldposy] |= layers;
-                    if (true)//layers != 255)
-                    {
-                        for (int i = 0; i < LAYER_NUM + 1; ++i)
-                            if ((layers & (1 << i)) > 0)
-                                CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(layers & (1 << i)));
-                    }
-                    //else
-                    //    CalculateNetworkAt(mo_worldposx, mo_worldposy, 255);
-                    Network.Delete(FoundNetworks);
-                    FoundNetworks.Clear();
+                    //IsWire[mo_worldposx, mo_worldposy] |= layers;
+                    byte[,] data = new byte[1, 1];
+                    data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+                    data[0, 0] |= (byte)GetUILayers();
+                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+
+                    //if (true)//layers != 255)
+                    //{
+                    //    for (int i = 0; i < LAYER_NUM + 1; ++i)
+                    //        if ((layers & (1 << i)) > 0)
+                    //            CalculateNetworkAt(mo_worldposx, mo_worldposy, (byte)(layers & (1 << i)));
+                    //}
+                    ////else
+                    ////    CalculateNetworkAt(mo_worldposx, mo_worldposy, 255);
+                    //Network.Delete(FoundNetworks);
+                    //FoundNetworks.Clear();
 
                 }
 
@@ -759,17 +899,29 @@ namespace Circuit_Simulator
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.IsMiddleButtonToggleOn())
                 {
                     FileHandler.IsUpToDate = false;
-                    IsWire[mo_worldposx, mo_worldposy] = 128;
-                    CalculateNetworkAt(mo_worldposx, mo_worldposy, 128);
-                    Network.Delete(FoundNetworks);
-                    FoundNetworks.Clear();
+                    byte[,] data = new byte[1, 1];
+                    data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+                    data[0, 0] |= 128;
+                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+
+                    Line line = new Line(new Point(mo_worldposx, mo_worldposy), new Point(mo_worldposx, mo_worldposy));
+                    VertexPositionLine line1, line2;
+                    line.Convert2LineVertices(data[0, 0], out line1, out line2);
+
+                    lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line1;// new VertexPositionLine(new Point(rec.Left, rec.Top + y), 0);
+                    lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line2;// new VertexPositionLine(new Point(rec.Right, rec.Top + y), 0);
+
+                    //IsWire[mo_worldposx, mo_worldposy] |= 128;
+                    //CalculateNetworkAt(mo_worldposx, mo_worldposy, 128);
+                    //Network.Delete(FoundNetworks);
+                    //FoundNetworks.Clear();
                 }
 
 
             }
             else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT)
             {
-                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
+                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
                 {
                     int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                     int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
@@ -913,16 +1065,54 @@ namespace Circuit_Simulator
             spritebatch.End();
 
 
-
             spritebatch.Begin();
-
+            for (int x = -200; x < 200; ++x)
+            {
+                for (int y = -200; y < 200; ++y)
+                {
+                    int xx = x + mo_worldposx;
+                    int yy = y + mo_worldposy;
+                    if (xx >= 30 && yy >= 30 && xx < 10000 && yy < 10000)
+                    {
+                        bool IsTrue = false;
+                        for(int i = 0; i < 7; ++i)
+                        {
+                            if (WireIDs[xx / 2, yy / 2, i] == UI_Handler.netboxval)
+                                IsTrue = true;
+                        }
+                        if (WireIDPs[x + mo_worldposx, y + mo_worldposy] == UI_Handler.netboxval || IsTrue)
+                        {
+                            float size = (float)Math.Pow(2, worldzoom);
+                            spritebatch.DrawHollowRectangle(new Rectangle((int)(worldpos.X + xx * size), (int)(worldpos.Y + yy * size), (int)size, (int)size), Color.White, 2);
+                        }
+                    }
+                }
+            }
             sim_comp.DrawCompOverlays(spritebatch);
 
-            //spritebatch.DrawString(Game1.basefont, "Layer: " + currentlayer.ToString(), new Vector2(500, 100), Color.Red);
-            if(IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
-                spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer].ToString(), new Vector2(500, 130), Color.Red);
-            if(IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
-            { 
+            for(int i = 0; i < 50; ++i)
+            {
+                spritebatch.DrawString(Game1.basefont, i.ToString() + ": " + ((networks[i] == null) ? "null" : networks[i].ToString()), new Vector2(1600, 100 + i * 15), Color.Red);
+            }
+
+            spritebatch.DrawString(Game1.basefont, "Layer: " + currentlayer.ToString(), new Vector2(500, 100), Color.Red);
+            if (IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+            {
+                if(currentlayer < 7)
+                    spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer].ToString(), new Vector2(500, 130), Color.Red);
+                else
+                    spritebatch.DrawString(Game1.basefont, "Network: " + WireIDPs[mo_worldposx, mo_worldposy].ToString(), new Vector2(500, 130), Color.Red);
+            }
+            if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] > Sim_Component.PINOFFSET)
+            {
+                int id = Sim_Component.GetComponentID(new Point(mo_worldposx, mo_worldposy));
+                int ID = Sim_Component.components[id].pinNetworkIDs[Sim_Component.CompType[mo_worldposx, mo_worldposy] - 5];
+                spritebatch.DrawString(Game1.basefont, "PIN: " + ID.ToString(), new Vector2(500, 240), Color.Red);
+            }
+            if (IsInGrid)
+                spritebatch.DrawString(Game1.basefont, "CompType: " + Sim_Component.CompType[mo_worldposx, mo_worldposy].ToString(), new Vector2(500, 160), Color.Red);
+            if (IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+            {
                 int state = 0;
                 if (IsSimulating)
                     state = Sim_INF_DLL.GetWireState(WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]);
@@ -934,8 +1124,9 @@ namespace Circuit_Simulator
                     else
                         state = networks[id].state;
                 }
-                spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 160), Color.Red);
+                spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 190), Color.Red);
             }
+            spritebatch.DrawString(Game1.basefont, "highestnetID: " + highestNetworkID.ToString(), new Vector2(500, 220), Color.Red);
 
         }
     }

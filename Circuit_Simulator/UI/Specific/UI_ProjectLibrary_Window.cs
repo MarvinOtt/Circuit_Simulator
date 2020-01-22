@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_ProjectLibrary_Window : UI_Window
     {
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Libraries;
-        UI_StringButton AddButton, Reload;
+        UI_StringButton AddButton, Reload, Refresh;
         public static bool IsChange;
 
 
@@ -23,6 +23,7 @@ namespace Circuit_Simulator.UI.Specific
             Libraries = new UI_Scrollable<UI_List<UI_Categorie<UI_Component>>>(new Pos(bezelsize, 50), Point.Zero);
             Libraries.Add_UI_Elements(new UI_List<UI_Categorie<UI_Component>>(Pos.Zero, false));
             AddButton = new UI_StringButton(new Pos(-bezelsize, ORIGIN.BR, ORIGIN.BR), new Point(UI_Handler.buttonwidth, UI_Handler.buttonheight), "Add", true, UI_Handler.genbutconf);
+            //Refresh = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, AddButton), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Refresh", true, UI_Handler.genbutconf);
             Reload = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, AddButton), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Reload", true, UI_Handler.genbutconf);
             Add_UI_Elements(AddButton, Reload);
             Add_UI_Elements(Libraries);
@@ -49,10 +50,18 @@ namespace Circuit_Simulator.UI.Specific
             CompLibrary.AllUsedLibraries.RemoveAll(x => x.STATE == CompLibrary.LOAD_FAILED);
             Reload_UI();
         }
+
+        public void RefreshLibraries(object sender)
+        {
+
+        }
+
         public void ReloadComponentBox(object sender)
         {
+            ChangedUpdate2True();
             CompLibrary.ReloadComponentData();
             UI_Handler.InitComponents();
+            Sim_INF_DLL.GenerateDllCodeAndCompile();
         }
 
         public void LibFolded(object sender)
@@ -83,7 +92,7 @@ namespace Circuit_Simulator.UI.Specific
                 int ID = i;
                 UI_Component cur_comp = new UI_Component(new Pos(0), new Point(20, 20), libs.Components[i].name, ID, 20, UI_Handler.componentconf);
                 cur_comp.ID_Name = libs.name + "|" + libs.Components[i].name;
-
+                cur_comp.Sort_Name = libs.Components[i].catagory + "|" + libs.Components[i].name;
 
                 newlib.AddComponents(cur_comp);
             }
@@ -100,18 +109,13 @@ namespace Circuit_Simulator.UI.Specific
             }
         }
 
-       
-
         public override void ChangedUpdate2True()
         {
             for (int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
             {
-                int index = CompLibrary.LibraryWindow_LoadedLibrarys.FindIndex(x => x.name == CompLibrary.AllUsedLibraries[i].name);
-                if (index == -1)
-                {
-                    CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
-                    newlib.Load();
-                }
+                CompLibrary.AllUsedLibraries[i].Load();
+                //CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
+                //newlib.Load();
             }
 
             Reload_UI();
