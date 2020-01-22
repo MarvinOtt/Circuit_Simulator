@@ -14,12 +14,14 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_EditComp_Window : UI_Window
     {
         public CompData rootcomp;
-        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length, Box_ClickType;
+        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length, Box_ClickType, ComponentValueInputCount;
         public UI_Scrollable<UI_Element> Features;
+        List<UI_ValueInput> inputlist = new List<UI_ValueInput>();
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
         UI_StringButton[] rotbuttons;
         UI_TexButton[] paintbuttons;
         UI_GridPaint gridpaint;
+        UI_String InputCount_Label;
 
         Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(0.15f, 0.15f, 0.15f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
 
@@ -32,6 +34,7 @@ namespace Circuit_Simulator.UI.Specific
             UI_String spooky = new UI_String(new Pos(0), Point.Zero, conf, "");
             UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name: ");
             UI_String Box_Category_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero, UI_Handler.genbutconf, "Category: ");
+          
             Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
             Box_Name.ValueChanged += BoxName_ValueChange;
             Box_Category = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Category_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
@@ -81,10 +84,19 @@ namespace Circuit_Simulator.UI.Specific
             }
             paintbuttons[0].IsActivated = true;
             gridpaint.curplacetype = 1;
+
+            InputCount_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, gridpaint), Point.Zero, UI_Handler.genbutconf, "InputCount: ");
+            ComponentValueInputCount = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 8, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 2);
+            
+
+
+
             Features.Add_UI_Elements(spooky, SimCode_FuncName_Label, Box_SimCode_FuncName, AfterSimCode_FuncName_Label, Box_AfterSimCode_FuncName, InternalState_Length_Label, Box_InternalState_Length, ClickType_Label, Box_ClickType, Code_Sim_Button, Code_AfterSim_Button);
             Features.Add_UI_Elements(rotbuttons);
             Features.Add_UI_Elements(gridpaint);
             Features.Add_UI_Elements(paintbuttons);
+            Features.Add_UI_Elements(InputCount_Label);
+            Features.Add_UI_Elements(ComponentValueInputCount);
             Add_UI_Elements(Box_Name_Label, Box_Name, Box_Category_Label, Box_Category, Features);
             
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
@@ -93,6 +105,7 @@ namespace Circuit_Simulator.UI.Specific
             Box_AfterSimCode_FuncName.ValueChanged += Box_AfterSimCode_FuncName_ValueChange;
             Box_InternalState_Length.ValueChanged += Box_InternalState_Length_ValueChange;
             Box_ClickType.ValueChanged += Box_ClickType_ValueChanged;
+            ComponentValueInputCount.ValueChanged += InputCount_ValueChanged;
             //Box_IsAfterSim.ValueChanged += Box_IsAfterSim_ValueChange;
 
             // Code Boxes
@@ -100,8 +113,11 @@ namespace Circuit_Simulator.UI.Specific
             CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
             CodeBox_Sim.LostFocus += Code_Sim_LostFocus;
             CodeBox_AfterSim.LostFocus += Code_AfterSim_LostFocus;
+            UpdatePos();
             Resize();
             GetsUpdated = GetsDrawn = false;
+
+
         }
 
         public void SetRootComp(CompData comp)
@@ -262,8 +278,28 @@ namespace Circuit_Simulator.UI.Specific
 
         protected override void Resize()
         {
-            Features.size = new Point(size.X - bezelsize * 2, size.Y - bezelsize * 2 - (int)(conf.font.MeasureString("Test").Y) - 5 - Features.pos.Y - UI_Handler.buttonheight);
+            Features.size = new Point(size.X - bezelsize * 2, size.Y - bezelsize - (Features.pos.Y_abs - absolutpos.Y));
             base.Resize();
+        }
+        public void InputCount_ValueChanged(object sender)
+        {
+            int count = int.Parse("0" + ComponentValueInputCount.value);
+            for (int i = 0; i < inputlist.Count; i++)
+            {
+                Features.ui_elements.Remove(inputlist[i]);
+
+            }
+            inputlist.Clear();
+            inputlist.Add(new UI_ValueInput(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12));
+            Features.Add_UI_Elements(inputlist[0]);
+            for (int i = 1; i < count; i++)
+            {
+                UI_ValueInput newbox = new UI_ValueInput(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, inputlist[i - 1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12);
+                inputlist.Add(newbox);
+                Features.Add_UI_Elements(newbox);
+            }
+           
+
         }
 
         public override void UpdateSpecific()

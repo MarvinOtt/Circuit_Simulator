@@ -772,7 +772,7 @@ namespace Circuit_Simulator
             byte OUT = 0;
             for(int i = 0; i < LAYER_NUM + 1; ++i)
             {
-                OUT |= (byte)(Convert.ToByte(UI_Handler.wire_ddbl.ui_elements[i].IsActivated) << i);
+                OUT |= (byte)(Convert.ToByte(UI_Handler.WireMaskHotbar.ui_elements[i].IsActivated) << i);
             }
             //if (UI_Handler.wire_ddbl.ui_elements[7].IsActivated)
             //    return 128;

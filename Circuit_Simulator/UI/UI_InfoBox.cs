@@ -23,10 +23,13 @@ namespace Circuit_Simulator.UI
 
         public  void ShowInfo()
         {
-            GetsUpdated = GetsDrawn = true;
+            
             pos.pos = Game1.mo_states.New.Position + new Point(10, 10);
+            absolutpos = pos.pos;
             size.X = values.size.X + 4;
             size.Y = values.size.Y + 4;
+            GetsUpdated = GetsDrawn = true;
+            UpdatePos();
         }
 
         public void HideInfo()
