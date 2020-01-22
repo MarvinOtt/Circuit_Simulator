@@ -19,6 +19,7 @@ namespace Circuit_Simulator.UI
         public string value = "";
         private string oldvalue;
         public bool IsTyping;
+        public int maxlength = 40;
         int inputtype;
         Rectangle hitbox;
         Keys[] newkeys;
@@ -31,6 +32,13 @@ namespace Circuit_Simulator.UI
         {
             this.conf = conf;
             this.inputtype = inputtype;
+            ValueChanged += ValueChange;
+        }
+        public UI_ValueInput(Pos pos, Point size, Generic_Conf conf, int inputtype, int maxlength) : base(pos, size)
+        {
+            this.conf = conf;
+            this.inputtype = inputtype;
+            this.maxlength = maxlength;
             ValueChanged += ValueChange;
         }
 
@@ -99,7 +107,7 @@ namespace Circuit_Simulator.UI
                         switch (inputtype)
                         {
                             case 1: //Numbers only
-                                if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 57 && value.Length <= 10)
+                                if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 57 && value.Length <= maxlength - 1)
                                 {
                                     value += ((int)newkeys[i] - 48).ToString();
                                 }
@@ -107,14 +115,14 @@ namespace Circuit_Simulator.UI
                                 break;
 
                             case 2: //binary only
-                                if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 49 && value.Length <= 16)
+                                if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 49 && value.Length <= maxlength - 1)
                                 {
                                     value += ((int)newkeys[i] - 48).ToString();
                                 }
                                 break;
 
                             case 3: //Text
-                                if (value.Length <= 42)
+                                if (value.Length <= maxlength - 1)
                                 {
                                     char key_char;
                                     bool IsValid = Extensions.TryConvertKeyboardInput(newkeys[i], IsShift, out key_char);
@@ -122,15 +130,9 @@ namespace Circuit_Simulator.UI
                                     {
                                         value += key_char;
                                     }
-                                    //if (((int)newkeys[i] >= 65 && (int)newkeys[i] <= 90))
-                                    //{
-                                    //    if (IsShift)
-                                    //        value += ((char)newkeys[i]);
-                                    //    else
-                                    //        value += (char)(((int)newkeys[i]) + 32);
-                                    //}
+                             
                                 }
-                                else if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 57 && value.Length <= 10)
+                                else if ((int)newkeys[i] >= 48 && (int)newkeys[i] <= 57 && value.Length <= maxlength - 1)
                                 {
                                     value += ((int)newkeys[i] - 48).ToString();
                                 }
