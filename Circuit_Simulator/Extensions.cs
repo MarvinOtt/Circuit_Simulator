@@ -181,6 +181,17 @@ namespace Circuit_Simulator
             }
         }
 
+        public static void GetAreaWithMask(this byte[,] arr, byte[,] dest, Rectangle source, byte mask)
+        {
+            for (int x = 0; x < source.Width; ++x)
+            {
+                for (int y = 0; y < source.Height; ++y)
+                {
+                    dest[x, y] = (byte)(arr[source.X + x, source.Y + y] & mask);
+                }
+            }
+        }
+
         // Reading String from File
         public static string ReadNullTerminated(this System.IO.FileStream rdr)
         {

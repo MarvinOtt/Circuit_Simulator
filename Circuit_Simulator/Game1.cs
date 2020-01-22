@@ -61,7 +61,7 @@ namespace Circuit_Simulator
         }
         public bool IsKeyToggleUp(Keys key)
         {
-            return !IsKeyToggleDown(key);
+            return New.IsKeyUp(key) && Old.IsKeyDown(key);
         }
     }
 

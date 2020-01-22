@@ -386,26 +386,19 @@ namespace Circuit_Simulator
                 UI_TexButton current = (UI_TexButton)QuickHotbar.ui_elements[6];
                 current.child.GetsUpdated = current.child.GetsDrawn = current.IsActivated;
             });
-            ((UI_TexButton)QuickHotbar.ui_elements[5]).GotActivatedLeft += delegate (object sender)
+            ((UI_TexButton)QuickHotbar.ui_elements[5]).GotToggledLeft += delegate (object sender)
             {
+                ((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = true;
+                Game1.simulator.ChangeToolmode(Simulator.TOOL_WIRE);
                 ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = false;
             };
-            ((UI_TexButton)QuickHotbar.ui_elements[4]).GotActivatedLeft += delegate (object sender)
+
+            ((UI_TexButton)QuickHotbar.ui_elements[4]).GotToggledLeft += delegate (object sender)
             {
+                ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = true;
+                Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
                 ((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = false;
             };
-
-            QuickHotbar.ui_elements[5].UpdateFunctions.Add(delegate ()
-            {
-                if (((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated)
-                    Game1.simulator.ChangeToolmode(Simulator.TOOL_WIRE);
-            });
-
-            QuickHotbar.ui_elements[4].UpdateFunctions.Add(delegate ()
-            {
-                if (((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated)
-                    Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
-            });
 
             ((UI_TexButton)QuickHotbar.ui_elements[2]).GotActivatedLeft += delegate (object sender)
             {

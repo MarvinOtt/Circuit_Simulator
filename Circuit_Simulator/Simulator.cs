@@ -285,8 +285,15 @@ namespace Circuit_Simulator
         public static Point worldpos;
         public static int worldzoom = 0;
 
-        public static int toolmode = TOOL_WIRE, oldtoolmode = 0, simspeed, simspeed_count;
+        public static int toolmode = TOOL_WIRE, oldtoolmode = TOOL_WIRE, simspeed, simspeed_count, selectstate = 0;
         public static bool IsSimulating;
+
+        #region Selection
+
+        Point Selection_StartPos, Selection_EndPos, Selection_Size;
+        byte[,] CopiedIsWire;
+
+        #endregion
 
         #region INPUT
 
@@ -823,7 +830,12 @@ namespace Circuit_Simulator
                     currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
                     //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
-
+                if (Game1.kb_states.IsKeyToggleDown(Keys.LeftControl))
+                {
+                    ChangeToolmode(TOOL_SELECT);
+                }
+                else if (Game1.kb_states.IsKeyToggleUp(Keys.LeftControl) && selectstate == 0)
+                    ChangeToolmode(oldtoolmode);
 
                 if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
                 {
@@ -921,6 +933,30 @@ namespace Circuit_Simulator
             }
             else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT)
             {
+                if(IsInGrid && Game1.mo_states.IsLeftButtonToggleOn() && selectstate == 0)
+                {
+                    selectstate = 1;
+                    Selection_StartPos = mo_worldpos;
+                }
+                if(Game1.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
+                {
+                    Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
+                    Selection_EndPos.Y = MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO);
+                    selectstate = 2;
+                }
+                if(selectstate == 2)
+                {
+                    if(Game1.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C))
+                    {
+                        selectstate = 3;
+                        Point start = new Point(Math.Min(Selection_StartPos.X, Selection_EndPos.X), Math.Min(Selection_StartPos.Y, Selection_EndPos.Y));
+                        Point end = new Point(Math.Max(Selection_StartPos.X, Selection_EndPos.X), Math.Max(Selection_StartPos.Y, Selection_EndPos.Y));
+                        Selection_Size = (end - start) + new Point(1);
+                        CopiedIsWire = new byte[Selection_Size.X, Selection_Size.Y];
+                        IsWire.GetAreaWithMask(CopiedIsWire, new Rectangle(start, Selection_Size), GetUILayers());
+                    }
+                }
+
                 if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
                 {
                     int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
@@ -1066,28 +1102,28 @@ namespace Circuit_Simulator
 
 
             spritebatch.Begin();
-            for (int x = -200; x < 200; ++x)
-            {
-                for (int y = -200; y < 200; ++y)
-                {
-                    int xx = x + mo_worldposx;
-                    int yy = y + mo_worldposy;
-                    if (xx >= 30 && yy >= 30 && xx < 10000 && yy < 10000)
-                    {
-                        bool IsTrue = false;
-                        for(int i = 0; i < 7; ++i)
-                        {
-                            if (WireIDs[xx / 2, yy / 2, i] == UI_Handler.netboxval)
-                                IsTrue = true;
-                        }
-                        if (WireIDPs[x + mo_worldposx, y + mo_worldposy] == UI_Handler.netboxval || IsTrue)
-                        {
-                            float size = (float)Math.Pow(2, worldzoom);
-                            spritebatch.DrawHollowRectangle(new Rectangle((int)(worldpos.X + xx * size), (int)(worldpos.Y + yy * size), (int)size, (int)size), Color.White, 2);
-                        }
-                    }
-                }
-            }
+            //for (int x = -200; x < 200; ++x)
+            //{
+            //    for (int y = -200; y < 200; ++y)
+            //    {
+            //        int xx = x + mo_worldposx;
+            //        int yy = y + mo_worldposy;
+            //        if (xx >= 30 && yy >= 30 && xx < 10000 && yy < 10000)
+            //        {
+            //            bool IsTrue = false;
+            //            for(int i = 0; i < 7; ++i)
+            //            {
+            //                if (WireIDs[xx / 2, yy / 2, i] == UI_Handler.netboxval)
+            //                    IsTrue = true;
+            //            }
+            //            if (WireIDPs[x + mo_worldposx, y + mo_worldposy] == UI_Handler.netboxval || IsTrue)
+            //            {
+            //                float size = (float)Math.Pow(2, worldzoom);
+            //                spritebatch.DrawHollowRectangle(new Rectangle((int)(worldpos.X + xx * size), (int)(worldpos.Y + yy * size), (int)size, (int)size), Color.White, 2);
+            //            }
+            //        }
+            //    }
+            //}
             sim_comp.DrawCompOverlays(spritebatch);
 
             for(int i = 0; i < 50; ++i)

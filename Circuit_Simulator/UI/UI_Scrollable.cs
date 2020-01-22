@@ -51,18 +51,18 @@ namespace Circuit_Simulator.UI
 
                 if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && ysize > size.Y)
                 {
-                    if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
+                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
                     {
-                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
+                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
                         UpdatePos();
                         int maxypos = 0;
                         maxypos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
                         if (maxypos < size.Y)
                             ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += size.Y - maxypos; } });
                     }
-                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
+                    if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
                     {
-                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y -= 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
+                        ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += 20 * (Game1.mo_states.New.ScrollWheelValue - Game1.mo_states.Old.ScrollWheelValue) / 120; } });
                         UpdatePos();
                         int minypos = ui_elements.Min(x => x.pos.Y_abs - pos.Y_abs);
                         if (minypos > 0)
