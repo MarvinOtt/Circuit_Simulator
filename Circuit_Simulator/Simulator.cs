@@ -938,6 +938,7 @@ namespace Circuit_Simulator
                     selectstate = 1;
                     Selection_StartPos = mo_worldpos;
                 }
+                
                 if(Game1.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
                 {
                     Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
@@ -951,6 +952,8 @@ namespace Circuit_Simulator
                         selectstate = 3;
                         Point start = new Point(Math.Min(Selection_StartPos.X, Selection_EndPos.X), Math.Min(Selection_StartPos.Y, Selection_EndPos.Y));
                         Point end = new Point(Math.Max(Selection_StartPos.X, Selection_EndPos.X), Math.Max(Selection_StartPos.Y, Selection_EndPos.Y));
+                        Selection_StartPos = start;
+                        Selection_EndPos = end;
                         Selection_Size = (end - start) + new Point(1);
                         CopiedIsWire = new byte[Selection_Size.X, Selection_Size.Y];
                         IsWire.GetAreaWithMask(CopiedIsWire, new Rectangle(start, Selection_Size), GetUILayers());
@@ -992,6 +995,22 @@ namespace Circuit_Simulator
                 sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
                 sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
                 sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
+                sim_effect.Parameters["selectstate"].SetValue(selectstate);
+                if(selectstate == 1 || selectstate == 2)
+                {
+                    Point endpos = new Point(MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO), MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO));
+                    Point start = new Point(Math.Min(Selection_StartPos.X, endpos.X), Math.Min(Selection_StartPos.Y, endpos.Y));
+                    Point end = new Point(Math.Max(Selection_StartPos.X, endpos.X), Math.Max(Selection_StartPos.Y, endpos.Y));
+                    if(selectstate == 2)
+                    {
+                        start = Selection_StartPos;
+                        end = Selection_EndPos;
+                    }
+                    sim_effect.Parameters["selection_startX"].SetValue(start.X);
+                    sim_effect.Parameters["selection_startY"].SetValue(start.Y);
+                    sim_effect.Parameters["selection_endX"].SetValue(end.X);
+                    sim_effect.Parameters["selection_endY"].SetValue(end.Y);
+                }
                 //sim_effect.Parameters["mindist"].SetValue(MathHelper.Clamp((float)(4.0f / Math.Pow(2, worldzoom)), 0.125f / 2, 0.125f));
                 sim_effect.Parameters["mindist"].SetValue(0.13f);
                 sim_effect.Parameters["currentlayer"].SetValue(currentlayer);

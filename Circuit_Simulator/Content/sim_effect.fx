@@ -16,9 +16,9 @@ texture2D comptex;
 int currentlayer;
 float zoom;
 float2 coos;
-int currenttype;
+int currenttype, selectstate;
 int copiedwidth, copiedheight, copiedposx, copiedposy; // Copying
-//int Selection_StartX, Selection_EndX, Selection_StartY, Selection_EndY; // Selecting
+int selection_startX, selection_endX, selection_startY, selection_endY; // Selecting
 int Screenwidth, Screenheight, worldsizex, worldsizey, mousepos_X, mousepos_Y;
 
 
@@ -533,6 +533,13 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	if (xcoo >= coos.x && xcoo <= coos.x + worldsizex * zoom && ycoo >= coos.y && ycoo <= coos.y + worldsizey * zoom)
 	{
 		OUT = getcoloratpos((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
+		if (selectstate == 1 || selectstate == 2)
+		{
+			if (xcoo >= selection_startX && xcoo <= selection_endX && ycoo >= selection_startY && ycoo <= selection_endY)
+			{
+				OUT = OUT * 0.75f + float4(1, 1, 1, 1) * 0.25f;
+			}
+		}
 	}
 	else
 		OUT = float4(0.25f, 0.25f, 0.25f, 1);
