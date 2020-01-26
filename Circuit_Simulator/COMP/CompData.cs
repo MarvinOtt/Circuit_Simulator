@@ -13,6 +13,7 @@ namespace Circuit_Simulator.COMP
     public class CompData
     {
         public List<ComponentPixel>[] data;
+        public List<string> parameters;
         public string name;
         public string catagory = "Other";
         public string Code_AfterSim = "", Code_Sim = "";
@@ -98,6 +99,7 @@ namespace Circuit_Simulator.COMP
                 data[i] = new List<ComponentPixel>();
             overlay_bounds = new FRectangle[4];
             overlaysize = Game1.basefont.MeasureString(name).ToPoint();
+            parameters = new List<string>();
         }
 
 
