@@ -95,10 +95,10 @@ namespace Circuit_Simulator
             }
         }
 
-        public static bool IsValidPlacement(int dataID, Point pos)
+        public static bool IsValidPlacement(int dataID, Point pos, int rotation)
         {
             //Check if component can be placed
-            List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[Sim_Component.Components_Data[dataID].currentrotation];
+            List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[rotation];
             bool IsPlacementValid = true;
             if (Simulator.IsSimulating)
                 IsPlacementValid = false;
@@ -339,9 +339,9 @@ namespace Circuit_Simulator
             this.sim_effect = sim_effect;
             overlay_effect = Game1.content.Load<Effect>("overlay_effect");
             placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 41, 41, false, SurfaceFormat.Alpha8);
-            CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
             CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
             components = new Component[1000000];
@@ -588,8 +588,8 @@ namespace Circuit_Simulator
             if (true)//UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
                 UI_Handler.UI_IsWindowHide = true;
-                ((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[6]).IsActivated = false;
-                UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
+                //((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[5]).IsActivated = false;
+                //UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
                 //UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
                 Game1.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
                 IsCompDrag = true;
@@ -637,23 +637,27 @@ namespace Circuit_Simulator
             Game1.simulator.Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
             ComponentDropAtPos(dataID, pos);
         }
-        public void ComponentDropAtPos(int dataID, Point pos)
+        public static void ComponentDropAtPos(int dataID, Point pos)
         {
-            if (UI_Handler.UI_Active_State == UI_Handler.UI_Active_CompDrag)
-            {
-                if(Component.IsValidPlacement(dataID, pos))
+            ComponentDropAtPos(dataID, pos, Components_Data[dataID].currentrotation);
+        }
+        public static void ComponentDropAtPos(int dataID, Point pos, int rotation)
+        {
+            //if (UI_Handler.UI_Active_State == UI_Handler.UI_Active_CompDrag)
+            //{
+                if (Component.IsValidPlacement(dataID, pos, rotation))
                 {
                     FileHandler.IsUpToDate = false;
                     Component newcomp;// = new Component(ID, nextComponentID);
-                    if(emptyComponentID_count > 0)
+                    if (emptyComponentID_count > 0)
                         newcomp = new Component(dataID, emptyComponentID[--emptyComponentID_count]);
                     else
                         newcomp = new Component(dataID, nextComponentID++);
                     components[newcomp.ID] = newcomp;
-                    newcomp.Place(pos, Components_Data[dataID].currentrotation);
+                    newcomp.Place(pos, rotation);
 
                 }
-            }
+            //}
         }
 
         public void DeactivateDrop()
@@ -675,7 +679,7 @@ namespace Circuit_Simulator
                 return -1;
         }
 
-        public void CheckPins()
+        public static void CheckPins()
         {
             if (pins2check_length > 0)
             {

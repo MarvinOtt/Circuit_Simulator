@@ -79,9 +79,6 @@ namespace Circuit_Simulator
         SpriteBatch spriteBatch;
         public static SpriteFont basefont;
 
-        System.Windows.Forms.Form popup;
-        Scintilla t;
-
         #region UI
 
         UI_Handler UI_handler;

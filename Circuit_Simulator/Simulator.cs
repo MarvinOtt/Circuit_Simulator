@@ -91,13 +91,17 @@ namespace Circuit_Simulator
 
     public class Network
     {
+        public static List<Network> CheckForDrawing = new List<Network>();
         public List<Line_Netw> lines;
         public int ID;
         public byte state;
         public static bool HasRealWires;
+        public bool NeedsDrawing;
 
         public Network(int ID)
         {
+            NeedsDrawing = true;
+            CheckForDrawing.Add(this);
             this.ID = ID;
             if (ID > Simulator.highestNetworkID)
                 Simulator.highestNetworkID = ID;
@@ -183,33 +187,38 @@ namespace Circuit_Simulator
 
         public void Draw()
         {
-            for (int i = 0; i < lines.Count; ++i)
+            if (NeedsDrawing)
             {
-                //if (lines[i].layers >)
-                //{
-                //    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].start, 255);
-                //    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].end + lines[i].dir, 255);
-                //    continue;
-                //}
-                for (int j = 0; j < Simulator.LAYER_NUM; ++j) // Iterating all Layers
+                for (int i = 0; i < lines.Count; ++i)
                 {
-                    if ((lines[i].layers & (1 << j)) > 0)
+                    //if (lines[i].layers >)
+                    //{
+                    //    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].start, 255);
+                    //    Simulator.lines2draw[Simulator.LAYER_NUM][Simulator.lines2draw_count[Simulator.LAYER_NUM]++] = new VertexPositionLine(lines[i].end + lines[i].dir, 255);
+                    //    continue;
+                    //}
+                    for (int j = 0; j < Simulator.LAYER_NUM; ++j) // Iterating all Layers
+                    {
+                        if ((lines[i].layers & (1 << j)) > 0)
+                        {
+                            Line line = new Line(lines[i].start, lines[i].end);
+                            VertexPositionLine line1, line2;
+                            line.Convert2LineVertices((1 << j), out line1, out line2);
+                            Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line1;// new VertexPositionLine(lines[i].start, (1 << j));
+                            Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line2;// new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
+                        }
+                    }
+                    if ((lines[i].layers & (1 << 7)) > 0)
                     {
                         Line line = new Line(lines[i].start, lines[i].end);
                         VertexPositionLine line1, line2;
-                        line.Convert2LineVertices((1 << j), out line1, out line2);
-                        Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line1;// new VertexPositionLine(lines[i].start, (1 << j));
-                        Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line2;// new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
+                        line.Convert2LineVertices(128, out line1, out line2);
+                        Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line1;// new VertexPositionLine(lines[i].start, (1 << j));
+                        Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line2;// new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
                     }
                 }
-                if ((lines[i].layers & (1 << 7)) > 0)
-                {
-                    Line line = new Line(lines[i].start, lines[i].end);
-                    VertexPositionLine line1, line2;
-                    line.Convert2LineVertices(128, out line1, out line2);
-                    Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line1;// new VertexPositionLine(lines[i].start, (1 << j));
-                    Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line2;// new VertexPositionLine(lines[i].end + lines[i].dir, (1 << j));
-                }
+                NeedsDrawing = false;
+                int breaki = 1;
             }
         }
     }
@@ -262,6 +271,7 @@ namespace Circuit_Simulator
         public Sim_INF_DLL sim_inf_dll;
 
         public static Effect sim_effect, line_effect, iswirerender_effect;
+        Texture2D copyWiretex, copyComptex;
         RenderTarget2D main_target, WireCalc_target;
         public static RenderTarget2D logic_target, sec_target;
         public static Network CalcNetwork;
@@ -282,17 +292,18 @@ namespace Circuit_Simulator
         public static int[,,] WireIDs;
         public static int[,] WireIDPs;
 
-        public static Point worldpos;
+        public static Point worldpos, copymouseoffset, copypos, copysize;
         public static int worldzoom = 0;
 
-        public static int toolmode = TOOL_WIRE, oldtoolmode = TOOL_WIRE, simspeed, simspeed_count, selectstate = 0;
+        public static int toolmode = TOOL_WIRE, oldtoolmode = TOOL_WIRE, simspeed, simspeed_count, selectstate = 0, copystate;
         public static bool IsSimulating;
 
         #region Selection
 
         Point Selection_StartPos, Selection_EndPos, Selection_Size;
-        byte[,] CopiedIsWire;
-
+        byte[] CopiedIsWire, CopiedCompType;
+        List<int> CopiedCompIDs, CopiedCompRot;
+        List<Point> CopiedCompPos;
         #endregion
 
         #region INPUT
@@ -324,6 +335,9 @@ namespace Circuit_Simulator
             //Game1.graphics.GraphicsDevice.SetRenderTarget(null);
 
             FoundNetworks = new HashSet<int>();
+            CopiedCompIDs = new List<int>();
+            CopiedCompRot = new List<int>();
+            CopiedCompPos = new List<Point>();
             IsWire = new byte[SIZEX, SIZEY];
             CalcGridData = new byte[SIZEX, SIZEY];
             CalcGridStat = new byte[SIZEX, SIZEY];
@@ -349,10 +363,6 @@ namespace Circuit_Simulator
             sim_comp = new Sim_Component(this, sim_effect);
             sim_inf_dll = new Sim_INF_DLL();
         }
-
-        // DLL functions
-        [DllImport("..\\..\\..\\..\\..\\x64\\Debug\\Sim_DLL.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int Test(int a, int b);
 
         public void Window_Graphics_Changed(object sender, EventArgs e)
         {
@@ -608,7 +618,7 @@ namespace Circuit_Simulator
 
             // Clear Calc Grid
             networks[netID].ClearCalcGrid();
-            networks[netID].Draw();
+            //networks[netID].Draw();
         }
 
         
@@ -753,6 +763,7 @@ namespace Circuit_Simulator
                 Network.Delete(FoundNetworks);
                 FoundNetworks.Clear();
             }
+            Sim_Component.CheckPins();
         }
 
         public bool IsValidPlacementCoo(Point pos)
@@ -830,12 +841,12 @@ namespace Circuit_Simulator
                     currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
                     //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
-                if (Game1.kb_states.IsKeyToggleDown(Keys.LeftControl))
-                {
-                    ChangeToolmode(TOOL_SELECT);
-                }
-                else if (Game1.kb_states.IsKeyToggleUp(Keys.LeftControl) && selectstate == 0)
-                    ChangeToolmode(oldtoolmode);
+                //if (Game1.kb_states.IsKeyToggleDown(Keys.LeftControl))
+                //{
+                //    ChangeToolmode(TOOL_SELECT);
+                //}
+                //else if (Game1.kb_states.IsKeyToggleUp(Keys.LeftControl) && selectstate == 0)
+                //    ChangeToolmode(oldtoolmode);
 
                 if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
                 {
@@ -855,11 +866,210 @@ namespace Circuit_Simulator
                 #endregion
             }
 
-            // Handling Tool Modes
-            //if(Game1.kb_states.IsKeyToggleDown(Keys.D1))
+            if (selectstate > 0 && Game1.kb_states.IsKeyToggleDown(Keys.Escape))
+            {
+                selectstate = 0;
+            }
+            // Finishing Selection
+            if (Game1.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
+            {
+                Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
+                Selection_EndPos.Y = MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO);
+                Point start = new Point(Math.Min(Selection_StartPos.X, Selection_EndPos.X), Math.Min(Selection_StartPos.Y, Selection_EndPos.Y));
+                Point end = new Point(Math.Max(Selection_StartPos.X, Selection_EndPos.X), Math.Max(Selection_StartPos.Y, Selection_EndPos.Y));
+                Selection_StartPos = start;
+                Selection_EndPos = end;
+                Selection_Size = (end - start) + new Point(1);
+                selectstate = 2;
+            }
+
+            // Copying
+            if (selectstate == 2)
+            {
+                if (Game1.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C) && !Game1.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.C))
+                {
+                    copysize = Selection_Size;
+                    CopiedIsWire = new byte[Selection_Size.X * Selection_Size.Y];
+                    CopiedCompType = new byte[Selection_Size.X * Selection_Size.Y];
+                    IsWire.GetAreaWithMask(CopiedIsWire, new Rectangle(Selection_StartPos, Selection_Size), GetUILayers());
+                    CopiedCompIDs.Clear();
+                    CopiedCompPos.Clear();
+                    CopiedCompRot.Clear();
+                    if (UI_Handler.WireMaskHotbar.ui_elements[8].IsActivated) // Only copy components if the corresponding mask is set
+                    {
+                        HashSet<Component> FoundComponents = new HashSet<Component>();
+                        for (int x = 0; x < Selection_Size.X; ++x)
+                        {
+                            for (int y = 0; y < Selection_Size.Y; ++y)
+                            {
+                                int xx = x + Selection_StartPos.X;
+                                int yy = y + Selection_StartPos.Y;
+                                if (Sim_Component.CompType[xx, yy] > 0)
+                                    FoundComponents.Add(Sim_Component.components[Sim_Component.GetComponentID(new Point(xx, yy))]);
+                            }
+                        }
+                        Component[] comps = FoundComponents.ToArray();
+                        Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
+                        for (int i = 0; i < comps.Length; ++i)
+                        {
+                            CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
+                            Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
+                            comprec.Location += comps[i].pos;
+                            Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
+                            if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
+                            {
+                                CopiedCompIDs.Add(comps[i].dataID);
+                                CopiedCompRot.Add(comps[i].rotation);
+                                CopiedCompPos.Add(comps[i].pos - Selection_StartPos);
+                                List<ComponentPixel> pixels = compdata.data[comps[i].rotation];
+                                for (int j = 0; j < pixels.Count; ++j)
+                                {
+                                    int x = (pixels[j].pos.X + comps[i].pos.X) - Selection_StartPos.X;
+                                    int y = (pixels[j].pos.Y + comps[i].pos.Y) - Selection_StartPos.Y;
+                                    CopiedCompType[x + y * Selection_Size.X] = pixels[j].type;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (Game1.kb_states.IsKeyToggleDown(Keys.Delete))
+                {
+                    selectstate = copystate = 0;
+
+                    byte[,] data = new byte[Selection_Size.X, Selection_Size.Y];
+                    Extensions.GetArea(IsWire, data, new Rectangle(Selection_StartPos, Selection_Size));
+                    byte layers = GetUILayers();
+                    for (int x = 0; x < Selection_Size.X; ++x)
+                    {
+                        for (int y = 0; y < Selection_Size.Y; ++y)
+                        {
+                            data[x, y] &= (byte)(~layers);
+                        }
+                    }
+                    PlaceArea(new Rectangle(Selection_StartPos, Selection_Size), data);
+
+                    if (UI_Handler.WireMaskHotbar.ui_elements[8].IsActivated) // Only delete components if the corresponding mask is set
+                    {
+                        HashSet<Component> FoundComponents = new HashSet<Component>();
+                        for (int x = 0; x < Selection_Size.X; ++x)
+                        {
+                            for (int y = 0; y < Selection_Size.Y; ++y)
+                            {
+                                int xx = x + Selection_StartPos.X;
+                                int yy = y + Selection_StartPos.Y;
+                                if (Sim_Component.CompType[xx, yy] > 0)
+                                    FoundComponents.Add(Sim_Component.components[Sim_Component.GetComponentID(new Point(xx, yy))]);
+                            }
+                        }
+                        Component[] comps = FoundComponents.ToArray();
+                        Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
+                        for (int i = 0; i < comps.Length; ++i)
+                        {
+                            CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
+                            Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
+                            comprec.Location += comps[i].pos;
+                            Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
+                            if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
+                            {
+                                comps[i].Delete();
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (Game1.kb_states.New.IsKeyDown(Keys.LeftControl))
+            {
+                // Starting Selection
+                if (IsInGrid && Game1.mo_states.IsLeftButtonToggleOn() && (selectstate == 0 || selectstate == 2))
+                {
+                    selectstate = 1;
+                    Selection_StartPos = mo_worldpos;
+                }
+
                 
 
-            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && !IsSimulating)
+                // Placing Copy Shadow
+                if(CopiedIsWire != null)
+                {
+                    if(Game1.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.V) && !Game1.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.V))
+                    {
+                        selectstate = 4;
+                        copystate = 0;
+                        if (copyWiretex != null && !copyWiretex.IsDisposed)
+                            copyWiretex.Dispose();
+                        if (copyComptex != null && !copyComptex.IsDisposed)
+                            copyComptex.Dispose();
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyWiretex.SetData(CopiedIsWire);
+                        copyComptex.SetData(CopiedCompType);
+                        copypos = new Point(mo_worldposx, mo_worldposy);
+                        copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
+                        copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
+                    }
+                }
+            }
+            // Moving Copy
+            if (selectstate == 4)
+            {
+                if (Game1.mo_states.IsLeftButtonToggleOn() && (new Rectangle(copypos, copysize)).Contains(mo_worldpos))
+                {
+                    copystate = 1;
+                    copymouseoffset = copypos - mo_worldpos;
+                }
+                if (copystate == 1)
+                {
+                    if (Game1.mo_states.New.LeftButton == ButtonState.Released)
+                        copystate = 0;
+
+                    copypos = mo_worldpos + copymouseoffset;
+                    copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
+                    copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
+                }
+
+                // Placing Copy
+                if(Game1.kb_states.IsKeyToggleDown(Keys.Enter))
+                {
+                    // Check if placement is valid
+                    bool IsValid = true;
+                    for (int x = 0; x < copysize.X; ++x)
+                    {
+                        for (int y = 0; y < copysize.Y; ++y)
+                        {
+                            int xx = x + copypos.X;
+                            int yy = y + copypos.Y;
+                            if (CopiedIsWire[x + y * copysize.X] > 0 && Sim_Component.CompType[xx, yy] > 0 && Sim_Component.CompType[xx, yy] <= Sim_Component.PINOFFSET)
+                                IsValid = false;
+                            if (CopiedCompType[x + y * copysize.X] > 0 && CopiedCompType[x + y * copysize.X] <= Sim_Component.PINOFFSET && IsWire[xx, yy] > 0)
+                                IsValid = false;
+                        }
+                    }
+
+                    if (IsValid)
+                    {
+                        selectstate = copystate = 0;
+                        byte[,] data = new byte[copysize.X, copysize.Y];
+                        Extensions.GetArea(IsWire, data, new Rectangle(copypos, copysize));
+                        for (int x = 0; x < copysize.X; ++x)
+                        {
+                            for (int y = 0; y < copysize.Y; ++y)
+                            {
+                                data[x, y] |= CopiedIsWire[x + y * copysize.X];
+                            }
+                        }
+                        PlaceArea(new Rectangle(copypos, copysize), data);
+                        for(int i = 0; i < CopiedCompIDs.Count; ++i)
+                        {
+                            Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, CopiedCompRot[i]);
+                        }
+                        int breaki = 1;
+                    }
+                }
+            }
+
+            // Handling Tool Modes
+            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && !IsSimulating && selectstate == 0)
             {
 
                 // Deleting Wires
@@ -931,35 +1141,8 @@ namespace Circuit_Simulator
 
 
             }
-            else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT)
+            else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT && selectstate == 0)
             {
-                if(IsInGrid && Game1.mo_states.IsLeftButtonToggleOn() && selectstate == 0)
-                {
-                    selectstate = 1;
-                    Selection_StartPos = mo_worldpos;
-                }
-                
-                if(Game1.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
-                {
-                    Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
-                    Selection_EndPos.Y = MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO);
-                    selectstate = 2;
-                }
-                if(selectstate == 2)
-                {
-                    if(Game1.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C))
-                    {
-                        selectstate = 3;
-                        Point start = new Point(Math.Min(Selection_StartPos.X, Selection_EndPos.X), Math.Min(Selection_StartPos.Y, Selection_EndPos.Y));
-                        Point end = new Point(Math.Max(Selection_StartPos.X, Selection_EndPos.X), Math.Max(Selection_StartPos.Y, Selection_EndPos.Y));
-                        Selection_StartPos = start;
-                        Selection_EndPos = end;
-                        Selection_Size = (end - start) + new Point(1);
-                        CopiedIsWire = new byte[Selection_Size.X, Selection_Size.Y];
-                        IsWire.GetAreaWithMask(CopiedIsWire, new Rectangle(start, Selection_Size), GetUILayers());
-                    }
-                }
-
                 if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
                 {
                     int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
@@ -996,7 +1179,7 @@ namespace Circuit_Simulator
                 sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
                 sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
                 sim_effect.Parameters["selectstate"].SetValue(selectstate);
-                if(selectstate == 1 || selectstate == 2)
+                if(selectstate >= 1 && selectstate <= 2)
                 {
                     Point endpos = new Point(MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO), MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO));
                     Point start = new Point(Math.Min(Selection_StartPos.X, endpos.X), Math.Min(Selection_StartPos.Y, endpos.Y));
@@ -1010,6 +1193,15 @@ namespace Circuit_Simulator
                     sim_effect.Parameters["selection_startY"].SetValue(start.Y);
                     sim_effect.Parameters["selection_endX"].SetValue(end.X);
                     sim_effect.Parameters["selection_endY"].SetValue(end.Y);
+                }
+                if(selectstate == 4)
+                {
+                    sim_effect.Parameters["copywiretex"].SetValue(copyWiretex);
+                    sim_effect.Parameters["copycomptex"].SetValue(copyComptex);
+                    sim_effect.Parameters["copyposX"].SetValue(copypos.X);
+                    sim_effect.Parameters["copyposY"].SetValue(copypos.Y);
+                    sim_effect.Parameters["selection_endX"].SetValue(copypos.X + copysize.X - 1);
+                    sim_effect.Parameters["selection_endY"].SetValue(copypos.Y + copysize.Y - 1);
                 }
                 //sim_effect.Parameters["mindist"].SetValue(MathHelper.Clamp((float)(4.0f / Math.Pow(2, worldzoom)), 0.125f / 2, 0.125f));
                 sim_effect.Parameters["mindist"].SetValue(0.13f);
@@ -1028,6 +1220,15 @@ namespace Circuit_Simulator
         public void Draw(SpriteBatch spritebatch)
         {
             spritebatch.End();
+            //Check Networks for Drawing
+            for(int i = 0; i < Network.CheckForDrawing.Count; ++i)
+            {
+                if(networks[Network.CheckForDrawing[i].ID] == Network.CheckForDrawing[i])
+                    Network.CheckForDrawing[i].Draw();
+            }
+            if (Network.CheckForDrawing.Count > 0)
+                Network.CheckForDrawing.Clear();
+
             for (int j = -1; j < LAYER_NUM + 1; ++j)
             {
                 int i = j;
@@ -1182,7 +1383,7 @@ namespace Circuit_Simulator
                 spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 190), Color.Red);
             }
             spritebatch.DrawString(Game1.basefont, "highestnetID: " + highestNetworkID.ToString(), new Vector2(500, 220), Color.Red);
-
+            //spritebatch.End();
         }
     }
 }

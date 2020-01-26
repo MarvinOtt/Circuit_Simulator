@@ -19,6 +19,7 @@ namespace Circuit_Simulator.UI
         public event Button_Activated_Handler GotActivatedLeft = delegate { };
         public event Button_Activated_Handler GotToggledLeft = delegate { };
         public event Button_Activated_Handler GotActivatedRight = delegate { };
+        public event Button_Activated_Handler GetsHovered = delegate { };
 
         public UI_Button(Pos pos, Point size, bool DrawBorder, Generic_Conf conf) : base(pos, size)
         {
@@ -46,6 +47,7 @@ namespace Circuit_Simulator.UI
                 {
                     GotActivatedRight(this);
                 }
+                GetsHovered(this);
             }
         }
 

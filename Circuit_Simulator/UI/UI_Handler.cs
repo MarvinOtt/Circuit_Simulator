@@ -63,8 +63,6 @@ namespace Circuit_Simulator
         public static UI_ValueInput netbox;
         public static int netboxval = 70;
 
-        UI_GridPaint gridpaint;
-
         public UI_Handler(ContentManager Content)
 	    {
 		    this.Content = Content;
@@ -384,6 +382,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
             {
                 (WireMaskHotbar.ui_elements[i]).GotToggledLeft += WireMaskBar_Pressed;
+                (WireMaskHotbar.ui_elements[i]).GetsHovered += WireMaskBar_Hovered;
             }
 
             //Changin Simspeed int the UI
@@ -454,27 +453,29 @@ namespace Circuit_Simulator
         public void WireMaskBar_Pressed(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
-            Simulator.currentlayer = WireMaskHotbar.ui_elements.IndexOf(cur);
-            Simulator.sim_effect.Parameters["currentlayer"].SetValue(Simulator.currentlayer);
             if (cur.IsActivated == false)
             {
                 if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
                     cur.IsActivated = true;
-            }   
-            else
-            {
-              
-                if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
-                {
-                    for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
-                    {
-                        UI_TexButton curbut = (WireMaskHotbar.ui_elements[i] as UI_TexButton);
-                        if (curbut != cur)
-                            curbut.IsActivated = false;
-                    }
-                }
-               
             }
+
+            if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
+            {
+                for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
+                {
+                    UI_TexButton curbut = (WireMaskHotbar.ui_elements[i] as UI_TexButton);
+                    if (curbut != cur)
+                        curbut.IsActivated = false;
+                }
+            }
+
+        }
+
+        public void WireMaskBar_Hovered(object sender)
+        {
+            UI_TexButton cur = sender as UI_TexButton;
+            if ((Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.IsLeftButtonToggleOff()) && Game1.kb_states.New.IsKeyDown(Keys.LeftShift))
+                cur.IsActivated = true;
         }
 
         // Gets called when something of the Window or Graphics got changed

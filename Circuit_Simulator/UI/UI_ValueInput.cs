@@ -51,7 +51,7 @@ namespace Circuit_Simulator.UI
                     final_value = int.Parse(value);
                 }
                 catch (Exception exp)
-                { }
+                { Console.WriteLine(exp.Message); }
             }
         }
 

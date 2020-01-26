@@ -50,6 +50,7 @@ namespace Circuit_Simulator.UI.Specific
 
         public void PlaceComp(object sender)
         {
+            Simulator.selectstate = 0;
             UI_Component comp = sender as UI_Component;
             UI_Handler.dragcomp.GetsUpdated = true;
             UI_Handler.dragcomp.GetsDrawn = true;

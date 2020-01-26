@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
     public class UI_ProjectLibrary_Window : UI_Window
     {
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Libraries;
-        UI_StringButton AddButton, Reload, Refresh;
+        UI_StringButton AddButton, Reload;
         public static bool IsChange;
 
 

@@ -15,7 +15,6 @@ namespace Circuit_Simulator.UI
 {
     public class UI_TextBox : UI_Element
     {
-        Generic_Conf conf;
         System.Windows.Forms.Form form;
         public Scintilla t;
         public delegate void LostFocus_Handler(object sender);

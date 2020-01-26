@@ -12,6 +12,7 @@
 texture2D logictex, wirecalctex, isedgetex;
 texture2D placementtex;
 texture2D comptex;
+texture2D copywiretex, copycomptex;
 
 int currentlayer;
 float zoom;
@@ -20,7 +21,7 @@ int currenttype, selectstate;
 int copiedwidth, copiedheight, copiedposx, copiedposy; // Copying
 int selection_startX, selection_endX, selection_startY, selection_endY; // Selecting
 int Screenwidth, Screenheight, worldsizex, worldsizey, mousepos_X, mousepos_Y;
-
+int copyposX, copyposY;
 
 static float4 layercols[8] =
 {
@@ -110,6 +111,42 @@ uint IsEdgeY(float x, float y)
 	else if (IsComp_0m1 || IsComp_0p1)
 		return 1;
 	return 0;
+}
+
+float4 ColorInPixel(uint type_int)
+{
+	if (type_int == 255)
+		return float4(1, 1, 1, 1);
+	else if ((type_int & (1 << currentlayer)) == (1 << currentlayer))
+		return layercols[currentlayer];
+	else if ((type_int & 1) > 0)
+		return layercols[0];
+	else if ((type_int & 2) > 0)
+		return layercols[1];
+	else if ((type_int & 4) > 0)
+		return layercols[2];
+	else if ((type_int & 8) > 0)
+		return layercols[3];
+	else if ((type_int & 16) > 0)
+		return layercols[4];
+	else if ((type_int & 32) > 0)
+		return layercols[5];
+	else if ((type_int & 64) > 0)
+		return layercols[6];
+	else
+		return float4(0, 0, 0, 1);
+}
+float4 ColorInPixel_Comp(uint type_int)
+{
+	float4 OUT = float4(0, 0, 0, 0);
+	if (type_int != 0)
+	{
+		if (type_int <= 4)
+			OUT = compcols[type_int - 1];
+		else
+			OUT = compcols[4];
+	}
+	return OUT;
 }
 
 float4 getcoloratpos(float x, float y)
@@ -477,28 +514,30 @@ float4 getcoloratpos(float x, float y)
 	if (zoom <= 1)
 	{
 		//if(type_int00)
+		if(type_int > 0)
+			OUT = ColorInPixel(type_int);
 
-		if (type_int == 0) { /*Do Nothing*/ }
-		else if(type_int == 255)
-			OUT = float4(1, 1, 1, 1);
-		else if ((type_int & (1 << currentlayer)) == (1 << currentlayer))
-			OUT = layercols[currentlayer];
-		else if ((type_int & 1) > 0)
-			OUT = layercols[0];
-		else if ((type_int & 2) > 0)
-			OUT = layercols[1];
-		else if ((type_int & 4) > 0)
-			OUT = layercols[2];
-		else if ((type_int & 8) > 0)
-			OUT = layercols[3];
-		else if ((type_int & 16) > 0)
-			OUT = layercols[4];
-		else if ((type_int & 32) > 0)
-			OUT = layercols[5];
-		else if ((type_int & 64) > 0)
-			OUT = layercols[6];
-		else
-			OUT = float4(1, 1, 1, 1);
+		//if (type_int == 0) { /*Do Nothing*/ }
+		//else if(type_int == 255)
+		//	OUT = float4(1, 1, 1, 1);
+		//else if ((type_int & (1 << currentlayer)) == (1 << currentlayer))
+		//	OUT = layercols[currentlayer];
+		//else if ((type_int & 1) > 0)
+		//	OUT = layercols[0];
+		//else if ((type_int & 2) > 0)
+		//	OUT = layercols[1];
+		//else if ((type_int & 4) > 0)
+		//	OUT = layercols[2];
+		//else if ((type_int & 8) > 0)
+		//	OUT = layercols[3];
+		//else if ((type_int & 16) > 0)
+		//	OUT = layercols[4];
+		//else if ((type_int & 32) > 0)
+		//	OUT = layercols[5];
+		//else if ((type_int & 64) > 0)
+		//	OUT = layercols[6];
+		//else
+		//	OUT = float4(1, 1, 1, 1);
 	}
 
 	//if (IsWireCalc && OUT.a > 0.5f && comptype_int > 2)
@@ -532,12 +571,27 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 
 	if (xcoo >= coos.x && xcoo <= coos.x + worldsizex * zoom && ycoo >= coos.y && ycoo <= coos.y + worldsizey * zoom)
 	{
+		uint2 abscoo = uint2((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
 		OUT = getcoloratpos((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
-		if (selectstate == 1 || selectstate == 2)
+		if (selectstate >= 1 && selectstate <= 2)
 		{
-			if (xcoo >= selection_startX && xcoo <= selection_endX && ycoo >= selection_startY && ycoo <= selection_endY)
+			if (abscoo.x >= selection_startX && abscoo.x <= selection_endX && abscoo.y >= selection_startY && abscoo.y <= selection_endY)
 			{
 				OUT = OUT * 0.75f + float4(1, 1, 1, 1) * 0.25f;
+			}
+		}
+		if (selectstate == 4)
+		{
+			if (abscoo.x >= copyposX && abscoo.x <= selection_endX && abscoo.y >= copyposY && abscoo.y <= selection_endY)
+			{
+				uint wire_type_int2 = (uint)(copywiretex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].a * 255.0f + 0.5f);
+				uint comp_type_int2 = (uint)(copycomptex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].a * 255.0f + 0.5f);
+				float4 newcol = ColorInPixel(wire_type_int2);
+				float4 compcol = ColorInPixel_Comp(comp_type_int2);
+				if (compcol.a > 0.5f)
+					OUT = (compcol) * 0.75f + float4(1, 0, 0, 1) * 0.25f;
+				else
+					OUT = (OUT * 0.5f + newcol * 0.5f) * 0.75f + float4(1, 0, 0, 1) * 0.25f;
 			}
 		}
 	}
