@@ -293,22 +293,24 @@ namespace Circuit_Simulator.UI.Specific
             }
             inputlist.Clear();
             labellist.Clear();
-            labellist.Add(new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, "Input 0:"));
-            inputlist.Add(new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[0]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12));
-
-            Features.Add_UI_Elements(labellist[0]);
-            Features.Add_UI_Elements(inputlist[0]);
-            for (int i = 1; i < count; i++)
+            if (count > 0)
             {
-                UI_String newlabel = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, labellist[i - 1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, "Input " + i.ToString() + ":");
-                labellist.Add(newlabel);
-                UI_ValueInput newbox = new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[i]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12);
-                inputlist.Add(newbox);
-             
-                Features.Add_UI_Elements(newlabel);
-                Features.Add_UI_Elements(newbox);
+                labellist.Add(new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, "Input 0:"));
+                inputlist.Add(new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[0]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12));
+
+                Features.Add_UI_Elements(labellist[0]);
+                Features.Add_UI_Elements(inputlist[0]);
+                for (int i = 1; i < count; i++)
+                {
+                    UI_String newlabel = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, labellist[i - 1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, "Input " + i.ToString() + ":");
+                    labellist.Add(newlabel);
+                    UI_ValueInput newbox = new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[i]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12);
+                    inputlist.Add(newbox);
+
+                    Features.Add_UI_Elements(newlabel);
+                    Features.Add_UI_Elements(newbox);
+                }
             }
-           
 
         }
 
