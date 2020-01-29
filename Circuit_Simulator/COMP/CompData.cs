@@ -227,6 +227,13 @@ namespace Circuit_Simulator.COMP
             }
             
             stream.Write(BitConverter.GetBytes(internalstate_length), 0, 4);
+            stream.Write(BitConverter.GetBytes(valuebox_length), 0, 4);
+            for(int i = 0; i < valuebox_length; ++i)
+            {
+                bytearray = parameters[i].GetBytes();
+                stream.Write(bytearray, 0, bytearray.Length);
+            }
+
             stream.Write(BitConverter.GetBytes(OverlaySeg_length), 0, 4);
             stream.Write(BitConverter.GetBytes(ClickAction_Type), 0, 4);
             if (IsUpdateAfterSim)
