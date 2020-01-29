@@ -61,6 +61,11 @@ namespace Circuit_Simulator.UI
             oldvalue = value;
         }
 
+        public void MakeValueChanged()
+        {
+            ValueChanged(this);
+        }
+
         public override void UpdateSpecific()
         {
             hitbox = new Rectangle(absolutpos, size);

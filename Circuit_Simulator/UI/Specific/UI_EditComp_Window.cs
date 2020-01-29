@@ -23,6 +23,7 @@ namespace Circuit_Simulator.UI.Specific
         UI_TexButton[] paintbuttons;
         UI_GridPaint gridpaint;
         UI_String InputCount_Label;
+        List<string> parameterlabels;
 
         Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(0.15f, 0.15f, 0.15f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
 
@@ -86,9 +87,10 @@ namespace Circuit_Simulator.UI.Specific
             paintbuttons[0].IsActivated = true;
             gridpaint.curplacetype = 1;
 
-            InputCount_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, gridpaint), Point.Zero, UI_Handler.genbutconf, "InputCount: ");
+            InputCount_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, gridpaint), Point.Zero, UI_Handler.genbutconf, "ParameterCount: ");
             ComponentValueInputCount = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 8, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 2);
-            
+
+            parameterlabels = new List<string>();
 
 
 
@@ -136,6 +138,14 @@ namespace Circuit_Simulator.UI.Specific
             CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
             gridpaint.pixel.Clear();
             gridpaint.currot = 0;
+            parameterlabels.Clear();
+            for(int i = 0; i < rootcomp.parameters.Count(); i++)
+                {
+                parameterlabels.Add(rootcomp.parameters[i]);
+                }
+            ComponentValueInputCount.value = rootcomp.parameters.Count().ToString();
+            ComponentValueInputCount.MakeValueChanged();
+            LoadInputCount();
             RotButtonPressed(rotbuttons[0]);
         }
 
@@ -284,6 +294,19 @@ namespace Circuit_Simulator.UI.Specific
             Features.size = new Point(size.X - bezelsize * 2, size.Y - bezelsize - (Features.pos.Y_abs - absolutpos.Y));
             base.Resize();
         }
+        public void LoadInputCount()
+        {
+            for (int i = 0; i < rootcomp.parameters.Count(); i++)
+            {
+                inputlist[i].value = parameterlabels[i];
+            }
+        }
+        public void SetParameterLabels(object sender)
+        {
+            UI_ValueInput  cur = sender as UI_ValueInput;
+            int index = inputlist.FindIndex(x => x.value == cur.value);
+            rootcomp.parameters[index] = cur.value;
+        }
         public void InputCount_ValueChanged(object sender)
         {
             int count = int.Parse("0" + ComponentValueInputCount.value);
@@ -294,12 +317,15 @@ namespace Circuit_Simulator.UI.Specific
                 Features.ui_elements.Remove(inputlist[i]);
 
             }
+            rootcomp.parameters.Clear();
             inputlist.Clear();
             labellist.Clear();
             if (count > 0)
             {
                 labellist.Add(new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, "Input 0:"));
-                inputlist.Add(new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[0]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12));
+                inputlist.Add(new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[0]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3, 12));
+                inputlist[0].ValueChanged += SetParameterLabels;
+                rootcomp.parameters.Add("");
 
                 Features.Add_UI_Elements(labellist[0]);
                 Features.Add_UI_Elements(inputlist[0]);
@@ -307,8 +333,10 @@ namespace Circuit_Simulator.UI.Specific
                 {
                     UI_String newlabel = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, labellist[i - 1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, "Input " + i.ToString() + ":");
                     labellist.Add(newlabel);
-                    UI_ValueInput newbox = new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[i]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12);
+                    UI_ValueInput newbox = new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, labellist[i]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3, 12);
                     inputlist.Add(newbox);
+                    inputlist[i].ValueChanged += SetParameterLabels;
+                    rootcomp.parameters.Add("");
 
                     Features.Add_UI_Elements(newlabel);
                     Features.Add_UI_Elements(newbox);
