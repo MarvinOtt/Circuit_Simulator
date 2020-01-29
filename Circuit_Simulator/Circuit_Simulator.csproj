@@ -57,6 +57,7 @@
     <Compile Include="Simulator.cs" />
     <Compile Include="Sim_Component.cs" />
     <Compile Include="Sim_INF_DLL.cs" />
+    <Compile Include="UI\Specific\UI_ParameterWindow.cs" />
     <Compile Include="UI\Specific\UI_GridPaint.cs" />
     <Compile Include="UI\Specific\UI_ProjectLibrary_Window.cs" />
     <Compile Include="UI\UI_TextBox.cs" />

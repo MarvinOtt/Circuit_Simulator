@@ -627,8 +627,8 @@ namespace Circuit_Simulator
                 UI_Handler.ZaWarudo = null;
                 DeactivateDrop();
             }
+           
         }
-
         public void ComponentDrop(int dataID)
         {
             Point pos = Point.Zero;

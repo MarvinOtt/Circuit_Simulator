@@ -1161,6 +1161,14 @@ namespace Circuit_Simulator
                         Sim_Component.components[compID].Delete();
                     }
 
+                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
+                    {
+                        int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                        int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
+                        int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                        UI_Handler.parameterWindow.SetRootcomp(Sim_Component.components[compID]);
+                    }
+
                     if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
                     {
                         int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];

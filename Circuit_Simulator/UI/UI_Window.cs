@@ -20,7 +20,7 @@ namespace Circuit_Simulator.UI
         private UI_TexButton ExitButton;
         RenderTarget2D target;
         public Generic_Conf conf;
-        string Title;
+        public string Title;
         Vector2 Title_pos;
         public Point minsize;
         Point oldrightborderpos;

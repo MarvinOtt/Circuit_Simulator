@@ -45,7 +45,7 @@ namespace Circuit_Simulator
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public static UI_InfoBox info;
         public UI_Window input;
-        public UI_Window parameters;
+        public static UI_ParameterWindow parameterWindow;
         public static UI_LibraryEdit_Window LibraryEditWindow;
         public static UI_ProjectLibrary_Window ProjectLibWindow;
         public static UI_EditComp_Window editcompwindow;
@@ -240,8 +240,8 @@ namespace Circuit_Simulator
             ProjectLibWindow.GetsUpdated = ProjectLibWindow.GetsDrawn = false;
 
             //ComponentparametersWindow
-           // parameters = new UI_Window(new Pos(500, 500), new Point(400), "Parameters", new Point(400), componentconf, true);
-            //parameters.Add_UI_Elements(new UI_Scrollable<UI_Element>(new Pos(0), parameters.size));
+            parameterWindow = new UI_ParameterWindow(new Pos(500, 500), new Point(400), new Point(400), componentconf);
+            parameterWindow.GetsUpdated = parameterWindow.GetsDrawn = false;
             //netbox = new UI_ValueInput(new Pos(200), new Point(200, 40), gen_conf, 1);
             //netbox.ValueChanged += netbox_ValueChange;
             
