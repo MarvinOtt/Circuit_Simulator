@@ -16,7 +16,7 @@ namespace Circuit_Simulator.UI.Specific
         public Component rootcomp;
         public List<UI_ValueInput> inputs;
 
-        public UI_ParameterWindow(Pos pos, Point size, Point minsize, Generic_Conf conf) : base(pos, size, "Parameters", minsize, conf, false)
+        public UI_ParameterWindow(Pos pos, Point size, Point minsize, Generic_Conf conf) : base(pos, size, "Parameters", minsize, conf, true)
         {
             inputs = new List<UI_ValueInput>();
         }
