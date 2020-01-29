@@ -318,9 +318,9 @@ float4 getcoloratpos(float x, float y)
 	uint type2 = 0;
 	if (currenttype == 1)
 	{
-		uint posx = ux - mousepos_X + 20;
-		uint posy = uy - mousepos_Y + 20;
-		if (posx >= 0 && posx < 42 && posy >= 0 && posy < 42)
+		uint posx = ux - mousepos_X + 40;
+		uint posy = uy - mousepos_Y + 40;
+		if (posx >= 0 && posx < 82 && posy >= 0 && posy < 82)
 		{
 			type2 = (uint)(placementtex[uint2(posx, posy)].a * 255.0f + 0.5f);
 			if (type2 != 0)

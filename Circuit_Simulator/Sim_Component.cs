@@ -113,8 +113,6 @@ namespace Circuit_Simulator
                     {
                         if (datapixel[i].type < Sim_Component.PINOFFSET + 1 && Simulator.IsWire[currentcoo.X, currentcoo.Y] != 0)
                             IsPlacementValid = false;
-                        if (datapixel[i].type >= Sim_Component.PINOFFSET + 1 && Simulator.IsWire[currentcoo.X, currentcoo.Y] >= 128)
-                            IsPlacementValid = false;
                     }
                 }
                 else
@@ -338,7 +336,7 @@ namespace Circuit_Simulator
             this.sim = sim;
             this.sim_effect = sim_effect;
             overlay_effect = Game1.content.Load<Effect>("overlay_effect");
-            placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 41, 41, false, SurfaceFormat.Alpha8);
+            placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 81, 81, false, SurfaceFormat.Alpha8);
             CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
@@ -593,11 +591,11 @@ namespace Circuit_Simulator
                 //UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
                 Game1.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
                 IsCompDrag = true;
-                byte[] data = new byte[41 * 41];
+                byte[] data = new byte[81 * 81];
                 List<ComponentPixel> datapixel = Components_Data[ID].data[Components_Data[ID].currentrotation];
                 for (int i = 0; i < datapixel.Count; ++i)
                 {
-                    data[(datapixel[i].pos.Y + 20) * 41 + (datapixel[i].pos.X + 20)] = datapixel[i].type;
+                    data[(datapixel[i].pos.Y + 40) * 81 + (datapixel[i].pos.X + 40)] = datapixel[i].type;
                 }
 
                 placementtex.SetData(data);

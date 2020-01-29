@@ -27,7 +27,7 @@ namespace Circuit_Simulator.UI
 
         public override void UpdateSpecific()
         {
-            UI_Handler.IsInScrollable = true;
+            //UI_Handler.IsInScrollable = true;
             UI_Handler.IsInScrollable_Bounds = new Rectangle(absolutpos, size);
             //if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
             //    ui_elements.ForEach(x => x.GetsUpdated = true);
@@ -71,6 +71,7 @@ namespace Circuit_Simulator.UI
                 }
             }
             DenyScroll = false;
+            //UI_Handler.IsInScrollable = false;
             UpdatePos();
             base.UpdateSpecific();
         }

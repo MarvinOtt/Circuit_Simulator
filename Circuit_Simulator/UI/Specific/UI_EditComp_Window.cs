@@ -130,6 +130,8 @@ namespace Circuit_Simulator.UI.Specific
             Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
             Box_InternalState_Length.value = comp.internalstate_length.ToString();
             Box_ClickType.value = rootcomp.IsClickable ? rootcomp.ClickAction_Type.ToString() : "";
+            ComponentValueInputCount.value = rootcomp.valuebox_length.ToString();
+
             CodeBox_Sim.t.Text = comp.Code_Sim;
             CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
             gridpaint.pixel.Clear();
@@ -285,6 +287,7 @@ namespace Circuit_Simulator.UI.Specific
         public void InputCount_ValueChanged(object sender)
         {
             int count = int.Parse("0" + ComponentValueInputCount.value);
+            rootcomp.valuebox_length = count;
             for (int i = 0; i < labellist.Count; i++)
             {
                 Features.ui_elements.Remove(labellist[i]);
@@ -311,12 +314,10 @@ namespace Circuit_Simulator.UI.Specific
                     Features.Add_UI_Elements(newbox);
                 }
             }
-
         }
 
         public override void UpdateSpecific()
         {
-
             if (paintbuttons[0].IsHovered)
             {
                 UI_Handler.info.values.ui_elements[0].setValue("Place Mid-Gray Body");
@@ -342,8 +343,6 @@ namespace Circuit_Simulator.UI.Specific
                 UI_Handler.info.values.ui_elements[0].setValue("Place Pin");
                 UI_Handler.info.ShowInfo();
             }
-
-
 
             base.UpdateSpecific();
         }

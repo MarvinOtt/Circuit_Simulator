@@ -117,14 +117,15 @@ namespace Circuit_Simulator
 
             if (_GetsUpdated && !(IsTypeOfWindow && UI_Handler.UI_IsWindowHide))
             {
-                if((!UI_Handler.UI_Element_Pressed/* || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)*/) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this))
+                bool IsValid4Scroll = (!UI_Handler.IsInScrollable || (UI_Handler.IsInScrollable && UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)));
+                if ((!UI_Handler.UI_Element_Pressed/* || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)*/) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this) && IsValid4Scroll)
                     UpdateSpecific();
                 UpdateAlways();
                 if(UpdateAndDrawChild)
                     _child?.Update();
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && IsValid4Scroll)
                     UI_Handler.UI_Element_Pressed = true;
-                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
+                if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position) && IsValid4Scroll)
                     UI_Handler.UI_Active_State = 1;
             }
 		    for (int i = 0; i < UpdateFunctions.Count; ++i)

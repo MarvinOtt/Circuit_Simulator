@@ -20,9 +20,10 @@ namespace Circuit_Simulator.COMP
         public Rectangle[] bounds;
         public int currentrotation;
         public int pin_num, OverlayStateID, totalstate_length;
-        private int _internalstate_length, _overlayseg_length;
-        public int internalstate_length { get { return _internalstate_length; } set { _internalstate_length = value; totalstate_length = _internalstate_length + _overlayseg_length; } }
-        public int OverlaySeg_length { get { return _overlayseg_length; } set { _overlayseg_length = value; totalstate_length = _internalstate_length + _overlayseg_length; } }
+        private int _internalstate_length, _overlayseg_length, _valuebox_length;
+        public int internalstate_length { get { return _internalstate_length; } set { _internalstate_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
+        public int OverlaySeg_length { get { return _overlayseg_length; } set { _overlayseg_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
+        public int valuebox_length { get { return _valuebox_length; } set { _valuebox_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
         public bool IsOverlay, IsUpdateAfterSim, ShowOverlay;
         public bool IsClickable;
         public Point overlaysize;
