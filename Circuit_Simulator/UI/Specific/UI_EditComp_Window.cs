@@ -139,11 +139,11 @@ namespace Circuit_Simulator.UI.Specific
             gridpaint.pixel.Clear();
             gridpaint.currot = 0;
             parameterlabels.Clear();
-            for(int i = 0; i < rootcomp.parameters.Count(); i++)
+            for(int i = 0; i < rootcomp.valuebox_length; i++)
                 {
                 parameterlabels.Add(rootcomp.parameters[i]);
                 }
-            ComponentValueInputCount.value = rootcomp.parameters.Count().ToString();
+            //ComponentValueInputCount.value = rootcomp.parameters.Count().ToString();
             ComponentValueInputCount.MakeValueChanged();
             LoadInputCount();
             RotButtonPressed(rotbuttons[0]);
@@ -296,7 +296,7 @@ namespace Circuit_Simulator.UI.Specific
         }
         public void LoadInputCount()
         {
-            for (int i = 0; i < rootcomp.parameters.Count(); i++)
+            for (int i = 0; i < rootcomp.valuebox_length; i++)
             {
                 inputlist[i].value = parameterlabels[i];
             }

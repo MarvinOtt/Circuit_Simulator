@@ -313,7 +313,7 @@ namespace Circuit_Simulator
         Simulator sim;
         Effect sim_effect;
         Texture2D placementtex;
-        public static RenderTarget2D CompTex, IsEdgeTex;
+        public static RenderTarget2D CompTex, IsEdgeTex, HighlightTex;
         public bool IsCompDrag;
 
         public static List<CompData> Components_Data;
@@ -338,6 +338,7 @@ namespace Circuit_Simulator
             overlay_effect = Game1.content.Load<Effect>("overlay_effect");
             placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 81, 81, false, SurfaceFormat.Alpha8);
             CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
             IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
@@ -759,7 +760,7 @@ namespace Circuit_Simulator
                 Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, overlaylines, 0, count / 2);
                 Game1.graphics.GraphicsDevice.SetRenderTarget(null);
             }
-
+            //if()
 
         }
 

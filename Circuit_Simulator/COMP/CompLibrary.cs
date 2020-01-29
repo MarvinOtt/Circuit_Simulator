@@ -245,6 +245,12 @@ namespace Circuit_Simulator.COMP
                 stream.Read(intbuffer, 0, 4);
                 newcomp.internalstate_length = BitConverter.ToInt32(intbuffer, 0);
                 stream.Read(intbuffer, 0, 4);
+                newcomp.valuebox_length = BitConverter.ToInt32(intbuffer, 0);
+                for(int i = 0; i < newcomp.valuebox_length; ++i)
+                {
+                    newcomp.parameters.Add(stream.ReadNullTerminated());
+                }
+                stream.Read(intbuffer, 0, 4);
                 newcomp.OverlaySeg_length = BitConverter.ToInt32(intbuffer, 0);
                 stream.Read(intbuffer, 0, 4);
                 newcomp.ClickAction_Type = BitConverter.ToInt32(intbuffer, 0);
