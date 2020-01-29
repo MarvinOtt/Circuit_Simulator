@@ -25,17 +25,18 @@ namespace Circuit_Simulator.UI.Specific
         {
             this.rootcomp = rootcomp;
             int parmetercount = Sim_Component.Components_Data[rootcomp.dataID].valuebox_length;
-            this.Title = Sim_Component.Components_Data[rootcomp.dataID].name + "Parameters";
-            this.ui_elements.Clear();
+            int maxstringlength = (int)Sim_Component.Components_Data[rootcomp.dataID].parameters.Max(x => UI_Handler.genbutconf.font.MeasureString(x + ": ").X);
+            this.Title = Sim_Component.Components_Data[rootcomp.dataID].name + " Parameters";
+            this.ui_elements.RemoveRange(1, this.ui_elements.Count - 1);
             if (parmetercount > 0)
             {
-                this.Add_UI_Elements(new UI_String(Pos.Zero, new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, Sim_Component.Components_Data[rootcomp.dataID].parameters[0]));
-                this.Add_UI_Elements(new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, this.ui_elements[0]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12));
+                this.Add_UI_Elements(new UI_String(new Pos(bezelsize,headheight + bezelsize), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, Sim_Component.Components_Data[rootcomp.dataID].parameters[0] +": "));
+                this.Add_UI_Elements(new UI_ValueInput(new Pos(maxstringlength, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, this.ui_elements[1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 10));
 
-                for (int i = 1; i < parmetercount; i++)
+                for (int i = 2; i < parmetercount + 1; i++)
                 {
-                    this.Add_UI_Elements(new UI_String(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, this.ui_elements[i - 1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, Sim_Component.Components_Data[rootcomp.dataID].parameters[0]));
-                    this.Add_UI_Elements(new UI_ValueInput(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, this.ui_elements[i]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 12));
+                    this.Add_UI_Elements(new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, this.ui_elements[i * 2 - 3]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, Sim_Component.Components_Data[rootcomp.dataID].parameters[i - 1] + ": "));
+                    this.Add_UI_Elements(new UI_ValueInput(new Pos(maxstringlength, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, this.ui_elements[i * 2 - 1]), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 1, 10));
 
                 }
                 this.GetsUpdated = this.GetsDrawn = true;
