@@ -1169,18 +1169,20 @@ namespace Circuit_Simulator
                         UI_Handler.parameterWindow.SetRootcomp(Sim_Component.components[compID]);
                     }
 
-                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
-                    {
-                        int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                        int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                        UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
-                        UI_Handler.info.ShowInfo();
-                    }
-                    else
-                        UI_Handler.info.HideInfo();
+                    
                 }
 
             }
+            if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && toolmode == TOOL_SELECT && selectstate == 0 && UI_Handler.UI_Active_State == 0)
+            {
+
+                int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+                int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+                UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
+                UI_Handler.info.ShowInfo();
+            }
+            else
+                UI_Handler.info.HideInfo();
 
             if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
@@ -1356,44 +1358,44 @@ namespace Circuit_Simulator
             //}
             sim_comp.DrawCompOverlays(spritebatch);
 
-            for(int i = 0; i < 50; ++i)
-            {
-                spritebatch.DrawString(Game1.basefont, i.ToString() + ": " + ((networks[i] == null) ? "null" : networks[i].ToString()), new Vector2(1600, 100 + i * 15), Color.Red);
-            }
+            //for(int i = 0; i < 50; ++i)
+            //{
+            //    spritebatch.DrawString(Game1.basefont, i.ToString() + ": " + ((networks[i] == null) ? "null" : networks[i].ToString()), new Vector2(1600, 100 + i * 15), Color.Red);
+            //}
 
-            spritebatch.DrawString(Game1.basefont, "Layer: " + currentlayer.ToString(), new Vector2(500, 100), Color.Red);
-            if (IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
-            {
-                if(currentlayer < 7)
-                    spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer].ToString(), new Vector2(500, 130), Color.Red);
-                else
-                    spritebatch.DrawString(Game1.basefont, "Network: " + WireIDPs[mo_worldposx, mo_worldposy].ToString(), new Vector2(500, 130), Color.Red);
-            }
-            if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] > Sim_Component.PINOFFSET)
-            {
-                int id = Sim_Component.GetComponentID(new Point(mo_worldposx, mo_worldposy));
-                int ID = Sim_Component.components[id].pinNetworkIDs[Sim_Component.CompType[mo_worldposx, mo_worldposy] - 5];
-                spritebatch.DrawString(Game1.basefont, "PIN: " + ID.ToString(), new Vector2(500, 240), Color.Red);
-            }
-            if (IsInGrid)
-                spritebatch.DrawString(Game1.basefont, "CompType: " + Sim_Component.CompType[mo_worldposx, mo_worldposy].ToString(), new Vector2(500, 160), Color.Red);
-            if (IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
-            {
-                int state = 0;
-                if (IsSimulating)
-                    state = Sim_INF_DLL.GetWireState(WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]);
-                else
-                {
-                    int id = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
-                    if (networks[id] == null)
-                        state = -1;
-                    else
-                        state = networks[id].state;
-                }
-                spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 190), Color.Red);
-            }
-            spritebatch.DrawString(Game1.basefont, "highestnetID: " + highestNetworkID.ToString(), new Vector2(500, 220), Color.Red);
-            //spritebatch.End();
+            //spritebatch.DrawString(Game1.basefont, "Layer: " + currentlayer.ToString(), new Vector2(500, 100), Color.Red);
+            //if (IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+            //{
+            //    if(currentlayer < 7)
+            //        spritebatch.DrawString(Game1.basefont, "Network: " + WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer].ToString(), new Vector2(500, 130), Color.Red);
+            //    else
+            //        spritebatch.DrawString(Game1.basefont, "Network: " + WireIDPs[mo_worldposx, mo_worldposy].ToString(), new Vector2(500, 130), Color.Red);
+            //}
+            //if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] > Sim_Component.PINOFFSET)
+            //{
+            //    int id = Sim_Component.GetComponentID(new Point(mo_worldposx, mo_worldposy));
+            //    int ID = Sim_Component.components[id].pinNetworkIDs[Sim_Component.CompType[mo_worldposx, mo_worldposy] - 5];
+            //    spritebatch.DrawString(Game1.basefont, "PIN: " + ID.ToString(), new Vector2(500, 240), Color.Red);
+            //}
+            //if (IsInGrid)
+            //    spritebatch.DrawString(Game1.basefont, "CompType: " + Sim_Component.CompType[mo_worldposx, mo_worldposy].ToString(), new Vector2(500, 160), Color.Red);
+            //if (IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+            //{
+            //    int state = 0;
+            //    if (IsSimulating)
+            //        state = Sim_INF_DLL.GetWireState(WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]);
+            //    else
+            //    {
+            //        int id = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
+            //        if (networks[id] == null)
+            //            state = -1;
+            //        else
+            //            state = networks[id].state;
+            //    }
+            //    spritebatch.DrawString(Game1.basefont, "State: " + state.ToString(), new Vector2(500, 190), Color.Red);
+            //}
+            //spritebatch.DrawString(Game1.basefont, "highestnetID: " + highestNetworkID.ToString(), new Vector2(500, 220), Color.Red);
+            ////spritebatch.End();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Circuit_Simulator.UI.Specific
     {
         public Component rootcomp;
 
-        public UI_ParameterWindow(Pos pos, Point size, Point minsize, Generic_Conf conf) : base(pos, size, "Parameters", minsize, conf, false)
+        public UI_ParameterWindow(Pos pos, Point size, Point minsize, Generic_Conf conf) : base(pos, size, "Parameters", minsize, conf, true)
         {
             
         }
