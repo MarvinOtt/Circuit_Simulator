@@ -140,9 +140,9 @@ namespace Circuit_Simulator.UI.Specific
             gridpaint.currot = 0;
             parameterlabels.Clear();
             for(int i = 0; i < rootcomp.valuebox_length; i++)
-                {
+            {
                 parameterlabels.Add(rootcomp.parameters[i]);
-                }
+            }
             //ComponentValueInputCount.value = rootcomp.parameters.Count().ToString();
             ComponentValueInputCount.MakeValueChanged();
             LoadInputCount();
@@ -212,14 +212,14 @@ namespace Circuit_Simulator.UI.Specific
             int max = 0;
             if (gridpaint.ledsegmentpixel.Count > 0)
             {
-                max = gridpaint.ledsegmentpixel.Max();
+                max = gridpaint.ledsegmentpixel.Max() + 1;
                 rootcomp.IsOverlay = true;
             }
             else
             {
                 rootcomp.IsOverlay = false;
             }
-            rootcomp.InitializeLineOverlays(1 + max);
+            rootcomp.InitializeLineOverlays(max);
             bool[,] IsCalc = new bool[gridpaint.GridSize, gridpaint.GridSize];
             for(int i = 0; i < gridpaint.pixel.Count; ++i)
             {
@@ -299,6 +299,7 @@ namespace Circuit_Simulator.UI.Specific
             for (int i = 0; i < rootcomp.valuebox_length; i++)
             {
                 inputlist[i].value = parameterlabels[i];
+                rootcomp.parameters[i] = parameterlabels[i];
             }
         }
         public void SetParameterLabels(object sender)

@@ -115,16 +115,19 @@ namespace Circuit_Simulator.COMP
         public void InitializeLineOverlays(int count)
         {
             OverlaySeg_length = count;
-            overlaylines = new List<Line>[count][];
-            overlaylines_vertices = new List<VertexPositionLine>[count][];
-            for(int i = 0; i < count; ++i)
+            if (count > 0)
             {
-                overlaylines[i] = new List<Line>[4];
-                overlaylines_vertices[i] = new List<VertexPositionLine>[4];
-                for(int j = 0; j < 4; ++j)
+                overlaylines = new List<Line>[count][];
+                overlaylines_vertices = new List<VertexPositionLine>[count][];
+                for (int i = 0; i < count; ++i)
                 {
-                    overlaylines[i][j] = new List<Line>();
-                    overlaylines_vertices[i][j] = new List<VertexPositionLine>();
+                    overlaylines[i] = new List<Line>[4];
+                    overlaylines_vertices[i] = new List<VertexPositionLine>[4];
+                    for (int j = 0; j < 4; ++j)
+                    {
+                        overlaylines[i][j] = new List<Line>();
+                        overlaylines_vertices[i][j] = new List<VertexPositionLine>();
+                    }
                 }
             }
         }
