@@ -11,7 +11,7 @@
 
 texture2D logictex, wirecalctex, isedgetex;
 texture2D placementtex;
-texture2D comptex;
+texture2D comptex, highlighttex;
 texture2D copywiretex, copycomptex;
 
 int currentlayer;
@@ -573,6 +573,10 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	{
 		uint2 abscoo = uint2((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
 		OUT = getcoloratpos((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
+		uint highlight_state = (uint)(highlighttex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].a * 255.0f + 0.5f);
+		if (highlight_state > 0)
+			OUT = OUT * 0.5f + float4(1, 1, 1, 1) * 0.5f;
+
 		if (selectstate >= 1 && selectstate <= 2)
 		{
 			if (abscoo.x >= selection_startX && abscoo.x <= selection_endX && abscoo.y >= selection_startY && abscoo.y <= selection_endY)

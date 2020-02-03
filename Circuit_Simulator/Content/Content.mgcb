@@ -100,6 +100,12 @@
 /processorParam:DebugMode=Auto
 /build:UI/GridPaint_effect.fx
 
+#begin UI/highlight_effect.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:UI/highlight_effect.fx
+
 #begin UI/Project Spritemap.png
 /importer:TextureImporter
 /processor:TextureProcessor
