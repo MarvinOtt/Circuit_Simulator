@@ -12,6 +12,9 @@ namespace Circuit_Simulator.COMP
 {
     public class CompData
     {
+        public static int[] rottable_ROT = { 1, 2, 3, 0, 5, 6, 7, 4 };
+        public static int[] rottable_FLIPX = { 6, 5, 4, 7, 2, 1, 0, 3};
+        public static int[] rottable_FLIPY = { 4, 7, 6, 5, 0, 3, 2, 1};
         public List<ComponentPixel>[] data;
         public List<string> parameters;
         public string name;
@@ -94,15 +97,14 @@ namespace Circuit_Simulator.COMP
             //overlaylines_vertices = new List<VertexPositionLine>[4];
             //for (int i = 0; i < 4; ++i)
             //    overlaylines_vertices[i] = new List<VertexPositionLine>();
-            bounds = new Rectangle[4];
-            data = new List<ComponentPixel>[4];
-            for (int i = 0; i < 4; ++i)
+            bounds = new Rectangle[8];
+            data = new List<ComponentPixel>[8];
+            for (int i = 0; i < 8; ++i)
                 data[i] = new List<ComponentPixel>();
-            overlay_bounds = new FRectangle[4];
+            overlay_bounds = new FRectangle[8];
             overlaysize = Game1.basefont.MeasureString(name).ToPoint();
             parameters = new List<string>();
         }
-
 
         public void CalculateBounds(int rotation)
         {
@@ -121,9 +123,9 @@ namespace Circuit_Simulator.COMP
                 overlaylines_vertices = new List<VertexPositionLine>[count][];
                 for (int i = 0; i < count; ++i)
                 {
-                    overlaylines[i] = new List<Line>[4];
-                    overlaylines_vertices[i] = new List<VertexPositionLine>[4];
-                    for (int j = 0; j < 4; ++j)
+                    overlaylines[i] = new List<Line>[8];
+                    overlaylines_vertices[i] = new List<VertexPositionLine>[8];
+                    for (int j = 0; j < 8; ++j)
                     {
                         overlaylines[i][j] = new List<Line>();
                         overlaylines_vertices[i][j] = new List<VertexPositionLine>();
@@ -136,42 +138,69 @@ namespace Circuit_Simulator.COMP
         {
             if (dat.type > Sim_Component.PINOFFSET && dat.type - Sim_Component.PINOFFSET > pin_num)
                 pin_num = dat.type - Sim_Component.PINOFFSET;
-            data[(0 + offset) % 4].Add(dat);
-            data[(1 + offset) % 4].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
-            data[(2 + offset) % 4].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
-            data[(3 + offset) % 4].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
-            for (int i = 0; i < 4; ++i)
+            data[(0 + offset) % 8].Add(dat);
+            data[(1 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
+            data[(2 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
+            data[(3 + offset) % 8].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
+            data[(4 + offset) % 8].Add(new ComponentPixel(new Point(dat.pos.X, -dat.pos.Y), dat.type));
+            data[(5 + offset) % 8].Add(new ComponentPixel(new Point(dat.pos.Y, dat.pos.X), dat.type));
+            data[(6 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, dat.pos.Y), dat.type));
+            data[(7 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, -dat.pos.X), dat.type));
+            for (int i = 0; i < 8; ++i)
                 CalculateBounds(i);
         }
 
         public void ClearAllPixel()
         {
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 8; ++i)
                 data[i].Clear();
         }
 
         public void addOverlayLine(Line line, float layers, int OverlayIndex)
         {
             VertexPositionLine Vline1, Vline2;
-            line.Convert2LineVertices(layers, out Vline1, out Vline2);
-            overlaylines[OverlayIndex][0].Add(line);
+            Line line1 = new Line(new Point(line.start.X, line.start.Y), new Point(line.end.X, line.end.Y));
+            line1.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][0].Add(line1);
             overlaylines_vertices[OverlayIndex][0].Add(Vline1);
             overlaylines_vertices[OverlayIndex][0].Add(Vline2);
-            line = new Line(new Point(-line.start.Y, line.start.X), new Point(-line.end.Y, line.end.X));
-            line.Convert2LineVertices(layers, out Vline1, out Vline2);
-            overlaylines[OverlayIndex][1].Add(line);
+            Line line2 = new Line(new Point(-line.start.Y, line.start.X), new Point(-line.end.Y, line.end.X));
+            line2.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][1].Add(line2);
             overlaylines_vertices[OverlayIndex][1].Add(Vline1);
             overlaylines_vertices[OverlayIndex][1].Add(Vline2);
-            line = new Line(new Point(-line.start.Y, line.start.X), new Point(-line.end.Y, line.end.X));
-            line.Convert2LineVertices(layers, out Vline1, out Vline2);
-            overlaylines[OverlayIndex][2].Add(line);
+            Line line3 = new Line(new Point(-line2.start.Y, line2.start.X), new Point(-line2.end.Y, line2.end.X));
+            line3.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][2].Add(line3);
             overlaylines_vertices[OverlayIndex][2].Add(Vline1);
             overlaylines_vertices[OverlayIndex][2].Add(Vline2);
-            line = new Line(new Point(-line.start.Y, line.start.X), new Point(-line.end.Y, line.end.X));
-            line.Convert2LineVertices(layers, out Vline1, out Vline2);
-            overlaylines[OverlayIndex][3].Add(line);
+            Line line4 = new Line(new Point(-line3.start.Y, line3.start.X), new Point(-line3.end.Y, line3.end.X));
+            line4.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][3].Add(line4);
             overlaylines_vertices[OverlayIndex][3].Add(Vline1);
             overlaylines_vertices[OverlayIndex][3].Add(Vline2);
+
+
+            line = new Line(new Point(line1.start.X, -line1.start.Y), new Point(line1.end.X, -line1.end.Y));
+            line.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][4].Add(line);
+            overlaylines_vertices[OverlayIndex][4].Add(Vline1);
+            overlaylines_vertices[OverlayIndex][4].Add(Vline2);
+            line = new Line(new Point(-line2.start.X, line2.start.Y), new Point(-line2.end.X, line2.end.Y));
+            line.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][5].Add(line);
+            overlaylines_vertices[OverlayIndex][5].Add(Vline1);
+            overlaylines_vertices[OverlayIndex][5].Add(Vline2);
+            line = new Line(new Point(line3.start.X, -line3.start.Y), new Point(line3.end.X, -line3.end.Y));
+            line.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][6].Add(line);
+            overlaylines_vertices[OverlayIndex][6].Add(Vline1);
+            overlaylines_vertices[OverlayIndex][6].Add(Vline2);
+            line = new Line(new Point(-line4.start.X, line4.start.Y), new Point(-line4.end.X, line4.end.Y));
+            line.Convert2LineVertices(layers, out Vline1, out Vline2);
+            overlaylines[OverlayIndex][7].Add(line);
+            overlaylines_vertices[OverlayIndex][7].Add(Vline1);
+            overlaylines_vertices[OverlayIndex][7].Add(Vline2);
             //overlaylines_vertices[1].Add(new VertexPositionLine(new Point((int)-Math.Floor(line.Position.Y), (int)Math.Floor(line.Position.X)), line.layers));
             //overlaylines_vertices[2].Add(new VertexPositionLine(new Point(-(int)Math.Floor(line.Position.X), (int)-Math.Floor(line.Position.Y)), line.layers));
             //overlaylines_vertices[3].Add(new VertexPositionLine(new Point((int)Math.Floor(line.Position.Y), (int)-Math.Floor(line.Position.X)), line.layers));
@@ -180,7 +209,7 @@ namespace Circuit_Simulator.COMP
 
         public void Finish()
         {
-            for (int i = 0; i < 4; ++i)
+            for (int i = 0; i < 8; ++i)
             {
                 for (int j = 0; j < data[i].Count; ++j)
                 {

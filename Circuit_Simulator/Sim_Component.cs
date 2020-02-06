@@ -616,7 +616,17 @@ namespace Circuit_Simulator
                 // Rotating Component clock-wise
                 if (Game1.kb_states.IsKeyToggleDown(Keys.R))
                 {
-                    Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = (Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation + 1) % 4;
+                    Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = CompData.rottable_ROT[Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation];
+                    InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
+                }
+                if (Game1.kb_states.IsKeyToggleDown(Keys.X))
+                {
+                    Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = CompData.rottable_FLIPX[Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation];
+                    InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
+                }
+                if (Game1.kb_states.IsKeyToggleDown(Keys.Y))
+                {
+                    Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = CompData.rottable_FLIPY[Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation];
                     InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
                 }
             }

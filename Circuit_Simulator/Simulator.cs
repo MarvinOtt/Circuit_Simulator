@@ -1014,6 +1014,101 @@ namespace Circuit_Simulator
                 // Moving Copy
                 if (selectstate == 4)
                 {
+                    if(Game1.kb_states.IsKeyToggleDown(Keys.R)) // Rotating Copy
+                    {
+                        byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
+                        byte[] newCopiedCompType = new byte[CopiedCompType.Length];
+                        Point newcopysize = new Point(copysize.Y, copysize.X);
+                        for(int x = 0; x < newcopysize.X; ++x)
+                        {
+                            for (int y = 0; y < newcopysize.Y; ++y)
+                            {
+                                newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[(y) + (newcopysize.X - x - 1) * copysize.X];
+                                newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[(y) + (newcopysize.X - x - 1) * copysize.X];
+                            }
+                        }
+                        copysize = newcopysize;
+                        CopiedIsWire = newCopiedIsWire;
+                        CopiedCompType = newCopiedCompType;
+                        if (copyWiretex != null && !copyWiretex.IsDisposed)
+                            copyWiretex.Dispose();
+                        if (copyComptex != null && !copyComptex.IsDisposed)
+                            copyComptex.Dispose();
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyWiretex.SetData(CopiedIsWire);
+                        copyComptex.SetData(CopiedCompType);
+                        for (int i = 0; i < CopiedCompIDs.Count; ++i)
+                        {
+                            CopiedCompRot[i] = CompData.rottable_ROT[CopiedCompRot[i]];
+                            CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].Y - 1, CopiedCompPos[i].X);
+                        }
+                    }
+
+                    if (Game1.kb_states.IsKeyToggleDown(Keys.X)) // Flipping Copy X
+                    {
+                        byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
+                        byte[] newCopiedCompType = new byte[CopiedCompType.Length];
+                        Point newcopysize = new Point(copysize.X, copysize.Y);
+                        for (int x = 0; x < newcopysize.X; ++x)
+                        {
+                            for (int y = 0; y < newcopysize.Y; ++y)
+                            {
+                                newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[(copysize.X - x - 1) + y * copysize.X];
+                                newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[(copysize.X - x - 1) + y * copysize.X];
+                            }
+                        }
+                        
+                        copysize = newcopysize;
+                        CopiedIsWire = newCopiedIsWire;
+                        CopiedCompType = newCopiedCompType;
+                        if (copyWiretex != null && !copyWiretex.IsDisposed)
+                            copyWiretex.Dispose();
+                        if (copyComptex != null && !copyComptex.IsDisposed)
+                            copyComptex.Dispose();
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyWiretex.SetData(CopiedIsWire);
+                        copyComptex.SetData(CopiedCompType);
+                        for (int i = 0; i < CopiedCompIDs.Count; ++i)
+                        {
+                            CopiedCompRot[i] = CompData.rottable_FLIPX[CopiedCompRot[i]];
+                            CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].X - 1, CopiedCompPos[i].Y);
+                        }
+                    }
+                    if (Game1.kb_states.IsKeyToggleDown(Keys.Y)) // Flipping Copy Y
+                    {
+                        byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
+                        byte[] newCopiedCompType = new byte[CopiedCompType.Length];
+                        Point newcopysize = new Point(copysize.X, copysize.Y);
+                        for (int x = 0; x < newcopysize.X; ++x)
+                        {
+                            for (int y = 0; y < newcopysize.Y; ++y)
+                            {
+                                newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[x + (copysize.Y - y - 1) * copysize.X];
+                                newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[x + (copysize.Y - y - 1) * copysize.X];
+                            }
+                        }
+
+                        copysize = newcopysize;
+                        CopiedIsWire = newCopiedIsWire;
+                        CopiedCompType = newCopiedCompType;
+                        if (copyWiretex != null && !copyWiretex.IsDisposed)
+                            copyWiretex.Dispose();
+                        if (copyComptex != null && !copyComptex.IsDisposed)
+                            copyComptex.Dispose();
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
+                        copyWiretex.SetData(CopiedIsWire);
+                        copyComptex.SetData(CopiedCompType);
+                        for (int i = 0; i < CopiedCompIDs.Count; ++i)
+                        {
+                            CopiedCompRot[i] = CompData.rottable_FLIPY[CopiedCompRot[i]];
+                            CopiedCompPos[i] = new Point(CopiedCompPos[i].X, copysize.Y - CopiedCompPos[i].Y - 1);
+                        }
+                    }
+
+
                     if (Game1.mo_states.IsLeftButtonToggleOn() && (new Rectangle(copypos, copysize)).Contains(mo_worldpos))
                     {
                         copystate = 1;
@@ -1043,6 +1138,8 @@ namespace Circuit_Simulator
                                 if (CopiedIsWire[x + y * copysize.X] > 0 && Sim_Component.CompType[xx, yy] > 0 && Sim_Component.CompType[xx, yy] <= Sim_Component.PINOFFSET)
                                     IsValid = false;
                                 if (CopiedCompType[x + y * copysize.X] > 0 && CopiedCompType[x + y * copysize.X] <= Sim_Component.PINOFFSET && IsWire[xx, yy] > 0)
+                                    IsValid = false;
+                                if (CopiedCompType[x + y * copysize.X] > Sim_Component.PINOFFSET && (Sim_Component.CompType[xx, yy] > 0 || IsWire[xx, yy] > 0))
                                     IsValid = false;
                             }
                         }
