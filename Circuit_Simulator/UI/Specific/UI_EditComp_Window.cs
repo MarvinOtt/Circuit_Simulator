@@ -56,8 +56,8 @@ namespace Circuit_Simulator.UI.Specific
             Code_Sim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, ClickType_Label), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
             Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
 
-            rotbuttons = new UI_StringButton[4];
-            for(int i = 0; i < 4; ++i)
+            rotbuttons = new UI_StringButton[8];
+            for(int i = 0; i < 8; ++i)
             {
                 if(i == 0)
                     rotbuttons[i] = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_AfterSim_Button), new Point(25, 25), i.ToString(), true, UI_Handler.behave1conf);
@@ -208,27 +208,30 @@ namespace Circuit_Simulator.UI.Specific
 
         public void PixelChanged()
         {
-            rootcomp.ClearAllPixel();
-            int max = 0;
-            if (gridpaint.ledsegmentpixel.Count > 0)
+            if (gridpaint.currot == 0)
             {
-                max = gridpaint.ledsegmentpixel.Max() + 1;
-                rootcomp.IsOverlay = true;
-            }
-            else
-            {
-                rootcomp.IsOverlay = false;
-            }
-            rootcomp.InitializeLineOverlays(max);
-            bool[,] IsCalc = new bool[gridpaint.GridSize, gridpaint.GridSize];
-            for(int i = 0; i < gridpaint.pixel.Count; ++i)
-            {
-                rootcomp.addData(gridpaint.pixel[i], gridpaint.currot);
-            }
-            for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
-            {
-                Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
-                rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
+                rootcomp.ClearAllPixel();
+                int max = 0;
+                if (gridpaint.ledsegmentpixel.Count > 0)
+                {
+                    max = gridpaint.ledsegmentpixel.Max() + 1;
+                    rootcomp.IsOverlay = true;
+                }
+                else
+                {
+                    rootcomp.IsOverlay = false;
+                }
+                rootcomp.InitializeLineOverlays(max);
+                bool[,] IsCalc = new bool[gridpaint.GridSize, gridpaint.GridSize];
+                for (int i = 0; i < gridpaint.pixel.Count; ++i)
+                {
+                    rootcomp.addData(gridpaint.pixel[i]);
+                }
+                for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
+                {
+                    Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
+                    rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
+                }
             }
         }
 

@@ -133,6 +133,12 @@ namespace Circuit_Simulator
                         stream.Write(BitConverter.GetBytes(Sim_Component.components[i].pos.X), 0, 4);
                         stream.Write(BitConverter.GetBytes(Sim_Component.components[i].pos.Y), 0, 4);
                         stream.Write(BitConverter.GetBytes(Sim_Component.components[i].rotation), 0, 4);
+                        CompData compdata = Sim_Component.Components_Data[Sim_Component.components[i].dataID];
+                        stream.Write(BitConverter.GetBytes(compdata.valuebox_length), 0, 4);
+                        for (int j = 0; j < compdata.valuebox_length; ++j)
+                        {
+                            stream.Write(BitConverter.GetBytes(Sim_Component.components[i].internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j]), 0, 4);
+                        }
                     }
                 }
                 #endregion
@@ -417,6 +423,17 @@ namespace Circuit_Simulator
                         int posY = BitConverter.ToInt32(intbuffer, 0);
                         stream.Read(intbuffer, 0, 4);
                         int rotation = BitConverter.ToInt32(intbuffer, 0);
+                        stream.Read(intbuffer, 0, 4);
+                        int valuebox_length = BitConverter.ToInt32(intbuffer, 0);
+
+                        CompData compdata = Sim_Component.Components_Data[compdata_index[buffercomp.dataID]];
+                        for (int j = 0; j < valuebox_length; ++j)
+                        {
+                            stream.Read(intbuffer, 0, 4);
+                            int curval = BitConverter.ToInt32(intbuffer, 0);
+                            buffercomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = curval;
+                        }
+
                         Sim_Component.components[i] = buffercomp;
                         buffercomp.Place(new Point(posX, posY), rotation, true);
                     }

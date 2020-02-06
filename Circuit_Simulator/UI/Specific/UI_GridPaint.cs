@@ -151,7 +151,7 @@ namespace Circuit_Simulator.UI.Specific
                 }
                 int mouse_worldpos_X, mouse_worldpos_Y;
                 Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
-                if (mouse_worldpos_X >= 0 && mouse_worldpos_X < GridSize && mouse_worldpos_Y >= 0 && mouse_worldpos_Y < GridSize)
+                if (mouse_worldpos_X >= 0 && mouse_worldpos_X < GridSize && mouse_worldpos_Y >= 0 && mouse_worldpos_Y < GridSize && currot == 0)
                 {
                     if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
                     {

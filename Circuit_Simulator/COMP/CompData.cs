@@ -134,18 +134,18 @@ namespace Circuit_Simulator.COMP
             }
         }
 
-        public void addData(ComponentPixel dat, int offset = 0)
+        public void addData(ComponentPixel dat)
         {
             if (dat.type > Sim_Component.PINOFFSET && dat.type - Sim_Component.PINOFFSET > pin_num)
                 pin_num = dat.type - Sim_Component.PINOFFSET;
-            data[(0 + offset) % 8].Add(dat);
-            data[(1 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
-            data[(2 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
-            data[(3 + offset) % 8].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
-            data[(4 + offset) % 8].Add(new ComponentPixel(new Point(dat.pos.X, -dat.pos.Y), dat.type));
-            data[(5 + offset) % 8].Add(new ComponentPixel(new Point(dat.pos.Y, dat.pos.X), dat.type));
-            data[(6 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, dat.pos.Y), dat.type));
-            data[(7 + offset) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, -dat.pos.X), dat.type));
+            data[(0) % 8].Add(dat);
+            data[(1) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
+            data[(2) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
+            data[(3) % 8].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
+            data[(4) % 8].Add(new ComponentPixel(new Point(dat.pos.X, -dat.pos.Y), dat.type));
+            data[(5) % 8].Add(new ComponentPixel(new Point(dat.pos.Y, dat.pos.X), dat.type));
+            data[(6) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, dat.pos.Y), dat.type));
+            data[(7) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, -dat.pos.X), dat.type));
             for (int i = 0; i < 8; ++i)
                 CalculateBounds(i);
         }

@@ -151,6 +151,7 @@ float4 ColorInPixel_Comp(uint type_int)
 
 float4 getcoloratpos(float x, float y)
 {
+	uint IsWire = 0;
 	uint ux = (uint)x;
 	uint uy = (uint)y;
 	float2 xy = float2(x, y);
@@ -315,28 +316,7 @@ float4 getcoloratpos(float x, float y)
 
 
 
-	uint type2 = 0;
-	if (currenttype == 1)
-	{
-		uint posx = ux - mousepos_X + 40;
-		uint posy = uy - mousepos_Y + 40;
-		if (posx >= 0 && posx < 82 && posy >= 0 && posy < 82)
-		{
-			type2 = (uint)(placementtex[uint2(posx, posy)].a * 255.0f + 0.5f);
-			if (type2 != 0)
-			{
-				if (OUT.a > 0.5f)
-					OUT = float4(1, 0, 0, 1);
-				else
-				{
-					if (type2 <= 4)
-						OUT = compcols[type2 - 1];
-					else
-						OUT = compcols[4];
-				}
-			}
-		}
-	}
+	
 	uint type_int = getWiresAtPos(uint2(ux, uy));
 	if (type_int >= 128 && OUT.a < 0.5f && OUT.a > 0.15f)
 	{
@@ -384,7 +364,7 @@ float4 getcoloratpos(float x, float y)
 
 			[branch]if (WireType)
 			{
-
+				IsWire = 1;
 				if (WireType == state_m10 && IsCloseToLine(xymid, float2(xymid.x - 1, xymid.y), xy, mindist))
 					OUT = layercols[i];
 				if (WireType == state_p10 && IsCloseToLine(xymid, float2(xymid.x + 1, xymid.y), xy, mindist))
@@ -511,6 +491,7 @@ float4 getcoloratpos(float x, float y)
 
 	}
 
+
 	if (zoom <= 1)
 	{
 		//if(type_int00)
@@ -538,6 +519,29 @@ float4 getcoloratpos(float x, float y)
 		//	OUT = layercols[6];
 		//else
 		//	OUT = float4(1, 1, 1, 1);
+	}
+
+	uint type2 = 0;
+	if (currenttype == 1)
+	{
+		uint posx = ux - mousepos_X + 40;
+		uint posy = uy - mousepos_Y + 40;
+		if (posx >= 0 && posx < 82 && posy >= 0 && posy < 82)
+		{
+			type2 = (uint)(placementtex[uint2(posx, posy)].a * 255.0f + 0.5f);
+			if (type2 != 0)
+			{
+				if ((OUT.a > 0.5f && !IsWire) || (OUT.a > 0.5f && type2 <= 4))
+					OUT = float4(1, 0, 0, 1);
+				else
+				{
+					if (type2 <= 4)
+						OUT = compcols[type2 - 1];
+					else
+						OUT = compcols[4];
+				}
+			}
+		}
 	}
 
 	//if (IsWireCalc && OUT.a > 0.5f && comptype_int > 2)
