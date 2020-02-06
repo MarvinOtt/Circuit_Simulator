@@ -831,15 +831,25 @@ namespace Circuit_Simulator
                     simspeed--;
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
                 {
-                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
+                  
                     currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
-                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+                    if (currentlayer == LAYER_NUM - 1)
+                    {
+                        currentlayer = 0;
+                    }
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
                 if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
                 {
-                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
-                    currentlayer = MathHelper.Clamp(--currentlayer, 0, LAYER_NUM - 1);
-                    //(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
+                   
+                    currentlayer = MathHelper.Clamp(--currentlayer, -1, LAYER_NUM - 1);
+                    if (currentlayer == -1)
+                    {
+                        currentlayer = LAYER_NUM - 1;
+                    }
+                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
                 //if (Game1.kb_states.IsKeyToggleDown(Keys.LeftControl))
                 //{
