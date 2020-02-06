@@ -309,7 +309,7 @@ namespace Circuit_Simulator
         #region INPUT
 
         public static int currentlayer;
-        int mo_worldposx, mo_worldposy;
+        public static int mo_worldposx, mo_worldposy;
         bool IsInGrid;
 
         #endregion
