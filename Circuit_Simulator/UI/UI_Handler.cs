@@ -43,7 +43,7 @@ namespace Circuit_Simulator
         public static Color[] layer_colors;
         private UI_MultiElement<UI_Element> Toolbar;
         private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
-        public static UI_InfoBox info;
+        public static UI_InfoBox info, GridInfo;
         public UI_Window input;
         public static UI_ParameterWindow parameterWindow;
         public static UI_LibraryEdit_Window LibraryEditWindow;
@@ -156,6 +156,9 @@ namespace Circuit_Simulator
             info = new UI_InfoBox(new Pos(500,500), new Point(300, 300));
             info.values.Add_UI_Elements(new UI_String(new Pos(0, 0), new Point(0, 0), componentconf));
 
+            //Hover GridInfo Box 
+            GridInfo = new UI_InfoBox(new Pos(500, 500), new Point(300, 300));
+            GridInfo.values.Add_UI_Elements(new UI_String(new Pos(0, 0), new Point(0, 0), componentconf));
 
             //GeneralInfo Box (Bottom Left)
             GeneralInfoBox = new UI_Box<UI_Element>(new Pos(-1, Game1.Screenheight - 24 + 1), new Point(Game1.Screenwidth + 2, 24));
@@ -203,7 +206,7 @@ namespace Circuit_Simulator
             EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 3)));
             UI_StringButton RenameLib = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
             UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameLib), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
-            UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Library", true, componentconf);
+            UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Remove Library", true, componentconf);
             
             EditLib.Add_UI_Elements(RenameLib, NewComp, Dellib);
             EditLib.GetsUpdated = EditLib.GetsDrawn = false;
@@ -497,6 +500,7 @@ namespace Circuit_Simulator
             EditProjectLib.UpdateMain();
             EditComp.UpdateMain();
             UI_Window.All_Update();
+            GridInfo.UpdateMain();
             info.UpdateMain();
             QuickHotbar.UpdateMain();
             Toolbar.UpdateMain();
@@ -517,6 +521,7 @@ namespace Circuit_Simulator
             QuickHotbar.Draw(spritebatch);
             UI_Window.All_Draw(spritebatch);
             info.Draw(spritebatch);
+            GridInfo.Draw(spritebatch);
             EditComp.Draw(spritebatch);
             EditProjectLib.Draw(spritebatch);
             EditLib.Draw(spritebatch);

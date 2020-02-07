@@ -1285,11 +1285,11 @@ namespace Circuit_Simulator
 
                 int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                 int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                UI_Handler.info.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
-                UI_Handler.info.ShowInfo();
+                UI_Handler.GridInfo.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
+                UI_Handler.GridInfo.ShowInfo();
             }
             else
-                UI_Handler.info.HideInfo();
+                UI_Handler.GridInfo.HideInfo();
 
             if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {

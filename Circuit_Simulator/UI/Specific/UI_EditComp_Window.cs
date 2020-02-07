@@ -383,7 +383,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             bool AllPaintButtonsNotHovered = paintbuttons.All(x => x.IsHovered == false);
             if(AllPaintButtonsNotHovered)
-                UI_Handler.info.HideInfo();
+               UI_Handler.info.HideInfo();
 
             base.UpdateAlways();
         }
