@@ -106,6 +106,13 @@
 /processorParam:DebugMode=Auto
 /build:UI/highlight_effect.fx
 
+#begin UI/overlayfont.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:UI/overlayfont.spritefont
+
 #begin UI/Project Spritemap.png
 /importer:TextureImporter
 /processor:TextureProcessor

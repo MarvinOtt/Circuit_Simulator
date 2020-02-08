@@ -809,7 +809,7 @@ namespace Circuit_Simulator
 
         public void DrawCompOverlays(SpriteBatch spritebatch)
         {
-            if (Simulator.worldzoom > 4)
+            if (Simulator.worldzoom > 2)
             {
                 for (int i = 0; i < 1000; ++i)
                 {
@@ -822,6 +822,14 @@ namespace Circuit_Simulator
                             Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * (components[i].pos.ToVector2() + new Vector2(0.5f)/*compdata.bounds[components[i].rotation].Size.ToVector2() / 2.0f*/);
                             spritebatch.DrawString(Game1.basefont, compdata.name, screencoo - compdata.overlaysize.ToVector2() / 2, Color.Black);
                         }
+                        if (compdata.OverlayText.Length > 0)
+                        {
+                            Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText);
+                            Vector2 pos = new Vector2((components[i].pos.ToVector2().X + compdata.OverlayTextPos[components[i].rotation].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[i].pos.ToVector2().Y + compdata.OverlayTextPos[components[i].rotation].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
+                            spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[components[i].rotation] * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
+                        }
+
+
                         //if (compdata.overlaytex != null)
                         //{
                         //    FRectangle destrec = compdata.overlay_bounds[components[i].rotation];

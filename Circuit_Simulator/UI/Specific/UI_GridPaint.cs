@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Circuit_Simulator.COMP;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -151,7 +152,7 @@ namespace Circuit_Simulator.UI.Specific
                 }
                 int mouse_worldpos_X, mouse_worldpos_Y;
                 Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
-                if (mouse_worldpos_X >= 0 && mouse_worldpos_X < GridSize && mouse_worldpos_Y >= 0 && mouse_worldpos_Y < GridSize && currot == 0)
+                if (mouse_worldpos_X >= 0 && mouse_worldpos_X < GridSize && mouse_worldpos_Y >= 0 && mouse_worldpos_Y < GridSize && currot == 0 && !UI_EditComp_Window.IsInOverlayMode)
                 {
                     if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
                     {
@@ -285,6 +286,21 @@ namespace Circuit_Simulator.UI.Specific
                         ApplyPixel();
                     }
                 }
+                else if(UI_EditComp_Window.IsInOverlayMode)
+                {
+                    CompData compdata = UI_EditComp_Window.rootcomp;
+                    Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText) * compdata.OverlayTextSize[currot] * (float)Math.Pow(2, zoom);
+                    Vector2 pos = absolutpos.ToVector2() + new Vector2((compdata.OverlayTextPos[currot].X + Origin.X + 0.5f) * (float)Math.Pow(2, zoom) + worldpos.X, (compdata.OverlayTextPos[currot].Y + Origin.Y + 0.5f) * (float)Math.Pow(2, zoom) + worldpos.Y) - size / 2;
+                    if (Game1.mo_states.New.LeftButton == ButtonState.Pressed && Game1.kb_states.New.IsKeyDown(Keys.LeftControl))
+                    {
+                        compdata.OverlayTextSize[currot] += (((float)(Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y)) / (float)Math.Pow(2, zoom)) * 0.01f;
+                    }
+                    else if ((new Rectangle(pos.ToPoint(), size.ToPoint())).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+                    {
+                        compdata.OverlayTextPos[currot] += (Game1.mo_states.New.Position - Game1.mo_states.Old.Position).ToVector2() / (float)Math.Pow(2, zoom);
+                    }
+                    
+                }
 
                 #endregion
 
@@ -326,6 +342,15 @@ namespace Circuit_Simulator.UI.Specific
                         ledsegmentcount++;
                     }
                 }
+            }
+            if(UI_EditComp_Window.rootcomp.OverlayText.Length > 0)
+            {
+                CompData compdata = UI_EditComp_Window.rootcomp;
+                Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText);
+                Vector2 pos = absolutpos.ToVector2() + new Vector2((compdata.OverlayTextPos[currot].X + Origin.X + 0.5f) * (float)Math.Pow(2, zoom) + worldpos.X, (compdata.OverlayTextPos[currot].Y + Origin.Y + 0.5f) * (float)Math.Pow(2, zoom) + worldpos.Y);
+                spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[currot] * (float)Math.Pow(2, zoom), SpriteEffects.None, 0);
+                if(UI_EditComp_Window.IsInOverlayMode)
+                    spritebatch.DrawHollowRectangle(new Rectangle((pos - (size * compdata.OverlayTextSize[currot] * (float)Math.Pow(2, zoom)) / 2).ToPoint(), (size * compdata.OverlayTextSize[currot] * (float)Math.Pow(2, zoom)).ToPoint()), Color.Blue, 2);
             }
             spritebatch.End();
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, null, matrix);

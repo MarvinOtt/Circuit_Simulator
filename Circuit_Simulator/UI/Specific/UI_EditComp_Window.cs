@@ -13,14 +13,16 @@ namespace Circuit_Simulator.UI.Specific
 {
     public class UI_EditComp_Window : UI_Window
     {
-        public CompData rootcomp;
-        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length, Box_ClickType, ComponentValueInputCount;
+        public static CompData rootcomp;
+        public static bool IsInOverlayMode = false;
+        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length, Box_ClickType, ComponentValueInputCount, OverlayTextBox;
         public UI_Scrollable<UI_Element> Features;
         List<UI_ValueInput> inputlist = new List<UI_ValueInput>();
         List<UI_String> labellist = new List<UI_String>();
         UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
         UI_StringButton[] rotbuttons;
         UI_TexButton[] paintbuttons;
+        UI_TexButton overlaybutton;
         UI_GridPaint gridpaint;
         UI_String InputCount_Label;
         List<string> parameterlabels;
@@ -85,9 +87,14 @@ namespace Circuit_Simulator.UI.Specific
                 paintbuttons[i].GotToggledLeft += PaintButtonPressed;
             }
             paintbuttons[0].IsActivated = true;
+            overlaybutton = new UI_TexButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, paintbuttons[4]), new Point(25, 25), new Point(364, 0), UI_Handler.Button_tex, UI_Handler.gridpaintbuttonconf);
+            overlaybutton.GotToggledLeft += OverlayButtonPressed;
             gridpaint.curplacetype = 1;
 
-            InputCount_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, gridpaint), Point.Zero, UI_Handler.genbutconf, "ParameterCount: ");
+            UI_String OverlayTextBox_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, gridpaint), Point.Zero, UI_Handler.genbutconf, "Text for Overlay: ");
+            OverlayTextBox = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, OverlayTextBox_Label), new Point(size.X / 4, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 20);
+
+            InputCount_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, OverlayTextBox_Label), Point.Zero, UI_Handler.genbutconf, "ParameterCount: ");
             ComponentValueInputCount = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 8, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 2);
 
             parameterlabels = new List<string>();
@@ -96,8 +103,9 @@ namespace Circuit_Simulator.UI.Specific
 
             Features.Add_UI_Elements(spooky, SimCode_FuncName_Label, Box_SimCode_FuncName, AfterSimCode_FuncName_Label, Box_AfterSimCode_FuncName, InternalState_Length_Label, Box_InternalState_Length, ClickType_Label, Box_ClickType, Code_Sim_Button, Code_AfterSim_Button);
             Features.Add_UI_Elements(rotbuttons);
-            Features.Add_UI_Elements(gridpaint);
+            Features.Add_UI_Elements(gridpaint, OverlayTextBox_Label, OverlayTextBox);
             Features.Add_UI_Elements(paintbuttons);
+            Features.Add_UI_Elements(overlaybutton);
             Features.Add_UI_Elements(InputCount_Label);
             Features.Add_UI_Elements(ComponentValueInputCount);
             Add_UI_Elements(Box_Name_Label, Box_Name, Box_Category_Label, Box_Category, Features);
@@ -108,6 +116,7 @@ namespace Circuit_Simulator.UI.Specific
             Box_AfterSimCode_FuncName.ValueChanged += Box_AfterSimCode_FuncName_ValueChange;
             Box_InternalState_Length.ValueChanged += Box_InternalState_Length_ValueChange;
             Box_ClickType.ValueChanged += Box_ClickType_ValueChanged;
+            OverlayTextBox.ValueChanged += Box_Overlay_ValueChanged;
             ComponentValueInputCount.ValueChanged += InputCount_ValueChanged;
             //Box_IsAfterSim.ValueChanged += Box_IsAfterSim_ValueChange;
 
@@ -126,12 +135,14 @@ namespace Circuit_Simulator.UI.Specific
         public void SetRootComp(CompData comp)
         {
             rootcomp = comp;
+            RotButtonPressed(rotbuttons[0]);
             Box_Name.value = comp.name;
             Box_Category.value = comp.catagory;
             Box_SimCode_FuncName.value = comp.Code_Sim_FuncName;
             Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
             Box_InternalState_Length.value = comp.internalstate_length.ToString();
             Box_ClickType.value = rootcomp.IsClickable ? rootcomp.ClickAction_Type.ToString() : "";
+            OverlayTextBox.value = rootcomp.OverlayText;
             ComponentValueInputCount.value = rootcomp.valuebox_length.ToString();
 
             CodeBox_Sim.t.Text = comp.Code_Sim;
@@ -146,7 +157,6 @@ namespace Circuit_Simulator.UI.Specific
             //ComponentValueInputCount.value = rootcomp.parameters.Count().ToString();
             ComponentValueInputCount.MakeValueChanged();
             LoadInputCount();
-            RotButtonPressed(rotbuttons[0]);
         }
 
         public void RotButtonPressed(object sender)
@@ -157,41 +167,40 @@ namespace Circuit_Simulator.UI.Specific
             {
                 cur.IsActivated = true;
             }
-            else
+            gridpaint.currot = index;
+            for (int i = 0; i < rotbuttons.Length; ++i)
             {
-                for (int i = 0; i < rotbuttons.Length; ++i)
+                UI_StringButton curbut = rotbuttons[i];
+                if (i != index)
+                    curbut.IsActivated = false;
+            }
+            gridpaint.ledsegmentpixel.Clear();
+            gridpaint.ledsegmentpixel_pos.Clear();
+            for (int i = 0; i < rootcomp.overlaylines.Length; ++i)
+            {
+                for (int j = 0; j < rootcomp.overlaylines[i][index].Count; ++j)
                 {
-                    UI_StringButton curbut = rotbuttons[i];
-                    if (i != index)
-                        curbut.IsActivated = false;
-                }
-                gridpaint.currot = index;
-                gridpaint.ledsegmentpixel.Clear();
-                gridpaint.ledsegmentpixel_pos.Clear();
-                for (int i = 0; i < rootcomp.overlaylines.Length; ++i)
-                {
-                    for (int j = 0; j < rootcomp.overlaylines[i][index].Count; ++j)
+                    Point dir = rootcomp.overlaylines[i][index][j].end - rootcomp.overlaylines[i][index][j].start;
+                    int length = 1;
+                    Point curpos = rootcomp.overlaylines[i][index][j].start;
+                    for (int k = 0; k < length; ++k)
                     {
-                        Point dir = rootcomp.overlaylines[i][index][j].end - rootcomp.overlaylines[i][index][j].start;
-                        int length = 1;
-                        Point curpos = rootcomp.overlaylines[i][index][j].start;
-                        for (int k = 0; k < length; ++k)
-                        {
-                            gridpaint.ledsegmentpixel.Add((byte)i);
-                            gridpaint.ledsegmentpixel_pos.Add(curpos + gridpaint.Origin);
-                        }
+                        gridpaint.ledsegmentpixel.Add((byte)i);
+                        gridpaint.ledsegmentpixel_pos.Add(curpos + gridpaint.Origin);
                     }
                 }
-                gridpaint.pixel.Clear();
-                gridpaint.pixel.AddRange(rootcomp.data[index]);
-                gridpaint.ApplyPixel();
             }
+            gridpaint.pixel.Clear();
+            gridpaint.pixel.AddRange(rootcomp.data[index]);
+            gridpaint.ApplyPixel();
 
         }
         public void PaintButtonPressed(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
             int index = Array.IndexOf(paintbuttons, cur);
+            overlaybutton.IsActivated = false;
+            IsInOverlayMode = false;
             if (cur.IsActivated == false)
                 cur.IsActivated = true;
             else
@@ -204,6 +213,17 @@ namespace Circuit_Simulator.UI.Specific
                 }
             }
             gridpaint.curplacetype = index + 1;
+        }
+
+        public void OverlayButtonPressed(object sender)
+        {
+            for (int i = 0; i < paintbuttons.Length; ++i)
+            {
+                UI_TexButton curbut = paintbuttons[i];
+                curbut.IsActivated = false;
+            }
+            overlaybutton.IsActivated = true;
+            IsInOverlayMode = true;
         }
 
         public void PixelChanged()
@@ -273,6 +293,23 @@ namespace Circuit_Simulator.UI.Specific
             else
                 rootcomp.IsClickable = false;
         }
+        public void Box_Overlay_ValueChanged(object sender)
+        {
+            if (OverlayTextBox.value.Length > 0)
+            {
+                if(rootcomp.OverlayText.Length == 0)
+                {
+                    for(int i = 0; i < 8; ++i)
+                    {
+                        rootcomp.OverlayTextSize[i] = 1.0f / 128.0f;
+                        rootcomp.OverlayTextPos[i] = Vector2.Zero;
+                    }
+                }
+                rootcomp.OverlayText = OverlayTextBox.value;
+            }
+            else
+                rootcomp.OverlayText = "";
+        }
 
         public void Code_Sim_Button_Pressed(object sender)
         {
@@ -291,6 +328,8 @@ namespace Circuit_Simulator.UI.Specific
         {
             rootcomp.Code_AfterSim = CodeBox_AfterSim.t.Text;
         }
+
+
 
         protected override void Resize()
         {
@@ -382,8 +421,8 @@ namespace Circuit_Simulator.UI.Specific
         protected override void UpdateAlways()
         {
             bool AllPaintButtonsNotHovered = paintbuttons.All(x => x.IsHovered == false);
-            if(AllPaintButtonsNotHovered)
-                UI_Handler.info.HideInfo();
+            //if(AllPaintButtonsNotHovered)
+                //UI_Handler.info.HideInfo();
 
             base.UpdateAlways();
         }

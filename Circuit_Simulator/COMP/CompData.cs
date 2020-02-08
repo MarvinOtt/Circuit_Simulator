@@ -15,9 +15,13 @@ namespace Circuit_Simulator.COMP
         public static int[] rottable_ROT = { 1, 2, 3, 0, 5, 6, 7, 4 };
         public static int[] rottable_FLIPX = { 6, 5, 4, 7, 2, 1, 0, 3};
         public static int[] rottable_FLIPY = { 4, 7, 6, 5, 0, 3, 2, 1};
+        public static SpriteFont overlayfont = Game1.content.Load<SpriteFont>("UI\\overlayfont");
         public List<ComponentPixel>[] data;
         public List<string> parameters;
         public string name;
+        public string OverlayText;
+        public float[] OverlayTextSize;
+        public Vector2[] OverlayTextPos;
         public string catagory = "Other";
         public string Code_AfterSim = "", Code_Sim = "";
         public string Code_Sim_FuncName = "", Code_AfterSim_FuncName = "";
@@ -97,7 +101,10 @@ namespace Circuit_Simulator.COMP
             //overlaylines_vertices = new List<VertexPositionLine>[4];
             //for (int i = 0; i < 4; ++i)
             //    overlaylines_vertices[i] = new List<VertexPositionLine>();
+            OverlayText = "";
             bounds = new Rectangle[8];
+            OverlayTextSize = new float[8];
+            OverlayTextPos = new Vector2[8];
             data = new List<ComponentPixel>[8];
             for (int i = 0; i < 8; ++i)
                 data[i] = new List<ComponentPixel>();
@@ -236,7 +243,6 @@ namespace Circuit_Simulator.COMP
             stream.Write(BitConverter.GetBytes(IsOverlay), 0, 1);
             stream.Write(BitConverter.GetBytes(IsClickable), 0, 1);
             stream.Write(BitConverter.GetBytes(IsUpdateAfterSim), 0, 1);
-            stream.Write(BitConverter.GetBytes(ShowOverlay), 0, 1);
             stream.Write(BitConverter.GetBytes(data[0].Count), 0, 4);
             for(int j = 0; j < data[0].Count; ++j)
             {
@@ -257,7 +263,16 @@ namespace Circuit_Simulator.COMP
                     stream.Write(BitConverter.GetBytes(overlaylines_vertices[i][0][j * 2].layers), 0, 4);
                 }
             }
-            
+
+            bytearray = OverlayText.GetBytes();
+            stream.Write(bytearray, 0, bytearray.Length);
+            for(int i = 0; i < 8; ++i)
+            {
+                stream.Write(BitConverter.GetBytes(OverlayTextPos[i].X), 0, 4);
+                stream.Write(BitConverter.GetBytes(OverlayTextPos[i].Y), 0, 4);
+                stream.Write(BitConverter.GetBytes(OverlayTextSize[i]), 0, 4);
+            }
+
             stream.Write(BitConverter.GetBytes(internalstate_length), 0, 4);
             stream.Write(BitConverter.GetBytes(valuebox_length), 0, 4);
             for(int i = 0; i < valuebox_length; ++i)

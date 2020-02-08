@@ -198,11 +198,8 @@ namespace Circuit_Simulator.COMP
                 bool IsClickable = BitConverter.ToBoolean(intbuffer, 0);
                 stream.Read(intbuffer, 0, 1);
                 bool IsUpdateAfterSim = BitConverter.ToBoolean(intbuffer, 0);
-                stream.Read(intbuffer, 0, 1);
-                bool ShowOverlay = BitConverter.ToBoolean(intbuffer, 0);
 
                 CompData newcomp = new CompData(name, category, IsOverlay, IsClickable, IsUpdateAfterSim);
-                newcomp.ShowOverlay = ShowOverlay;
                 stream.Read(intbuffer, 0, 4);
                 int Pixel_Num = BitConverter.ToInt32(intbuffer, 0);
                 for (int k = 0; k < Pixel_Num; ++k)
@@ -240,6 +237,17 @@ namespace Circuit_Simulator.COMP
                         float layers = BitConverter.ToSingle(intbuffer, 0);
                         newcomp.addOverlayLine(new Line(pos, pos2), layers, i);
                     }
+                }
+
+                newcomp.OverlayText = stream.ReadNullTerminated();
+                for (int i = 0; i < 8; ++i)
+                {
+                    stream.Read(intbuffer, 0, 4);
+                    newcomp.OverlayTextPos[i].X = BitConverter.ToSingle(intbuffer, 0);
+                    stream.Read(intbuffer, 0, 4);
+                    newcomp.OverlayTextPos[i].Y = BitConverter.ToSingle(intbuffer, 0);
+                    stream.Read(intbuffer, 0, 4);
+                    newcomp.OverlayTextSize[i] = BitConverter.ToSingle(intbuffer, 0);
                 }
 
                 stream.Read(intbuffer, 0, 4);
