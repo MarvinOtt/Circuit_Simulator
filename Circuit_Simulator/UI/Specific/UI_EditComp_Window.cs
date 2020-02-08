@@ -421,8 +421,8 @@ namespace Circuit_Simulator.UI.Specific
         protected override void UpdateAlways()
         {
             bool AllPaintButtonsNotHovered = paintbuttons.All(x => x.IsHovered == false);
-            //if(AllPaintButtonsNotHovered)
-                //UI_Handler.info.HideInfo();
+            if(AllPaintButtonsNotHovered)
+               UI_Handler.info.HideInfo();
 
             base.UpdateAlways();
         }
