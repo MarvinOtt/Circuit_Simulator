@@ -23,7 +23,6 @@ namespace Circuit_Simulator.UI.Specific
             Libraries = new UI_Scrollable<UI_List<UI_Categorie<UI_Component>>>(new Pos(bezelsize, 50), Point.Zero);
             Libraries.Add_UI_Elements(new UI_List<UI_Categorie<UI_Component>>(Pos.Zero, false));
             AddButton = new UI_StringButton(new Pos(-bezelsize, ORIGIN.BR, ORIGIN.BR), new Point(UI_Handler.buttonwidth, UI_Handler.buttonheight), "Add", true, UI_Handler.genbutconf);
-            //Refresh = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, AddButton), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Refresh", true, UI_Handler.genbutconf);
             Reload = new UI_StringButton(new Pos(-bezelsize, 0, ORIGIN.DEFAULT, ORIGIN.TR, AddButton), new Point((int)(UI_Handler.buttonwidth * 1.5), UI_Handler.buttonheight), "Reload", true, UI_Handler.genbutconf);
             Add_UI_Elements(AddButton, Reload);
             Add_UI_Elements(Libraries);
@@ -42,7 +41,6 @@ namespace Circuit_Simulator.UI.Specific
             UI_Handler.EditProjectLib.GetsUpdated = UI_Handler.EditProjectLib.GetsDrawn = true;
             UI_Handler.EditProjectLib.pos.pos = Game1.mo_states.New.Position + new Point(5, 5);
             UI_Handler.EditProjectLib.UpdatePos();
-            //currlibID = curUIlib.ID;
         }
         public void OpenLib(object sender)
         {
@@ -114,8 +112,6 @@ namespace Circuit_Simulator.UI.Specific
             for (int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
             {
                 CompLibrary.AllUsedLibraries[i].Load();
-                //CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
-                //newlib.Load();
             }
 
             Reload_UI();

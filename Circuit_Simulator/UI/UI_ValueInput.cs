@@ -171,7 +171,6 @@ namespace Circuit_Simulator.UI
                 if (DateTime.Now.Millisecond % 1000 < 500)
                 {
                     int Xsize = (int)conf.font.MeasureString(value).X;
-                    //int Ysize = (int)conf.font.MeasureString("Test").Y;
                     spritebatch.DrawFilledRectangle(new Rectangle(new Point(absolutpos.X + 5 + Xsize, absolutpos.Y + 2), new Point(1, size.Y - 4)), Color.White);
                 }
             }

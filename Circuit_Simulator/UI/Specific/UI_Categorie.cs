@@ -78,17 +78,13 @@ namespace Circuit_Simulator.UI.Specific
         {
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, height));
 
-            //if (hitbox.Contains(Game1.mo_states.New.Position) == UI_ComponentBox.cathitbox.Contains(Game1.mo_states.New.Position))
-            //{
             if (hitbox.Contains(Game1.mo_states.New.Position))
             {
-                //IsHover2 = true;
                 if (Game1.mo_states.IsLeftButtonToggleOff())
                 {
                     Fold(!IsFold);
                 }
             }
-            //}
 
             base.UpdateSpecific();
         }
@@ -97,17 +93,12 @@ namespace Circuit_Simulator.UI.Specific
         {
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, height));
 
-            //if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed)
-            //    IsHover2 = false;
+  
             base.UpdateAlways();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
-            //if (IsHover2)
-            //    spritebatch.DrawFilledRectangle(new Rectangle(absolutpos, new Point(size.X, height)), conf.HoverColor);
-            //spritebatch.DrawString(conf.font, title, absolutpos.ToVector2() + title_pos, conf.font_color);
-
             base.DrawSpecific(spritebatch);
         }
     }

@@ -123,7 +123,6 @@ namespace Circuit_Simulator.UI.Specific
             Box_ClickType.ValueChanged += Box_ClickType_ValueChanged;
             OverlayTextBox.ValueChanged += Box_Overlay_ValueChanged;
             ComponentValueInputCount.ValueChanged += InputCount_ValueChanged;
-            //Box_IsAfterSim.ValueChanged += Box_IsAfterSim_ValueChange;
 
             // Code Boxes
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
@@ -159,7 +158,6 @@ namespace Circuit_Simulator.UI.Specific
             {
                 parameterlabels.Add(rootcomp.parameters[i]);
             }
-            //ComponentValueInputCount.value = rootcomp.parameters.Count().ToString();
             ComponentValueInputCount.MakeValueChanged();
             LoadInputCount();
         }

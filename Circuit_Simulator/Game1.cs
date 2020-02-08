@@ -6,7 +6,6 @@ using ScintillaNET;
 using System;
 using System.IO;
 using System.Security.Permissions;
-//using Circuit_Simulator.UI;
 
 namespace Circuit_Simulator
 {
@@ -195,19 +194,13 @@ namespace Circuit_Simulator
             simulator = new Simulator();
             GraphicsChanged(null, EventArgs.Empty);
             string pathtoexe = Directory.GetCurrentDirectory();
-            //System.Diagnostics.Process.Start("cmd", "/k " + "\"" + @"C:\GCC\MinGW\bin\g++" + "\"" + " -c -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
-            //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\GCC\\MinGW\\bin\\g++ -c -DBUILDING_EXAMPLE_DLL " + "\"" + "C:\\Users\\Marvin Ott\\code.c" + "\"" + " -o " + "\"" + "C:\\Users\\Marvin Ott\\code.o" + "\"");
-            //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\GCC\\gcc -shared -o C:\\Users\\code.dll C:\\Users\\code.o -Wl,--out-implib,libexample_dll.a");
-
             
         }
 
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            //popup.Size = new System.Drawing.Size(t.Width - (System.Windows.Forms.SystemInformation.VerticalScrollBarWidth - 1), popup.Height - (40 - 1));
-            //popup.Width = 200;
-            //popup.Height = 200;
+           
             //----------------//
             // HANDLING INPUT //
             //----------------//
@@ -255,11 +248,6 @@ namespace Circuit_Simulator
             simulator.Draw(spriteBatch);
 
             UI_handler.Draw(spriteBatch);
-
-            
-
-            //spriteBatch.DrawString(basefont, Screenwidth.ToString(), new Vector2(100, 100), Color.Red);
-            //spriteBatch.DrawString(basefont, Screenheight.ToString(), new Vector2(100, 130), Color.Red);
 
             spriteBatch.End();
 

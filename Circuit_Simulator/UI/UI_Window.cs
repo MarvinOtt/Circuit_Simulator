@@ -89,8 +89,6 @@ namespace Circuit_Simulator.UI
 
         public override void UpdateSpecific()
         {
-            //if (((UI_TexButton)ui_elements[0]).IsActivated)
-            //    GetsUpdated = GetsDrawn = false;
             if (size.Y >= Game1.Screenheight)
                 size.Y = Game1.Screenheight;
 
@@ -108,7 +106,7 @@ namespace Circuit_Simulator.UI
                 if (IsGrab && Game1.mo_states.New.Position.X < 2 && Game1.mo_states.IsLeftButtonToggleOff())
                 {
 
-                    size.Y = Game1.Screenheight - (UI_Handler.buttonheight + UI_Handler.sqarebuttonwidth) - 24;
+                    size.Y = Game1.Screenheight - (UI_Handler.buttonheight + UI_Handler.sqarebuttonwidth + UI_Handler.LayerSelectHotbar.size.Y) - 24 ;
                     size.X = minsize.X;
 
                     pos.X = 0;
@@ -145,7 +143,7 @@ namespace Circuit_Simulator.UI
                     size.Y = minsize.Y;
 
                     pos.X = 0;
-                    pos.Y = Game1.Screenheight - size.Y - 24;
+                    pos.Y = Game1.Screenheight - size.Y - UI_Handler.LayerSelectHotbar.size.Y - 24;
                     Resize();
                     Snap = Snapbottom = true;
                     IsGrab = false;

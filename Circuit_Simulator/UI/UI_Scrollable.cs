@@ -22,17 +22,11 @@ namespace Circuit_Simulator.UI
         public override void Add_UI_Elements(params T[] elements)
         {
             base.Add_UI_Elements(elements);
-            //ui_elements.ForEach(x => x.parent = null);
         }
 
         public override void UpdateSpecific()
         {
-            //UI_Handler.IsInScrollable = true;
             UI_Handler.IsInScrollable_Bounds = new Rectangle(absolutpos, size);
-            //if (new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position))
-            //    ui_elements.ForEach(x => x.GetsUpdated = true);
-            //else
-            //    ui_elements.ForEach(x => x.GetsUpdated = false);
             if (!DenyScroll)
             {
                 int minpos = ui_elements.Min(x => x.pos.Y_abs - pos.Y_abs);

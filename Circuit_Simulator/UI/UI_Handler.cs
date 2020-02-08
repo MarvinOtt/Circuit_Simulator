@@ -101,7 +101,6 @@ namespace Circuit_Simulator
             genbutconf.font = toolbarfont;
             gridpaintbuttonconf = new Generic_Conf(behave1conf);
             gridpaintbuttonconf.BorderColor = BorderColor;
-            //gridpaint = new UI_GridPaint(new Pos(100), new Point(200), 200, new Point(25));
 
             //Toolbar
             Toolbar = new UI_MultiElement<UI_Element>(new Pos(0, 0));
@@ -125,7 +124,6 @@ namespace Circuit_Simulator
             for (int i = 0; i < ViewButton_Names.Length; ++i)
             {
                 ButtonMenu_View.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i], toolbarddconf1));
-                //((Button_Menu)ButtonMenu_View.ui_elements[i]).conf.behav = 2;
             }
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Pos(0, 25));
             string[] ToolsButton_Names = new string[] { "Libary Editor", "Project Libararies", "Test" };
@@ -145,7 +143,6 @@ namespace Circuit_Simulator
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, behave2conf));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, behave1conf));         
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, behave1conf));
-            //QuickHotbar.Add_UI_Element(new UI_TeBxutton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 6 + 6, 0), Button_tex, behave1conf));
 
             //Componentbox
             ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
@@ -490,7 +487,6 @@ namespace Circuit_Simulator
             if (ZaWarudo != null)
             {
                 ZaWarudo.UpdateMain();
-                //return;
             }
 
 

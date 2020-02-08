@@ -148,7 +148,6 @@ namespace Circuit_Simulator
             sb.DrawLine(rec.Location + new Point(strokewidth, 0), rec.Location + new Point(strokewidth, rec.Size.Y + strokewidth), col, strokewidth);
             sb.DrawLine(rec.Location + new Point(rec.Size.X + strokewidth, strokewidth), rec.Location + rec.Size + new Point(strokewidth, strokewidth), col, strokewidth);
             sb.DrawLine(rec.Location + new Point(strokewidth, rec.Size.Y), rec.Location + rec.Size + new Point(strokewidth, 0), col, strokewidth);
-            //Game1.spriteBatch.Draw(Game1.pixel, pos, new Rectangle((int)pos.X, (int)pos.Y, (int)size.X, (int)size.Y), col, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0);
         }
 
         // LINQ
@@ -216,9 +215,6 @@ namespace Circuit_Simulator
             p.Start();
             p.WaitForExit();
 
-            ////read the command line output 
-            //StreamReader sr = p.StandardOutput;
-            //return (sr.ReadToEnd());
         }
 
         public static string MakeRelativePath(string workingDirectory, string fullPath)

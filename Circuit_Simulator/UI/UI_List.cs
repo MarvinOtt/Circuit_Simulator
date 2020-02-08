@@ -62,7 +62,6 @@ namespace Circuit_Simulator.UI
             {
                 ui_elements[i].pos.pos = currentpos;
                 ui_elements[i].Update();
-                //currentpos.Y += ui_elements[i].size.Y;
             }
         }
 

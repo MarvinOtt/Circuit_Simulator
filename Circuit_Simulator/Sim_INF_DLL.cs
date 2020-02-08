@@ -38,9 +38,7 @@ namespace Circuit_Simulator
 
         public static IntPtr SimDLL_Handle = IntPtr.Zero;
 
-        //[DllImport(DLL_Path + "Sim_DLL.dll", CallingConvention = CallingConvention.Cdecl)]
         public delegate void DLL_SimOneStep_prototype(byte[] WireStatesIN, byte[] WireStatesOUT, int[] CompInfos, int[] CompID, int comp_num, int net_num);
-        //[DllImport(DLL_Path + "Sim_DLL.dll", CallingConvention = CallingConvention.Cdecl)]
         public delegate void InitSimulation_prototype(int comp_num);
 
         public static DLL_SimOneStep_prototype DLL_SimOneStep;
@@ -116,17 +114,6 @@ namespace Circuit_Simulator
                 code_withinitfuncs = code_withinitfuncs.Insert(initfuncpos, "compfuncs[index++] = " + curdata.Code_Sim_FuncName + ";");
             }
 
-            //int clickfuncpos = code_withinitfuncs.IndexOf("#define _CLICKFUNCS_");
-            //string code_withclickfuncs = code_withinitfuncs.Remove(clickfuncpos, 20);
-            //for (int i = Sim_Component.Components_Data.Count - 1; i >= 0; --i)
-            //{
-            //    CompData curdata = Sim_Component.Components_Data[i];
-            //    if(curdata.IsClickable)
-            //    {
-            //        code_withclickfuncs.Insert(clickfuncpos, curdata.Code_ClickAction);
-            //    }
-            //}
-
             int afterupdatefuncpos = code_withinitfuncs.IndexOf("#define _AFTERUPDATEFUNCS_");
             string code_withafterupdatefuncs = code_withinitfuncs.Remove(afterupdatefuncpos, 26);
             for (int i = Sim_Component.Components_Data.Count - 1; i >= 0; --i)
@@ -139,15 +126,10 @@ namespace Circuit_Simulator
             }
             string pathtoexe = Directory.GetCurrentDirectory();
             File.WriteAllText(pathtoexe + @"\SIM_CODE\maincode.c", code_withafterupdatefuncs);
-            //System.Diagnostics.Process.Start("cmd", "/c" + "C:\\MinGW\\GCC\\gcc -c -DBUILDING_EXAMPLE_DLL C:\\Users\\marvi\\code.c -o C:\\Users\\marvi\\code.o");
-            //System.Diagnostics.Process.Start("cmd", "/k" + "C:\\MinGW\\GCC\\gcc -shared -o C:\\Users\\marvi\\code.dll C:\\Users\\marvi\\code.o -Wl,--out-implib,libexample_dll.a");
-            //Extensions.CMD_Execute("cmd", "/k " + "cmd " + "\"" + @"C:\Users\Marvin\ Ott" + "\"");
-            //string args = "/k " + "\"" + pathtoexe + @"\GCC\gcc" + "\"" + " - c -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " - o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"";
+          
             Extensions.CMD_Execute("cmd", "/c " + @"C:\GCC\mingw64\bin\g++" + " -c -m64 -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
             Extensions.CMD_Execute("cmd", "/c" + @"C:\GCC\mingw64\bin\g++" + @" -shared -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.dll" + "\" " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
 
-            //Extensions.CMD_Execute("cmd", "/c " + @"C:\GCC\mingw64\bin\g++" + " -c -m64 -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\code.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\code.o" + "\"");
-            //Extensions.CMD_Execute("cmd", "/k" + @"C:\GCC\mingw64\bin\g++" + @" -shared -o " + "\"" + pathtoexe + @"\SIM_CODE\code.dll" + "\" " + "\"" + pathtoexe + @"\SIM_CODE\code.o" + "\"");
             LoadSimDLL();
         }
 

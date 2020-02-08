@@ -221,7 +221,6 @@ namespace Circuit_Simulator
                     dialog.Title = "Select File to Open";
                     dialog.Filter = "DCE files (*.dce)|*.dce|All files (*.*)|*.*";
                     dialog.FilterIndex = 1;
-                    //dialog.RestoreDirectory = false;
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
                         string filename = dialog.FileName;
@@ -251,7 +250,6 @@ namespace Circuit_Simulator
                     Simulator.WireIDs = new int[Simulator.SIZEX / 2, Simulator.SIZEY / 2, Simulator.LAYER_NUM];
                     Simulator.WireIDPs = new int[Simulator.SIZEX, Simulator.SIZEY];
                     Simulator.networks = new Network[10000000];
-                    //networks[0] = new Network(0);
                     Simulator.emptyNetworkID = new int[10000000];
 
                     Sim_Component.CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
@@ -262,23 +260,10 @@ namespace Circuit_Simulator
                     Sim_Component.emptyComponentID = new int[1000000];
                     Sim_Component.CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
 
-
-
-                    //Array.Clear(Sim_Component.components, 0, Sim_Component.components.Length);
-                    //Array.Clear(Simulator.networks, 0, Simulator.networks.Length);
-                    //Array.Clear(Simulator.IsWire, 0, Simulator.IsWire.Length);
-                    //Array.Clear(Simulator.WireIDs, 0, Simulator.WireIDs.Length);
-                    //Array.Clear(Simulator.WireIDPs, 0, Simulator.WireIDPs.Length);
-                    //Array.Clear(Simulator.emptyNetworkID, 0, Simulator.emptyNetworkID.Length);
-                    //Array.Clear(Sim_Component.emptyComponentID, 0, Sim_Component.emptyComponentID.Length);
                     Simulator.emptyNetworkID_count = 0;
                     Sim_Component.emptyComponentID_count = 0;
                     Sim_Component.CompMayneedoverlay.Clear();
-                    //Array.Clear(Sim_Component.CompType, 0, Sim_Component.CompType.Length);
-                    //Array.Clear(Sim_Component.CompGrid, 0, Sim_Component.CompGrid.Length);
-                    //Array.Clear(Sim_Component.CompNetwork, 0, Sim_Component.CompNetwork.Length);
-                    //Array.Clear(Sim_Component.pins2check, 0, Sim_Component.pins2check.Length);
-                    //Array.Clear(Sim_Component.overlaylines, 0, Sim_Component.overlaylines.Length);
+                    
                     Sim_Component.pins2check_length = 0;
                     Sim_INF_DLL.Comp2UpdateAfterSim_count = 0;
 
@@ -447,7 +432,6 @@ namespace Circuit_Simulator
 
                     Console.WriteLine("Loading suceeded. Filename: {0}", filename);
                     IsUpToDate = true;
-                    //    SaveFile = filename;
                 }
                 catch (Exception exp)
                 {

@@ -72,15 +72,6 @@ namespace Circuit_Simulator.UI.Specific
 
         public void ApplyPixel()
         {
-            //int count = 0;
-            //for (int i = 0; i < pixel.Count; ++i)
-            //{
-            //    if (pixel[i].type > 3)
-            //    {
-            //        pixel[i] = new ComponentPixel(pixel[i].pos, (byte)(4 + count));
-            //        count++;
-            //    }
-            //}
             Array.Clear(ledsegment_IDs, 0, GridSize * GridSize);
             Array.Clear(data, 0, data.Length);
             for(int i = 0; i < pixel.Count; ++i)

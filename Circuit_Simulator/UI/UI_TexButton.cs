@@ -25,24 +25,7 @@ namespace Circuit_Simulator.UI
 
         public override void UpdateSpecific()
 	    {
-            //Rectangle hitbox = new Rectangle(absolutpos, size);
-            //         //GotActivated = false;
-            //   if (conf.behav == 2)
-            //    IsActivated = false;
-            //   if (hitbox.Contains(Game1.mo_states.New.Position))
-            //   {
-            //    IsHovered = true;
-            //    if (Game1.mo_states.IsLeftButtonToggleOff())
-            //             {
-            //                 IsActivated ^= true;
-            //                 if (IsActivated)
-            //                 {
-            //                     GotActivated();
-            //                 }
-            //             }
-            //   }
-            //   else
-            //    IsHovered = false;
+            
             base.UpdateSpecific();
 	    }
 

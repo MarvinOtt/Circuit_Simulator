@@ -83,15 +83,7 @@ namespace Circuit_Simulator
                     Point curpos = curpixel[i].pos + pos;
                     pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = Simulator.WireIDPs[curpos.X, curpos.Y];
                 }
-                //for (int j = 0; j < 7; ++j)
-                //{
-                //    int wireID = Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, j];
-                //    if (wireID != 0 && (Simulator.IsWire[curpos.X, curpos.Y] & (1 << j)) != 0)
-                //    {
-                //        if (pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] == 0)
-                //            pinNetworkIDs[Sim_Component.CompType[curpos.X, curpos.Y] - (Sim_Component.PINOFFSET + 1)] = wireID;
-                //    }
-                //}
+                
             }
         }
 
@@ -129,7 +121,6 @@ namespace Circuit_Simulator
             this.pos = pos;
             this.rotation = newrotation;
             List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[newrotation];
-            //Sim_Component.components[Sim_Component.nextComponentID++] = new Component(pos, ID, Sim_Component.nextComponentID - 1);
             Rectangle area = Sim_Component.Components_Data[dataID].bounds[newrotation];
             area.Location += pos;
             byte[,] data2place = new byte[area.Size.X, area.Size.Y];
@@ -142,7 +133,7 @@ namespace Circuit_Simulator
                 Sim_Component.IsEdgeTex.SetPixel(datapixel[i].IsEdge, currentcoo);
                 if (datapixel[i].type > Sim_Component.PINOFFSET)
                 {
-                    Point datapos = currentcoo - area.Location;// datapixel[i].pos - Sim_Component.Components_Data[dataID].bounds[newrotation].Location;
+                    Point datapos = currentcoo - area.Location;
                     data2place[datapos.X, datapos.Y] |= 128;
 
                 }
@@ -177,7 +168,6 @@ namespace Circuit_Simulator
             Game1.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
             watch.Stop();
             double milis = (1000.0 * watch.ElapsedTicks) / (double)Stopwatch.Frequency;
-            //Console.WriteLine(milis);
         }
 
         public void Delete()
@@ -230,81 +220,7 @@ namespace Circuit_Simulator
             this.IsEdge = IsEdge;
         }
     }
-    //public class ComponentData
-    //{
-    //    public List<ComponentPixel>[] data;
-    //    public string name;
-    //    public string catagory;
-    //    public Rectangle[] bounds;
-    //    public int currentrotation;
-    //    public int pin_num, OverlayStateID, internalstate_length;
-    //    public bool IsOverlay, IsUpdateAfterSim;
-    //    public bool CanBeClicked;
-    //    public Action<Component> ClickAction, AfterSimAction;
-    //    public List<VertexPositionLine> overlaylines;
-    //    public Texture2D overlaytex;
-    //    public FRectangle[] overlay_bounds;
-    //    public Rectangle overlaytex_bounds;
-
-    //    public ComponentData(string name, string catagory, bool IsOverlay, bool IsClickable, bool IsUpdateAfterSim)
-    //    {
-    //        this.name = name;
-    //        this.CanBeClicked = IsClickable;
-    //        this.IsOverlay = IsOverlay;
-    //        this.IsUpdateAfterSim = IsUpdateAfterSim;
-    //        if (IsOverlay)
-    //            overlaylines = new List<VertexPositionLine>();
-    //        data = new List<ComponentPixel>[4];
-    //        bounds = new Rectangle[4];
-    //        for (int i = 0; i < 4; ++i)
-    //            data[i] = new List<ComponentPixel>();
-    //        overlay_bounds = new FRectangle[4];
-    //    }
-
-    //    public void CalculateBounds(int rotation)
-    //    {
-    //        bounds[rotation].X = data[rotation].Min(x => x.pos.X);
-    //        bounds[rotation].Y = data[rotation].Min(x => x.pos.Y);
-    //        bounds[rotation].Width = data[rotation].Max(x => (x.pos.X - bounds[rotation].X) + 1);
-    //        bounds[rotation].Height = data[rotation].Max(x => (x.pos.Y - bounds[rotation].Y) + 1);
-    //    }
-
-    //    public void addData(ComponentPixel dat)
-    //    {
-    //        if (dat.type > Sim_Component.PINOFFSET)
-    //            pin_num++;
-    //        data[0].Add(dat);
-    //        data[1].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
-    //        data[2].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
-    //        data[3].Add(new ComponentPixel(new Point(dat.pos.Y, -dat.pos.X), dat.type));
-    //        for (int i = 0; i < 4; ++i)
-    //            CalculateBounds(i);
-    //    }
-
-    //    public void Finish()
-    //    {
-    //        for (int i = 0; i < 4; ++i)
-    //        {
-    //            for(int j = 0; j < data[i].Count; ++j)
-    //            {
-    //                if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X - 1) && x.pos.Y == (data[i][j].pos.Y)))
-    //                    data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 0)));
-    //                if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X) && x.pos.Y == (data[i][j].pos.Y - 1)))
-    //                    data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 1)));
-    //                if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X + 1) && x.pos.Y == (data[i][j].pos.Y)))
-    //                    data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 2)));
-    //                if (data[i].Exists(x => x.pos.X == (data[i][j].pos.X) && x.pos.Y == (data[i][j].pos.Y + 1)))
-    //                    data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 3)));
-    //            }
-    //        }
-    //        int a = 3;
-    //    }
-
-    //    public void addOverlayLine(VertexPositionLine line)
-    //    {
-    //        overlaylines.Add(line);
-    //    }
-    //}
+   
 
     public class Sim_Component
     {
@@ -354,244 +270,15 @@ namespace Circuit_Simulator
             string[] Libraries2Load = Directory.GetFiles(@"LIBRARIES\", "*.dcl");
             Sim_INF_DLL.LoadLibrarys(Libraries2Load);
 
-            // Basic Components Data
-
-//            CompLibrary compLibrary = new CompLibrary("Main_Library", @"LIBRARIES\Main_Library.dcl");
-//            CompData newcomp = new CompData("AND", "Gates", false, false, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(2, 0), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 5));
-//            newcomp.Code_Sim = @"void CF_AND(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//            {
-//	            WireStatesOUT[CompInfo[3]] = WireStatesIN[CompInfo[1]] & WireStatesIN[CompInfo[2]];
-//            }";
-//            newcomp.Code_Sim_FuncName = "CF_AND";
-//            newcomp.ShowOverlay = true;
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("OR", "Gates", false, false, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(2, 0), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 5));
-//            newcomp.Code_Sim = @"void CF_OR(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//            {
-//	            WireStatesOUT[CompInfo[3]] = WireStatesIN[CompInfo[1]] | WireStatesIN[CompInfo[2]];
-//            }";
-//            newcomp.Code_Sim_FuncName = "CF_OR";
-//            newcomp.ShowOverlay = true;
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("XOR", "Gates", false, false, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(2, 0), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 5));
-//            newcomp.Code_Sim = @"void CF_XOR(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//            {
-//	            WireStatesOUT[CompInfo[3]] = WireStatesIN[CompInfo[1]] ^ WireStatesIN[CompInfo[2]];
-//            }";
-//            newcomp.Code_Sim_FuncName = "CF_XOR";
-//            newcomp.ShowOverlay = true;
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("NAND", "Gates", false, false, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(2, 0), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 5));
-//            newcomp.Code_Sim = @"void CF_NAND(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//            {
-//	            WireStatesOUT[CompInfo[3]] = (~(WireStatesIN[CompInfo[1]] & WireStatesIN[CompInfo[2]])) & 1;
-//            }";
-//            newcomp.Code_Sim_FuncName = "CF_NAND";
-//            newcomp.ShowOverlay = true;
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("NOR", "Gates", false, false, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(2, 0), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 5));
-//            newcomp.Code_Sim = @"void CF_NOR(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//            {
-//	            WireStatesOUT[CompInfo[3]] = (~(WireStatesIN[CompInfo[1]] | WireStatesIN[CompInfo[2]])) & 1;
-//            }";
-//            newcomp.Code_Sim_FuncName = "CF_NOR";
-//            newcomp.ShowOverlay = true;
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("XNOR", "Gates", false, false, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 1));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 1));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(2, 0), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 5));
-//            newcomp.Code_Sim = @"void CF_XNOR(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//            {
-//	            WireStatesOUT[CompInfo[3]] = (~(WireStatesIN[CompInfo[1]] ^ WireStatesIN[CompInfo[2]])) & 1;
-//            }";
-//            newcomp.Code_Sim_FuncName = "CF_XNOR";
-//            newcomp.ShowOverlay = true;
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("Switch", "Input", true, true, false);
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 2));
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 2));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 2));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 0), 2));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 2));
-//            newcomp.addData(new ComponentPixel(new Point(-1, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 5));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 6));
-//            newcomp.addData(new ComponentPixel(new Point(-1, 1), 7));
-//            newcomp.InitializeLineOverlays(1);
-//            newcomp.addOverlayLine(new Line(new Point(-1, 0), new Point(1, 0)), 200, 0);
-//            newcomp.addOverlayLine(new Line(new Point(0, -1), new Point(0, 1)), 200, 0);
-//            newcomp.internalstate_length = 1;
-//            newcomp.ClickAction_Type = 0;
-//            newcomp.OverlayStateID = 0;
-//            newcomp.Code_Sim = @"void CF_SWITCH(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//{
-//	WireStatesOUT[CompInfo[1]] = CompInfo[5];
-//	WireStatesOUT[CompInfo[2]] = CompInfo[5];
-//	WireStatesOUT[CompInfo[3]] = CompInfo[5];
-//	WireStatesOUT[CompInfo[4]] = CompInfo[5];
-//}";
-//            newcomp.Code_Sim_FuncName = "CF_SWITCH";
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            newcomp = new CompData("Led 2x2", "Output", true, false, true);
-//            newcomp.addData(new ComponentPixel(new Point(0, 0), 2));
-//            newcomp.addData(new ComponentPixel(new Point(1, 0), 2));
-//            newcomp.addData(new ComponentPixel(new Point(0, 1), 2));
-//            newcomp.addData(new ComponentPixel(new Point(1, 1), 2));
-//            newcomp.addData(new ComponentPixel(new Point(0, -1), 4));
-//            newcomp.addData(new ComponentPixel(new Point(1, -1), 5));
-//            newcomp.InitializeLineOverlays(1);
-//            newcomp.addOverlayLine(new Line(new Point(0, 0), new Point(1, 0)), 200, 0);
-//            newcomp.addOverlayLine(new Line(new Point(0, 1), new Point(1, 1)), 200, 0);
-//            newcomp.internalstate_length = 1;
-//            newcomp.OverlayStateID = 0;
-//            newcomp.Code_Sim = @"void CF_LED2x2(unsigned char* WireStatesIN, unsigned char* WireStatesOUT, int* CompInfo)
-//{
-//	CompInfo[3] =  WireStatesIN[CompInfo[1]];
-//}";
-//            newcomp.Code_Sim_FuncName = "CF_LED2x2";
-//            newcomp.Code_AfterSim = @"void DLL_EXPORT ASA_LED2x2(int* internalstates, int* CompInfos, int intstatesindex)
-//{
-//    internalstates[0] = CompInfos[intstatesindex];
-//}";
-//            newcomp.Code_AfterSim_FuncName = "ASA_LED2x2";
-//            newcomp.Finish();
-//            compLibrary.AddComponent(newcomp);
-
-//            compLibrary.Save();
-            int breaki = 1;
-
-            //Components_Data = new List<CompData>();
-            //Components_Data.Add(new CompData("Button", "Input", true, true, false));
-            //Components_Data[0].addData(new ComponentPixel(new Point(0, -1), 2));
-            //Components_Data[0].addData(new ComponentPixel(new Point(0, 0), 2));
-            //Components_Data[0].addData(new ComponentPixel(new Point(0, 1), 2));
-            //Components_Data[0].addData(new ComponentPixel(new Point(-1, 0), 2));
-            //Components_Data[0].addData(new ComponentPixel(new Point(1, 0), 2));
-            //Components_Data[0].addData(new ComponentPixel(new Point(-1, -1), 4));
-            //Components_Data[0].addData(new ComponentPixel(new Point(1, -1), 5));
-            //Components_Data[0].addData(new ComponentPixel(new Point(1, 1), 6));
-            //Components_Data[0].addData(new ComponentPixel(new Point(-1, 1), 7));
-            //Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(-1, 0), 200));
-            //Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(2, 0), 200));
-            //Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(0, -1), 200));
-            //Components_Data[0].addOverlayLine(new VertexPositionLine(new Point(0, 2), 200));
-            //Components_Data[0].internalstate_length = 1;
-            //Components_Data[0].ClickAction_Type = 0;
-            //Components_Data[0].OverlayStateID = 0;
-            //Components_Data[0].Finish();
-            //Point size = new Point(384, 256);
-            //Rectangle[] bounds = new Rectangle[] { new Rectangle(Point.Zero, size), new Rectangle(new Point(384, 0), size), Rectangle.Empty, Rectangle.Empty, Rectangle.Empty, Rectangle.Empty };
-            //string[] Comp_Names = new string[] { "AND", "OR", "XOR", "NAND", "NOR", "XNOR" };
-            //for (int i = 1; i <= 6; ++i)
-            //{
-            //    Components_Data.Add(new CompData(Comp_Names[i - 1], "Gates", false, false, false));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(0, -1), 1));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(0, 0), 1));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(0, 1), 1));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(1, -1), 1));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(1, 0), 1));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(1, 1), 1));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(-1, -1), 4));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(2, 0), 6));
-            //    Components_Data[i].addData(new ComponentPixel(new Point(-1, 1), 5));
-            //    Components_Data[i].overlaytex = Game1.content.Load<Texture2D>("Overlays\\Overlay_AND");
-            //    Components_Data[i].overlaytex_bounds = bounds[i - 1];
-            //    Components_Data[i].overlay_bounds[0] = new FRectangle(-1.0f, -1.0f, 3.0f, 2.0f);
-            //    Components_Data[i].overlay_bounds[1] = new FRectangle(-1.5f, -0.5f, 3.0f, 2.0f);
-            //    Components_Data[i].overlay_bounds[2] = new FRectangle(-2.0f, -1.0f, 3.0f, 2.0f);
-            //    Components_Data[i].overlay_bounds[3] = new FRectangle(-1.5f, -1.5f, 3.0f, 2.0f);
-            //    Components_Data[i].Finish();
-            //}
-
-            //Components_Data.Add(new CompData("Led 2x2", "Output", true, false, true));
-            //Components_Data[7].addData(new ComponentPixel(new Point(0, 0), 2));
-            //Components_Data[7].addData(new ComponentPixel(new Point(1, 0), 2));
-            //Components_Data[7].addData(new ComponentPixel(new Point(0, 1), 2));
-            //Components_Data[7].addData(new ComponentPixel(new Point(1, 1), 2));
-            //Components_Data[7].addData(new ComponentPixel(new Point(0, -1), 4));
-            //Components_Data[7].addData(new ComponentPixel(new Point(1, -1), 5));
-            //Components_Data[7].addOverlayLine(new VertexPositionLine(new Point(0, 0), 200));
-            //Components_Data[7].addOverlayLine(new VertexPositionLine(new Point(2, 0), 200));
-            //Components_Data[7].addOverlayLine(new VertexPositionLine(new Point(0, 1), 200));
-            //Components_Data[7].addOverlayLine(new VertexPositionLine(new Point(2, 1), 200));
-            //Components_Data[7].internalstate_length = 1;
-            //Components_Data[7].Finish();
+          
         }
 
         public void InizializeComponentDrag(int ID)
         {
-            if (true)//UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+            if (true)
             {
                 UI_Handler.UI_IsWindowHide = true;
-                //((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[5]).IsActivated = false;
-                //UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
-                //UI_Handler.wire_ddbl.GetsUpdated = UI_Handler.wire_ddbl.GetsDrawn = false;
+              
                 Game1.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
                 IsCompDrag = true;
                 byte[] data = new byte[81 * 81];
@@ -602,7 +289,6 @@ namespace Circuit_Simulator
                 }
 
                 placementtex.SetData(data);
-                //sim_effect.Parameters["currenttype"].SetValue(1);
                 sim_effect.Parameters["placementtex"].SetValue(placementtex);
             }
         }
@@ -654,12 +340,10 @@ namespace Circuit_Simulator
         }
         public static void ComponentDropAtPos(int dataID, Point pos, int rotation)
         {
-            //if (UI_Handler.UI_Active_State == UI_Handler.UI_Active_CompDrag)
-            //{
                 if (Component.IsValidPlacement(dataID, pos, rotation))
                 {
                     FileHandler.IsUpToDate = false;
-                    Component newcomp;// = new Component(ID, nextComponentID);
+                    Component newcomp;
                     if (emptyComponentID_count > 0)
                         newcomp = new Component(dataID, emptyComponentID[--emptyComponentID_count]);
                     else
@@ -668,7 +352,6 @@ namespace Circuit_Simulator
                     newcomp.Place(pos, rotation);
 
                 }
-            //}
         }
 
         public void DeactivateDrop()
@@ -698,20 +381,9 @@ namespace Circuit_Simulator
                 {
                     Point pos = pins2check[i];
                     Component cur_comp = components[CompGrid[pos.X / 32, pos.Y / 32][CompNetwork[pos.X, pos.Y]]];
-                    //if(cur_comp != null)
+                   
                     cur_comp.CheckAndUpdatePins();
-                    //bool IsNetwork = false;
-                    //int wireID = 0;
-                    //for(int j = 0; j < 7; ++j)
-                    //{
-                    //    int wireID2 = Simulator.WireIDs[pos.X / 2, pos.Y / 2, j];
-                    //    if (wireID2 != 0 && (Simulator.IsWire[pos.X, pos.Y] & (1 << j)) != 0)
-                    //    {
-                    //        IsNetwork = true;
-                    //        wireID = wireID2;
-                    //    }
-                    //}
-                    //cur_comp.pinNetworkIDs[CompType[pos.X, pos.Y] - (PINOFFSET + 1)] = wireID;
+
                 }
 
                 pins2check_length = 0;
@@ -724,7 +396,6 @@ namespace Circuit_Simulator
             {
                 DropComponent = false;
                 ComponentDrop(UI_Handler.dragcomp.comp.ID);
-                //InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
             }
 
             if (IsCompDrag)
@@ -819,7 +490,7 @@ namespace Circuit_Simulator
                         if(compdata.ShowOverlay)
                         {
                             float pow = (float)Math.Pow(2, Simulator.worldzoom);
-                            Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * (components[i].pos.ToVector2() + new Vector2(0.5f)/*compdata.bounds[components[i].rotation].Size.ToVector2() / 2.0f*/);
+                            Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * (components[i].pos.ToVector2() + new Vector2(0.5f));
                             spritebatch.DrawString(Game1.basefont, compdata.name, screencoo - compdata.overlaysize.ToVector2() / 2, Color.Black);
                         }
                         if (compdata.OverlayText.Length > 0)
@@ -828,20 +499,6 @@ namespace Circuit_Simulator
                             Vector2 pos = new Vector2((components[i].pos.ToVector2().X + compdata.OverlayTextPos[components[i].rotation].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[i].pos.ToVector2().Y + compdata.OverlayTextPos[components[i].rotation].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
                             spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[components[i].rotation] * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
                         }
-
-
-                        //if (compdata.overlaytex != null)
-                        //{
-                        //    FRectangle destrec = compdata.overlay_bounds[components[i].rotation];
-                        //    float pow = (float)Math.Pow(2, Simulator.worldzoom);
-                        //    destrec.X += 0.5f;
-                        //    destrec.Y += 0.5f;
-                        //    destrec *= pow;
-                        //    Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * components[i].pos.ToVector2();
-                        //    destrec.X += screencoo.X;
-                        //    destrec.Y += screencoo.Y;
-                        //    spritebatch.Draw(compdata.overlaytex, destrec.ToRectangle(), compdata.overlaytex_bounds, Color.White);
-                        //}
                     }
                 }
             }

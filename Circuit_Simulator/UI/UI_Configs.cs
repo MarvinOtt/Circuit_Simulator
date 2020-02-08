@@ -45,24 +45,6 @@ namespace Circuit_Simulator.UI
             }
         }
 
-        //public struct TexButton_Conf
-        //{
-        //    public bool IsHoverEnabled;
-        //    public Color HoverCol;
-        //    public byte behav;
-
-        //    public TexButton_Conf(byte behav)
-        //    {
-        //        IsHoverEnabled = false;
-        //        HoverCol = Color.Black;
-        //        this.behav = behav;
-        //    }
-        //    public TexButton_Conf(byte behav, Color HoverCol)
-        //    {
-        //        IsHoverEnabled = true;
-        //        this.HoverCol = HoverCol;
-        //        this.behav = behav;
-        //    }
-        //}
+      
     }
 }

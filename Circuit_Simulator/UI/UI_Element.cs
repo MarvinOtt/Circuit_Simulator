@@ -101,7 +101,7 @@ namespace Circuit_Simulator
         public virtual void UpdatePos()
         {
             pos.Update();
-            absolutpos = pos.pos;// pos.parent == null ? pos.pos : pos.pos + pos.parent.pos.pos;
+            absolutpos = pos.pos;
             _child?.UpdatePos();
         }
 
@@ -118,7 +118,7 @@ namespace Circuit_Simulator
             if (_GetsUpdated && !(IsTypeOfWindow && UI_Handler.UI_IsWindowHide))
             {
                 bool IsValid4Scroll = (!UI_Handler.IsInScrollable || (UI_Handler.IsInScrollable && UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)));
-                if ((!UI_Handler.UI_Element_Pressed/* || !new Rectangle(absolutpos, size).Contains(Game1.mo_states.New.Position)*/) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this) && IsValid4Scroll)
+                if ((!UI_Handler.UI_Element_Pressed) && (UI_Handler.ZaWarudo == null || UI_Handler.ZaWarudo == this) && IsValid4Scroll)
                     UpdateSpecific();
                 UpdateAlways();
                 if(UpdateAndDrawChild)
@@ -146,15 +146,7 @@ namespace Circuit_Simulator
 
         public void Draw(SpriteBatch spritebatch)
         {
-            //UpdatePos();
-            //absolutpos = parent == null ? pos : pos + parent.absolutpos;
-            //if (parent != null && CanBeSizeRelated)
-            //{
-            //    if (pos.X < 0)
-            //        absolutpos.X += parent.size.X;
-            //    if (pos.Y < 0)
-            //        absolutpos.Y += parent.size.Y;
-            //}
+           
             if (_GetsDrawn)
             {
                 DrawSpecific(spritebatch);

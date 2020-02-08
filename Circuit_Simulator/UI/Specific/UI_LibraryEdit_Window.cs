@@ -15,7 +15,6 @@ namespace Circuit_Simulator.UI.Specific
     {
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Libraries;
         public static Rectangle libhitbox;
-        //UI_String NeedSavingString;
         UI_StringButton AddButton, Open, SaveAll;
         UI_ValueInput RenameBox1, RenameBox2;
         public static bool IsChange;
@@ -30,7 +29,6 @@ namespace Circuit_Simulator.UI.Specific
             RenameBox1 = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.genbutconf, 3);
             RenameBox2 = new UI_ValueInput(new Pos(0, 0), Point.Zero, UI_Handler.componentconf, 3);
 
-            //NeedSavingString = new UI_String(new Pos(10, 10 + headheight), Point.Zero, conf, "In order to edit Librarys, the circuit has to be saved.");
 
             Add_UI_Elements(RenameBox1, RenameBox2, AddButton, Open, SaveAll);
             Add_UI_Elements(Libraries);
@@ -111,19 +109,7 @@ namespace Circuit_Simulator.UI.Specific
             }
         }
 
-        //public void Reload_All(object sender)
-        //{
-        //    IsChange = false;
-        //    Sim_Component.Components_Data.Clear();
-        //    for(int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
-        //    {
-        //        CompLibrary curlib = CompLibrary.AllUsedLibraries[i];
-        //        Sim_Component.Components_Data.AddRange(curlib.Components);
-        //    }
-        //    UI_Handler.InitComponents();
-        //    FileHandler.OpenCurrent();
-
-        //}
+       
         public void SaveAllChanges( object sender)
         {
             for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibrarys.Count; i++)
@@ -143,7 +129,6 @@ namespace Circuit_Simulator.UI.Specific
             for(int i = 1; ; ++i)
             {
                 bool state = CompLibrary.LibraryWindow_LoadedLibrarys.Exists(x => x.name == startname + i.ToString());
-                //bool state = Libraries.ui_elements[0].ui_elements.Exists(x => x.cat.ID_Name == startname + i.ToString());
                 if(!state)
                 {
                     finalname = startname + i.ToString();
@@ -157,7 +142,6 @@ namespace Circuit_Simulator.UI.Specific
             Libraries.UpdatePos();
             Libraries.UpdateSpecific();
             UpdatePos();
-            //RenameLib(Libraries.ui_elements[0].ui_elements.Last().cat);
             UI_Component curUIcomp = Libraries.ui_elements[0].ui_elements.Last().cat;
 
             RenameBox1.pos = new Pos(Libraries.pos.X, (curUIcomp.absolutpos.Y - this.pos.Y), ORIGIN.DEFAULT, ORIGIN.DEFAULT, this);
@@ -176,7 +160,6 @@ namespace Circuit_Simulator.UI.Specific
             UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
             UI_Handler.EditLib.pos.pos = Game1.mo_states.New.Position + new Point(5, 5);
             UI_Handler.EditLib.UpdatePos();
-            //currlibID = curUIlib.ID;
         }
 
         public void AddComp(object sender)
@@ -193,7 +176,6 @@ namespace Circuit_Simulator.UI.Specific
                     if (state)
                         DoesExist = true;
                 }
-                //bool state = //Libraries.ui_elements[0].ui_elements[i].Components.ui_elements.Exists(x => x.ID_Name == startname + y.ToString());
                 if (!DoesExist)
                 {
                     finalname = startname + y.ToString();
@@ -210,7 +192,6 @@ namespace Circuit_Simulator.UI.Specific
             Libraries.UpdatePos();
             Libraries.UpdateSpecific();
             UpdatePos();
-            //RenameLib(Libraries.ui_elements[0].ui_elements.Last().cat);
             UI_Component curUIcomp;
             int libindex_UI = Libraries.ui_elements[0].ui_elements.FindIndex(x => x.cat.ID_Name == pressedElement.parent.ID_Name);
 
