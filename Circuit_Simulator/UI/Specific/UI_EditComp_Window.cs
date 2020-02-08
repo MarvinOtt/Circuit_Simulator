@@ -36,23 +36,28 @@ namespace Circuit_Simulator.UI.Specific
         {
 
             UI_String spooky = new UI_String(new Pos(0), Point.Zero, conf, "");
-            UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name: ");
+            UI_String Box_Name_Label = new UI_String(new Pos(bezelsize, bezelsize + headheight), Point.Zero, UI_Handler.genbutconf, "Name:");
             UI_String Box_Category_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Name_Label), Point.Zero, UI_Handler.genbutconf, "Category: ");
-          
-            Box_Name = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
+
+            int longestLabelX = (int)(UI_Handler.genbutconf.font.MeasureString("Category: ").X);
+            Box_Name = new UI_ValueInput(new Pos(longestLabelX , 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, Box_Name_Label), new Point(size.X / 3, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3, 24);
             Box_Name.ValueChanged += BoxName_ValueChange;
-            Box_Category = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, Box_Category_Label), new Point(size.X / 2, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3);
+            Box_Category = new UI_ValueInput(new Pos(longestLabelX, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, Box_Category_Label), new Point(size.X / 3, (int)(UI_Handler.genbutconf.font.MeasureString("Test").Y)), UI_Handler.genbutconf, 3, 24);
             Box_Category.ValueChanged += BoxCategory_ValueChange;
 
+            
             Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Category_Label), Point.Zero);
-            UI_String SimCode_FuncName_Label = new UI_String(new Pos(5, 5), Point.Zero, UI_Handler.genbutconf, "Sim Code Func. Name: ");
-            Box_SimCode_FuncName = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, SimCode_FuncName_Label), new Point(size.X / 2, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
-            UI_String AfterSimCode_FuncName_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "After-Sim Code Func. Name: ");
-            Box_AfterSimCode_FuncName = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3);
-            UI_String InternalState_Length_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "Internal State Length: ");
-            Box_InternalState_Length = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1);
+            UI_String SimCode_FuncName_Label = new UI_String(new Pos(5, 5), Point.Zero, UI_Handler.genbutconf, "SC Func. Name: ");
+            UI_String AfterSimCode_FuncName_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "PSC Func. Name: ");
+            UI_String InternalState_Length_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "Int. State Length: ");
             UI_String ClickType_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InternalState_Length_Label), Point.Zero, UI_Handler.genbutconf, "Click Type: ");
-            Box_ClickType = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, ClickType_Label), new Point(size.X / 2, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1);
+
+            int longestLabelX2 = (int)(UI_Handler.genbutconf.font.MeasureString("Int. State Length: ").X);
+
+            Box_SimCode_FuncName = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, SimCode_FuncName_Label), new Point(size.X / 3, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 24);
+            Box_AfterSimCode_FuncName = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), new Point(size.X / 3, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 24);
+            Box_InternalState_Length = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 3, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 24);
+            Box_ClickType = new UI_ValueInput(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, ClickType_Label), new Point((int)(UI_Handler.genbutconf.font.MeasureString("00").X), AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 1);
 
 
             Code_Sim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, ClickType_Label), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
@@ -92,7 +97,7 @@ namespace Circuit_Simulator.UI.Specific
             gridpaint.curplacetype = 1;
 
             UI_String OverlayTextBox_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, gridpaint), Point.Zero, UI_Handler.genbutconf, "Text for Overlay: ");
-            OverlayTextBox = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, OverlayTextBox_Label), new Point(size.X / 4, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 20);
+            OverlayTextBox = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, OverlayTextBox_Label), new Point(size.X / 3, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 24);
 
             InputCount_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, OverlayTextBox_Label), Point.Zero, UI_Handler.genbutconf, "ParameterCount: ");
             ComponentValueInputCount = new UI_ValueInput(new Pos(0, ORIGIN.TR, ORIGIN.DEFAULT, InputCount_Label), new Point(size.X / 8, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 2);
