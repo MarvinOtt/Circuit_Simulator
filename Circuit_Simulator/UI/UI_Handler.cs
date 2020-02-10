@@ -234,7 +234,7 @@ namespace Circuit_Simulator
             ProjectLibWindow.GetsUpdated = ProjectLibWindow.GetsDrawn = false;
 
             //ComponentparametersWindow
-            parameterWindow = new UI_ParameterWindow(new Pos(500, 500), new Point(400), new Point(400), componentconf);
+            parameterWindow = new UI_ParameterWindow(new Pos(400, 250), new Point(300, 250), new Point(300, 100), componentconf);
             parameterWindow.GetsUpdated = parameterWindow.GetsDrawn = false;
 
             

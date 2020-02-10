@@ -422,7 +422,7 @@ namespace Circuit_Simulator
                 int ovstateID = compdata.internalstate_length;
                 for(int k = 0; k < compdata.OverlaySeg_length; ++k)
                 {
-                    int ovstate = components[compID].internalstates[ovstateID + k];
+                    int ovstate = Sim_INF_DLL.CompInfos[Sim_INF_DLL.IntStatesMap[compID] + ovstateID + k];//  components[compID].internalstates[ovstateID + k];
                     Component comp = components[compID];
                     List<VertexPositionLine> CompOverlaylines = Components_Data[comp.dataID].overlaylines_vertices[k][comp.rotation];
                     for (int j = 0; j < CompOverlaylines.Count; ++j)
@@ -480,9 +480,9 @@ namespace Circuit_Simulator
 
         public void DrawCompOverlays(SpriteBatch spritebatch)
         {
-            if (Simulator.worldzoom > 2)
+            if (Simulator.worldzoom > 3)
             {
-                for (int i = 0; i < 1000; ++i)
+                for (int i = 0; i < 2000; ++i)
                 {
                     if (components[i] != null)
                     {

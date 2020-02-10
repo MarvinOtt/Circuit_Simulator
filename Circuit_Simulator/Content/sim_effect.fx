@@ -497,6 +497,8 @@ float4 getcoloratpos(float x, float y)
 		//if(type_int00)
 		if(type_int > 0)
 			OUT = ColorInPixel(type_int);
+		if (comptype_int > 0)
+			OUT = ColorInPixel_Comp(comptype_int);
 
 		//if (type_int == 0) { /*Do Nothing*/ }
 		//else if(type_int == 255)

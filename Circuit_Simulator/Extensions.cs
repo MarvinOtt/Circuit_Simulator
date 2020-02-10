@@ -97,6 +97,7 @@ namespace Circuit_Simulator
                     case Keys.OemMinus: if (shift) { key = '_'; } else { key = '-'; } return true;
                     case Keys.OemComma: if (shift) { key = ';'; } else { key = ','; } return true;
                     case Keys.Space: key = ' '; return true;
+                    case Keys.OemBackslash: if (shift) { key = '>'; } else { key = '<'; } return true;
                 }
             }
 

@@ -1172,7 +1172,8 @@ namespace Circuit_Simulator
                         int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                         int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
                         int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                        UI_Handler.parameterWindow.SetRootcomp(Sim_Component.components[compID]);
+                        if (Sim_Component.Components_Data[Sim_Component.components[compID].dataID].valuebox_length > 0)
+                            UI_Handler.parameterWindow.SetRootcomp(Sim_Component.components[compID]);
                     }
 
                     

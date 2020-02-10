@@ -15,11 +15,11 @@ namespace Circuit_Simulator.UI.Specific
     {
         public static CompData rootcomp;
         public static bool IsInOverlayMode = false;
-        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_AfterSimCode_FuncName, Box_InternalState_Length, Box_ClickType, ComponentValueInputCount, OverlayTextBox;
+        public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_InternalState_Length, Box_ClickType, ComponentValueInputCount, OverlayTextBox;
         public UI_Scrollable<UI_Element> Features;
         List<UI_ValueInput> inputlist = new List<UI_ValueInput>();
         List<UI_String> labellist = new List<UI_String>();
-        UI_StringButton Code_Sim_Button, Code_AfterSim_Button;
+        UI_StringButton Code_Sim_Button;
         UI_StringButton[] rotbuttons;
         UI_TexButton[] paintbuttons;
         UI_TexButton overlaybutton;
@@ -48,26 +48,26 @@ namespace Circuit_Simulator.UI.Specific
             
             Features = new UI_Scrollable<UI_Element>(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Box_Category_Label), Point.Zero);
             UI_String SimCode_FuncName_Label = new UI_String(new Pos(5, 5), Point.Zero, UI_Handler.genbutconf, "SC Func. Name: ");
-            UI_String AfterSimCode_FuncName_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "PSC Func. Name: ");
-            UI_String InternalState_Length_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "Int. State Length: ");
+            //UI_String AfterSimCode_FuncName_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "PSC Func. Name: ");
+            UI_String InternalState_Length_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, SimCode_FuncName_Label), Point.Zero, UI_Handler.genbutconf, "Int. State Length: ");
             UI_String ClickType_Label = new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, InternalState_Length_Label), Point.Zero, UI_Handler.genbutconf, "Click Type: ");
 
             int longestLabelX2 = (int)(UI_Handler.genbutconf.font.MeasureString("Int. State Length: ").X);
 
             Box_SimCode_FuncName = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, SimCode_FuncName_Label), new Point(size.X / 3, SimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 24);
-            Box_AfterSimCode_FuncName = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), new Point(size.X / 3, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 24);
-            Box_InternalState_Length = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 3, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 24);
-            Box_ClickType = new UI_ValueInput(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, ClickType_Label), new Point((int)(UI_Handler.genbutconf.font.MeasureString("00").X), AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 1, 1);
+            //Box_AfterSimCode_FuncName = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, AfterSimCode_FuncName_Label), new Point(size.X / 3, AfterSimCode_FuncName_Label.size.Y), UI_Handler.genbutconf, 3, 24);
+            Box_InternalState_Length = new UI_ValueInput(new Pos(longestLabelX2, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, InternalState_Length_Label), new Point(size.X / 3, InternalState_Length_Label.size.Y), UI_Handler.genbutconf, 1, 24);
+            Box_ClickType = new UI_ValueInput(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, ClickType_Label), new Point((int)(UI_Handler.genbutconf.font.MeasureString("00").X), InternalState_Length_Label.size.Y), UI_Handler.genbutconf, 1, 1);
 
 
             Code_Sim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, ClickType_Label), new Point((int)(UI_Handler.buttonwidth * 1.8), UI_Handler.buttonheight), "Edit Sim Code", true, UI_Handler.genbutconf);
-            Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
+            //Code_AfterSim_Button = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point((int)(UI_Handler.buttonwidth * 2.4), UI_Handler.buttonheight), "Edit After-Sim Code", true, UI_Handler.genbutconf);
 
             rotbuttons = new UI_StringButton[8];
             for(int i = 0; i < 8; ++i)
             {
                 if(i == 0)
-                    rotbuttons[i] = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_AfterSim_Button), new Point(25, 25), i.ToString(), true, UI_Handler.behave1conf);
+                    rotbuttons[i] = new UI_StringButton(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, Code_Sim_Button), new Point(25, 25), i.ToString(), true, UI_Handler.behave1conf);
                 else
                     rotbuttons[i] = new UI_StringButton(new Pos(5, 0, ORIGIN.TR, ORIGIN.DEFAULT, rotbuttons[i - 1]), new Point(25, 25), i.ToString(), true, UI_Handler.behave1conf);
                 rotbuttons[i].GotToggledLeft += RotButtonPressed;
@@ -106,7 +106,7 @@ namespace Circuit_Simulator.UI.Specific
 
 
 
-            Features.Add_UI_Elements(spooky, SimCode_FuncName_Label, Box_SimCode_FuncName, AfterSimCode_FuncName_Label, Box_AfterSimCode_FuncName, InternalState_Length_Label, Box_InternalState_Length, ClickType_Label, Box_ClickType, Code_Sim_Button, Code_AfterSim_Button);
+            Features.Add_UI_Elements(spooky, SimCode_FuncName_Label, Box_SimCode_FuncName, InternalState_Length_Label, Box_InternalState_Length, ClickType_Label, Box_ClickType, Code_Sim_Button);
             Features.Add_UI_Elements(rotbuttons);
             Features.Add_UI_Elements(gridpaint, OverlayTextBox_Label, OverlayTextBox);
             Features.Add_UI_Elements(paintbuttons);
@@ -116,9 +116,9 @@ namespace Circuit_Simulator.UI.Specific
             Add_UI_Elements(Box_Name_Label, Box_Name, Box_Category_Label, Box_Category, Features);
             
             Code_Sim_Button.GotActivatedLeft += Code_Sim_Button_Pressed;
-            Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
+            //Code_AfterSim_Button.GotActivatedLeft += Code_AfterSim_Button_Pressed;
             Box_SimCode_FuncName.ValueChanged += Box_SimCode_FuncName_ValueChange;
-            Box_AfterSimCode_FuncName.ValueChanged += Box_AfterSimCode_FuncName_ValueChange;
+            //Box_AfterSimCode_FuncName.ValueChanged += Box_AfterSimCode_FuncName_ValueChange;
             Box_InternalState_Length.ValueChanged += Box_InternalState_Length_ValueChange;
             Box_ClickType.ValueChanged += Box_ClickType_ValueChanged;
             OverlayTextBox.ValueChanged += Box_Overlay_ValueChanged;
@@ -139,11 +139,10 @@ namespace Circuit_Simulator.UI.Specific
         public void SetRootComp(CompData comp)
         {
             rootcomp = comp;
-            RotButtonPressed(rotbuttons[0]);
             Box_Name.value = comp.name;
             Box_Category.value = comp.catagory;
             Box_SimCode_FuncName.value = comp.Code_Sim_FuncName;
-            Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
+            //Box_AfterSimCode_FuncName.value = comp.Code_AfterSim_FuncName;
             Box_InternalState_Length.value = comp.internalstate_length.ToString();
             Box_ClickType.value = rootcomp.IsClickable ? rootcomp.ClickAction_Type.ToString() : "";
             OverlayTextBox.value = rootcomp.OverlayText;
@@ -160,6 +159,7 @@ namespace Circuit_Simulator.UI.Specific
             }
             ComponentValueInputCount.MakeValueChanged();
             LoadInputCount();
+            RotButtonPressed(rotbuttons[0]);
         }
 
         public void RotButtonPressed(object sender)
@@ -277,11 +277,11 @@ namespace Circuit_Simulator.UI.Specific
         {
             rootcomp.Code_Sim_FuncName = Box_SimCode_FuncName.value;
         }
-        public void Box_AfterSimCode_FuncName_ValueChange(object sender)
-        {
-            rootcomp.Code_AfterSim_FuncName = Box_AfterSimCode_FuncName.value;
-            rootcomp.IsUpdateAfterSim = rootcomp.Code_AfterSim_FuncName.Length > 0;
-        }
+        //public void Box_AfterSimCode_FuncName_ValueChange(object sender)
+        //{
+        //    rootcomp.Code_AfterSim_FuncName = Box_AfterSimCode_FuncName.value;
+        //    rootcomp.IsUpdateAfterSim = rootcomp.Code_AfterSim_FuncName.Length > 0;
+        //}
         public void Box_InternalState_Length_ValueChange(object sender)
         {
             rootcomp.internalstate_length = int.Parse("0" + Box_InternalState_Length.value);
