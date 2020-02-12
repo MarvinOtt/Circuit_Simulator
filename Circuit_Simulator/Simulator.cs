@@ -287,6 +287,7 @@ namespace Circuit_Simulator
 
         Point Selection_StartPos, Selection_EndPos, Selection_Size;
         byte[] CopiedIsWire, CopiedCompType;
+        int[] CopiedParameterStates, CopiedParameterStates_Indices;
         List<int> CopiedCompIDs, CopiedCompRot;
         List<Point> CopiedCompPos;
         #endregion
@@ -841,6 +842,22 @@ namespace Circuit_Simulator
                             }
                             Component[] comps = FoundComponents.ToArray();
                             Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
+                            int parametercount = 0, compcount = 0;
+                            for (int i = 0; i < comps.Length; ++i)
+                            {
+                                CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
+                                Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
+                                comprec.Location += comps[i].pos;
+                                Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
+                                if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
+                                {
+                                    compcount++;
+                                    parametercount += compdata.valuebox_length;
+                                }
+                            }
+                            CopiedParameterStates_Indices = new int[compcount + 1];
+                            CopiedParameterStates = new int[parametercount + 1];
+                            parametercount = 0;
                             for (int i = 0; i < comps.Length; ++i)
                             {
                                 CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
@@ -852,6 +869,12 @@ namespace Circuit_Simulator
                                     CopiedCompIDs.Add(comps[i].dataID);
                                     CopiedCompRot.Add(comps[i].rotation);
                                     CopiedCompPos.Add(comps[i].pos - Selection_StartPos);
+                                    CopiedParameterStates_Indices[CopiedCompIDs.Count] = parametercount;
+                                    for(int j = 0; j < compdata.valuebox_length; ++j)
+                                    {
+                                        CopiedParameterStates[parametercount + j] = comps[i].internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j];
+                                    }
+                                    parametercount += compdata.valuebox_length;
                                     List<ComponentPixel> pixels = compdata.data[comps[i].rotation];
                                     for (int j = 0; j < pixels.Count; ++j)
                                     {
@@ -861,6 +884,7 @@ namespace Circuit_Simulator
                                     }
                                 }
                             }
+                            //CopiedParameterStates = new int[parametercount + 1];
                         }
                     }
                     if (Game1.kb_states.IsKeyToggleDown(Keys.Delete))
@@ -1089,7 +1113,15 @@ namespace Circuit_Simulator
                             PlaceArea(new Rectangle(copypos, copysize), data);
                             for (int i = 0; i < CopiedCompIDs.Count; ++i)
                             {
-                                Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, CopiedCompRot[i]);
+                                Component comp = Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, CopiedCompRot[i]);
+                                CompData compdata = Sim_Component.Components_Data[CopiedCompIDs[i]];
+                                if (comp != null)
+                                {
+                                    for (int j = 0; j < compdata.valuebox_length; ++j)
+                                    {
+                                        comp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = CopiedParameterStates[CopiedParameterStates_Indices[i] + j];
+                                    }
+                                }
                             }
                         }
                     }

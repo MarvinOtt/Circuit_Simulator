@@ -579,7 +579,7 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	{
 		uint2 abscoo = uint2((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
 		OUT = getcoloratpos((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
-		uint highlight_state = (uint)(highlighttex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].a * 255.0f + 0.5f);
+		uint highlight_state = (uint)(highlighttex[uint2(abscoo.x, abscoo.y)].a * 255.0f + 0.5f);
 		if (highlight_state > 0)
 			OUT = OUT * 0.5f + float4(1, 1, 1, 1) * 0.5f;
 

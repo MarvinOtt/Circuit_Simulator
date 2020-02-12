@@ -183,7 +183,7 @@ namespace Circuit_Simulator.UI.Specific
                 }
             }
             CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == pressedElement.parent.ID_Name);
-            CompData newComp = new CompData(finalname, "Other", false, false, false);
+            CompData newComp = new CompData(finalname, "Other", false, false);
             curlib.AddComponent(newComp);
 
 

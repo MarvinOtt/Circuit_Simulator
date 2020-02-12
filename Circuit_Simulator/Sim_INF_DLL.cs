@@ -114,18 +114,18 @@ namespace Circuit_Simulator
                 code_withinitfuncs = code_withinitfuncs.Insert(initfuncpos, "compfuncs[index++] = " + curdata.Code_Sim_FuncName + ";");
             }
 
-            int afterupdatefuncpos = code_withinitfuncs.IndexOf("#define _AFTERUPDATEFUNCS_");
-            string code_withafterupdatefuncs = code_withinitfuncs.Remove(afterupdatefuncpos, 26);
-            for (int i = Sim_Component.Components_Data.Count - 1; i >= 0; --i)
-            {
-                CompData curdata = Sim_Component.Components_Data[i];
-                if (curdata.IsUpdateAfterSim)
-                {
-                    code_withafterupdatefuncs = code_withafterupdatefuncs.Insert(afterupdatefuncpos, curdata.Code_AfterSim);
-                }
-            }
+            //int afterupdatefuncpos = code_withinitfuncs.IndexOf("#define _AFTERUPDATEFUNCS_");
+            //string code_withafterupdatefuncs = code_withinitfuncs.Remove(afterupdatefuncpos, 26);
+            //for (int i = Sim_Component.Components_Data.Count - 1; i >= 0; --i)
+            //{
+            //    CompData curdata = Sim_Component.Components_Data[i];
+            //    if (curdata.IsUpdateAfterSim)
+            //    {
+            //        code_withafterupdatefuncs = code_withafterupdatefuncs.Insert(afterupdatefuncpos, curdata.Code_AfterSim);
+            //    }
+            //}
             string pathtoexe = Directory.GetCurrentDirectory();
-            File.WriteAllText(pathtoexe + @"\SIM_CODE\maincode.c", code_withafterupdatefuncs);
+            File.WriteAllText(pathtoexe + @"\SIM_CODE\maincode.c", code_withinitfuncs);
           
             Extensions.CMD_Execute("cmd", "/c " + @"C:\GCC\mingw64\bin\g++" + " -c -m64 -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
             Extensions.CMD_Execute("cmd", "/c" + @"C:\GCC\mingw64\bin\g++" + @" -shared -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.dll" + "\" " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
@@ -140,24 +140,24 @@ namespace Circuit_Simulator
 
             string pathtoexe = Directory.GetCurrentDirectory();
             SimDLL_Handle = DLL_Methods.LoadLibrary(pathtoexe + @"\SIM_CODE\maincode.dll");
-            try
-            {
-                for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
-                {
-                    CompData curdata = Sim_Component.Components_Data[i];
-                    if (curdata.IsUpdateAfterSim)
-                    {
-                        IntPtr AddressOfFunc_AfterSimUpdate = DLL_Methods.GetProcAddress(SimDLL_Handle, curdata.Code_AfterSim_FuncName);
+            //try
+            //{
+            //    for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
+            //    {
+            //        CompData curdata = Sim_Component.Components_Data[i];
+            //        if (curdata.IsUpdateAfterSim)
+            //        {
+            //            IntPtr AddressOfFunc_AfterSimUpdate = DLL_Methods.GetProcAddress(SimDLL_Handle, curdata.Code_AfterSim_FuncName);
 
-                        curdata.AfterSimAction = (CompData.AfterSimAction_Prototype)Marshal.GetDelegateForFunctionPointer(AddressOfFunc_AfterSimUpdate, typeof(CompData.AfterSimAction_Prototype));
-                    }
-                }
-            }
-            catch (Exception exp)
-            {
-                Console.WriteLine("Loading Libraries failed:\n{0}", exp);
-                System.Windows.Forms.MessageBox.Show("Loading Libraries failed:\n" + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            //            curdata.AfterSimAction = (CompData.AfterSimAction_Prototype)Marshal.GetDelegateForFunctionPointer(AddressOfFunc_AfterSimUpdate, typeof(CompData.AfterSimAction_Prototype));
+            //        }
+            //    }
+            //}
+            //catch (Exception exp)
+            //{
+            //    Console.WriteLine("Loading Libraries failed:\n{0}", exp);
+            //    System.Windows.Forms.MessageBox.Show("Loading Libraries failed:\n" + exp.Message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //}
 
             IntPtr AddressOfFunc_InitSimulation = DLL_Methods.GetProcAddress(SimDLL_Handle, "InitSimulation");
             InitSimulation = (InitSimulation_prototype)Marshal.GetDelegateForFunctionPointer(AddressOfFunc_InitSimulation, typeof(InitSimulation_prototype));
@@ -170,7 +170,7 @@ namespace Circuit_Simulator
         public void GenerateSimulationData()
         {
             InitSimulation(Sim_Component.Components_Data.Count);
-            Comp2UpdateAfterSim_count = 0;
+            //Comp2UpdateAfterSim_count = 0;
             int count = 1;
             for(int i = 0; i <= Simulator.highestNetworkID; ++i)
             {
@@ -193,11 +193,11 @@ namespace Circuit_Simulator
                     CompID[compcount++] = infocount;
                     CompInfos[infocount++] = curcomp.dataID;
                     CompData compdata = Sim_Component.Components_Data[curcomp.dataID];
-                    if (compdata.IsUpdateAfterSim)
-                    {
-                        Comp2UpdateAfterSim_ID[Comp2UpdateAfterSim_count] = infocount - 1;
-                        Comp2UpdateAfterSim[Comp2UpdateAfterSim_count++] = i;
-                    }
+                    //if (compdata.IsUpdateAfterSim)
+                    //{
+                    //    Comp2UpdateAfterSim_ID[Comp2UpdateAfterSim_count] = infocount - 1;
+                    //    Comp2UpdateAfterSim[Comp2UpdateAfterSim_count++] = i;
+                    //}
                     for (int j = 0; j < compdata.pin_num; ++j)
                     {
                         CompInfos[infocount++] = WireMap[curcomp.pinNetworkIDs[j]] - 1;
@@ -235,17 +235,17 @@ namespace Circuit_Simulator
                     Simulator.simspeed_count = 0;
                 }
             }
-            fixed (int* p = CompInfos)
-            {
-                for (int i = 0; i < Comp2UpdateAfterSim_count; ++i)
-                {
-                    Component comp = Sim_Component.components[Comp2UpdateAfterSim[i]];
+            //fixed (int* p = CompInfos)
+            //{
+            //    for (int i = 0; i < Comp2UpdateAfterSim_count; ++i)
+            //    {
+            //        Component comp = Sim_Component.components[Comp2UpdateAfterSim[i]];
 
 
 
-                    Sim_Component.Components_Data[comp.dataID].AfterSimAction(comp.internalstates, (IntPtr)p, IntStatesMap[comp.ID]);
-                }
-            }
+            //        Sim_Component.Components_Data[comp.dataID].AfterSimAction(comp.internalstates, (IntPtr)p, IntStatesMap[comp.ID]);
+            //    }
+            //}
         }
     }
 }

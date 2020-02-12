@@ -23,8 +23,8 @@ namespace Circuit_Simulator.COMP
         public float[] OverlayTextSize;
         public Vector2[] OverlayTextPos;
         public string catagory = "Other";
-        public string Code_AfterSim = "", Code_Sim = "";
-        public string Code_Sim_FuncName = "", Code_AfterSim_FuncName = "";
+        public string  Code_Sim = "";
+        public string Code_Sim_FuncName = "";
         public Rectangle[] bounds;
         public int currentrotation;
         public int pin_num, OverlayStateID, totalstate_length;
@@ -32,13 +32,13 @@ namespace Circuit_Simulator.COMP
         public int internalstate_length { get { return _internalstate_length; } set { _internalstate_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
         public int OverlaySeg_length { get { return _overlayseg_length; } set { _overlayseg_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
         public int valuebox_length { get { return _valuebox_length; } set { _valuebox_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
-        public bool IsOverlay, IsUpdateAfterSim, ShowOverlay;
+        public bool IsOverlay, ShowOverlay;
         public bool IsClickable;
         public Point overlaysize;
         public int ClickAction_Type;
         public Action<Component> ClickAction;
-        public delegate void AfterSimAction_Prototype(int[] internalstates, IntPtr CompInfos, int compindex);
-        public AfterSimAction_Prototype AfterSimAction;
+        //public delegate void AfterSimAction_Prototype(int[] internalstates, IntPtr CompInfos, int compindex);
+        //public AfterSimAction_Prototype AfterSimAction;
         public List<Line>[][] overlaylines;
         public List<VertexPositionLine>[][] overlaylines_vertices;
         public Texture2D overlaytex;
@@ -88,13 +88,12 @@ namespace Circuit_Simulator.COMP
             }
         };
 
-        public CompData(string name, string catagory, bool IsOverlay, bool IsClickable, bool IsUpdateAfterSim)
+        public CompData(string name, string catagory, bool IsOverlay, bool IsClickable)
         {
             this.name = name;
             this.catagory = catagory;
             this.IsClickable = IsClickable;
             this.IsOverlay = IsOverlay;
-            this.IsUpdateAfterSim = IsUpdateAfterSim;
             InitializeLineOverlays(1);
             //for (int i = 0; i < 4; ++i)
             //    overlaylines[i] = new List<Line>();
@@ -242,7 +241,6 @@ namespace Circuit_Simulator.COMP
             stream.Write(bytearray, 0, bytearray.Length);
             stream.Write(BitConverter.GetBytes(IsOverlay), 0, 1);
             stream.Write(BitConverter.GetBytes(IsClickable), 0, 1);
-            stream.Write(BitConverter.GetBytes(IsUpdateAfterSim), 0, 1);
             stream.Write(BitConverter.GetBytes(data[0].Count), 0, 4);
             for(int j = 0; j < data[0].Count; ++j)
             {
@@ -283,18 +281,8 @@ namespace Circuit_Simulator.COMP
 
             stream.Write(BitConverter.GetBytes(OverlaySeg_length), 0, 4);
             stream.Write(BitConverter.GetBytes(ClickAction_Type), 0, 4);
-            if (IsUpdateAfterSim)
-            {
-                bytearray = Code_AfterSim.GetBytes();
-                stream.Write(bytearray, 0, bytearray.Length);
-            }
             bytearray = Code_Sim.GetBytes();
             stream.Write(bytearray, 0, bytearray.Length);
-            if (IsUpdateAfterSim)
-            {
-                bytearray = Code_AfterSim_FuncName.GetBytes();
-                stream.Write(bytearray, 0, bytearray.Length);
-            }
             bytearray = Code_Sim_FuncName.GetBytes();
             stream.Write(bytearray, 0, bytearray.Length);
         }

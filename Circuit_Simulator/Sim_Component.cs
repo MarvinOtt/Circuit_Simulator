@@ -338,20 +338,20 @@ namespace Circuit_Simulator
         {
             ComponentDropAtPos(dataID, pos, Components_Data[dataID].currentrotation);
         }
-        public static void ComponentDropAtPos(int dataID, Point pos, int rotation)
+        public static Component ComponentDropAtPos(int dataID, Point pos, int rotation)
         {
-                if (Component.IsValidPlacement(dataID, pos, rotation))
-                {
-                    FileHandler.IsUpToDate = false;
-                    Component newcomp;
-                    if (emptyComponentID_count > 0)
-                        newcomp = new Component(dataID, emptyComponentID[--emptyComponentID_count]);
-                    else
-                        newcomp = new Component(dataID, nextComponentID++);
-                    components[newcomp.ID] = newcomp;
-                    newcomp.Place(pos, rotation);
-
-                }
+            Component newcomp = null;
+            if (Component.IsValidPlacement(dataID, pos, rotation))
+            {
+                FileHandler.IsUpToDate = false;
+                if (emptyComponentID_count > 0)
+                    newcomp = new Component(dataID, emptyComponentID[--emptyComponentID_count]);
+                else
+                    newcomp = new Component(dataID, nextComponentID++);
+                components[newcomp.ID] = newcomp;
+                newcomp.Place(pos, rotation);
+            }
+            return newcomp;
         }
 
         public void DeactivateDrop()
@@ -423,6 +423,8 @@ namespace Circuit_Simulator
                 for(int k = 0; k < compdata.OverlaySeg_length; ++k)
                 {
                     int ovstate = Sim_INF_DLL.CompInfos[Sim_INF_DLL.IntStatesMap[compID] + ovstateID + k];//  components[compID].internalstates[ovstateID + k];
+                    if (!Simulator.IsSimulating)
+                        ovstate = 0;
                     Component comp = components[compID];
                     List<VertexPositionLine> CompOverlaylines = Components_Data[comp.dataID].overlaylines_vertices[k][comp.rotation];
                     for (int j = 0; j < CompOverlaylines.Count; ++j)

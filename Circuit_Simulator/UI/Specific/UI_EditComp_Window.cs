@@ -30,7 +30,7 @@ namespace Circuit_Simulator.UI.Specific
         Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(0.15f, 0.15f, 0.15f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
 
         //Code Boxes
-        public static UI_TextBox CodeBox_Sim, CodeBox_AfterSim;
+        public static UI_TextBox CodeBox_Sim;
 
         public UI_EditComp_Window(Pos pos, Point size, string title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size, title, minsize, conf, IsResizeable )
         {
@@ -126,9 +126,9 @@ namespace Circuit_Simulator.UI.Specific
 
             // Code Boxes
             CodeBox_Sim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
-            CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
+            //CodeBox_AfterSim = new UI_TextBox(new Pos(0), new Point(250, 400), UI_Handler.gen_conf);
             CodeBox_Sim.LostFocus += Code_Sim_LostFocus;
-            CodeBox_AfterSim.LostFocus += Code_AfterSim_LostFocus;
+            //CodeBox_AfterSim.LostFocus += Code_AfterSim_LostFocus;
             UpdatePos();
             Resize();
             GetsUpdated = GetsDrawn = false;
@@ -149,7 +149,7 @@ namespace Circuit_Simulator.UI.Specific
             ComponentValueInputCount.value = rootcomp.valuebox_length.ToString();
 
             CodeBox_Sim.t.Text = comp.Code_Sim;
-            CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
+            //CodeBox_AfterSim.t.Text = comp.Code_AfterSim;
             gridpaint.pixel.Clear();
             gridpaint.currot = 0;
             parameterlabels.Clear();
@@ -318,19 +318,19 @@ namespace Circuit_Simulator.UI.Specific
         {
             CodeBox_Sim.Show();
         }
-        public void Code_AfterSim_Button_Pressed(object sender)
-        {
-            CodeBox_AfterSim.Show();
-        }
+        //public void Code_AfterSim_Button_Pressed(object sender)
+        //{
+        //    CodeBox_AfterSim.Show();
+        //}
 
         public void Code_Sim_LostFocus(object sender)
         {
             rootcomp.Code_Sim = CodeBox_Sim.t.Text;
         }
-        public void Code_AfterSim_LostFocus(object sender)
-        {
-            rootcomp.Code_AfterSim = CodeBox_AfterSim.t.Text;
-        }
+        //public void Code_AfterSim_LostFocus(object sender)
+        //{
+        //    rootcomp.Code_AfterSim = CodeBox_AfterSim.t.Text;
+        //}
 
 
 

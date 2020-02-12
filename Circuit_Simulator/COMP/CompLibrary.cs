@@ -196,10 +196,10 @@ namespace Circuit_Simulator.COMP
                 bool IsOverlay = BitConverter.ToBoolean(intbuffer, 0);
                 stream.Read(intbuffer, 0, 1);
                 bool IsClickable = BitConverter.ToBoolean(intbuffer, 0);
-                stream.Read(intbuffer, 0, 1);
-                bool IsUpdateAfterSim = BitConverter.ToBoolean(intbuffer, 0);
+                //stream.Read(intbuffer, 0, 1);
+                //bool IsUpdateAfterSim = BitConverter.ToBoolean(intbuffer, 0);
 
-                CompData newcomp = new CompData(name, category, IsOverlay, IsClickable, IsUpdateAfterSim);
+                CompData newcomp = new CompData(name, category, IsOverlay, IsClickable);
                 stream.Read(intbuffer, 0, 4);
                 int Pixel_Num = BitConverter.ToInt32(intbuffer, 0);
                 for (int k = 0; k < Pixel_Num; ++k)
@@ -262,11 +262,20 @@ namespace Circuit_Simulator.COMP
                 newcomp.OverlaySeg_length = BitConverter.ToInt32(intbuffer, 0);
                 stream.Read(intbuffer, 0, 4);
                 newcomp.ClickAction_Type = BitConverter.ToInt32(intbuffer, 0);
-                if (IsUpdateAfterSim)
-                    newcomp.Code_AfterSim = stream.ReadNullTerminated();
+                //if (IsUpdateAfterSim)
+                //{
+                //    int breaki = 1;
+                //    string trash = stream.ReadNullTerminated();
+                //}
+                //    newcomp.Code_AfterSim = stream.ReadNullTerminated();
                 newcomp.Code_Sim = stream.ReadNullTerminated();
-                if (IsUpdateAfterSim)
-                    newcomp.Code_AfterSim_FuncName = stream.ReadNullTerminated();
+                //if (IsUpdateAfterSim)
+                //{
+                //    int breaki = 1;
+                //    string trash = stream.ReadNullTerminated();
+                //}
+                //if (IsUpdateAfterSim)
+                //    newcomp.Code_AfterSim_FuncName = stream.ReadNullTerminated();
                 newcomp.Code_Sim_FuncName = stream.ReadNullTerminated();
 
                 newcomp.Finish();
