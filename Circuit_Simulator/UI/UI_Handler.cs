@@ -276,9 +276,19 @@ namespace Circuit_Simulator
             // Play Button Config
             QuickHotbar.ui_elements[0].UpdateFunctions.Add(delegate ()
             {
-                if(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
+                if (((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
+                {
                     Game1.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
+                }
             });
+
+            //Reset Button Config
+            ((UI_TexButton)QuickHotbar.ui_elements[1]).GotActivatedLeft += delegate (object sender)
+            {
+                Simulator.cursimframe = 0;
+                ((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated = false;
+                Simulator.IsSimulating = false;
+            };
 
             // ComponentBox UI Toggle
             ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate () 

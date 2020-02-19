@@ -56,7 +56,7 @@ namespace Circuit_Simulator.COMP
 
                     byte state = (byte)comp.internalstates[segid];
 
-                    if (!Simulator.IsSimulating)
+                    if (Simulator.cursimframe == 0)
                     {
                         for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
                         {
@@ -75,7 +75,7 @@ namespace Circuit_Simulator.COMP
 
                 byte state = (byte)comp.internalstates[segid];
 
-                if (!Simulator.IsSimulating)
+                if (Simulator.cursimframe == 0)
                 {
                     for (int i = 0; i < comp.pinNetworkIDs.Length; ++i)
                     {

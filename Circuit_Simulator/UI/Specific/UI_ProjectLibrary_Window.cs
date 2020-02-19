@@ -59,7 +59,9 @@ namespace Circuit_Simulator.UI.Specific
             ChangedUpdate2True();
             CompLibrary.ReloadComponentData();
             UI_Handler.InitComponents();
-            Sim_INF_DLL.GenerateDllCodeAndCompile();
+            string[] libfiles = (from s in CompLibrary.AllUsedLibraries select s.SaveFile).ToArray();
+            Sim_INF_DLL.LoadLibrarys(libfiles);
+            //Sim_INF_DLL.GenerateDllCodeAndCompile();
         }
 
         public void LibFolded(object sender)

@@ -92,7 +92,7 @@ namespace Circuit_Simulator
             //Check if component can be placed
             List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[rotation];
             bool IsPlacementValid = true;
-            if (Simulator.IsSimulating)
+            if (Simulator.cursimframe > 0)
                 IsPlacementValid = false;
             for (int i = 0; i < datapixel.Count; ++i)
             {
@@ -423,7 +423,7 @@ namespace Circuit_Simulator
                 for(int k = 0; k < compdata.OverlaySeg_length; ++k)
                 {
                     int ovstate = Sim_INF_DLL.CompInfos[Sim_INF_DLL.IntStatesMap[compID] + ovstateID + k];//  components[compID].internalstates[ovstateID + k];
-                    if (!Simulator.IsSimulating)
+                    if (Simulator.cursimframe == 0)
                         ovstate = 0;
                     Component comp = components[compID];
                     List<VertexPositionLine> CompOverlaylines = Components_Data[comp.dataID].overlaylines_vertices[k][comp.rotation];

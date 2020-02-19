@@ -64,7 +64,7 @@ namespace Circuit_Simulator
             Comp2UpdateAfterSim = new int[1000000];
             Comp2UpdateAfterSim_ID = new int[1000000];
 
-            InitSimulation(Sim_Component.Components_Data.Count);
+            //InitSimulation(Sim_Component.Components_Data.Count);
 
         }
 
@@ -167,7 +167,7 @@ namespace Circuit_Simulator
 
         }
 
-        public void GenerateSimulationData()
+        public static void GenerateSimulationData()
         {
             InitSimulation(Sim_Component.Components_Data.Count);
             //Comp2UpdateAfterSim_count = 0;
@@ -219,10 +219,12 @@ namespace Circuit_Simulator
 
         public void SimulateOneStep()
         {
+
             if (Simulator.simspeed >= 0)
             {
                 for (int i = 0; i < (int)Math.Pow(2, Simulator.simspeed); ++i)
                 {
+                    Simulator.cursimframe++;
                     DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
                 }
             }
@@ -231,6 +233,7 @@ namespace Circuit_Simulator
                 Simulator.simspeed_count++;
                 if(Simulator.simspeed_count >= (int)Math.Pow(2, -Simulator.simspeed))
                 {
+                    Simulator.cursimframe++;
                     DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
                     Simulator.simspeed_count = 0;
                 }
