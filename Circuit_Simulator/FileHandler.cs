@@ -41,14 +41,11 @@ namespace Circuit_Simulator
                 int wirecount = 0;
                 byte[] bytearray;
 
+                stream.Write(BitConverter.GetBytes(Simulator.ProjectSizeX), 0, 4);
+                stream.Write(BitConverter.GetBytes(Simulator.ProjectSizeY), 0, 4);
                 #region Save Library & Comp Table
 
-                //stream.Write(BitConverter.GetBytes(CompLibrary.AllLibraries.Count), 0, 4);
-                //for (int i = 0; i < CompLibrary.AllLibraries.Count; ++i)
-                //{
-                //    bytearray = CompLibrary.AllLibraries[i].name.GetBytes();
-                //    stream.Write(bytearray, 0, bytearray.Length);
-                //}
+
                 stream.Write(BitConverter.GetBytes(CompLibrary.AllUsedLibraries.Count), 0, 4);
                 string workingPath = SaveFile;
                 int index = 0;
@@ -242,6 +239,14 @@ namespace Circuit_Simulator
                     FileStream stream = new FileStream(filename, FileMode.Open);
 
                     byte[] intbuffer = new byte[4];
+                    //stream.Read(intbuffer, 0, 4);
+                    //int XGridSize = BitConverter.ToInt32(intbuffer, 0);
+                    //Simulator.SIZEX = Simulator.ProjectSizeX = XGridSize;
+                    //Simulator.MAXCOO = Simulator.SIZEX - Simulator.BORDERSIZE;
+
+                    //stream.Read(intbuffer, 0, 4);
+                    //int YGridSize = BitConverter.ToInt32(intbuffer, 0);
+                    //Simulator.SIZEY = Simulator.ProjectSizeY = YGridSize;
 
                     Sim_Component.components = new Component[Sim_Component.components.Length];
                     Simulator.networks = new Network[Simulator.networks.Length];

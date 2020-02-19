@@ -244,13 +244,14 @@ namespace Circuit_Simulator
         public const int TOOL_COMPONENT = 1;
         public const int TOOL_WIRE = 2;
 
-        public const int SIZEX = 10240;
-        public const int SIZEY = 10240;
+        public static int SIZEX = 6144;
+        public static int SIZEY = 6144;
         public const int LAYER_NUM = 7;
         public const int BORDERSIZE = 1;
         public const int MINCOO = BORDERSIZE;
-        public const int MAXCOO = SIZEX - BORDERSIZE;
-
+        public static int MAXCOO = SIZEX - BORDERSIZE;
+        public static int ProjectSizeX = 6144;
+        public static int ProjectSizeY = 6144;
         // Simulator Parts
         public Sim_Component sim_comp;
         public Sim_INF_DLL sim_inf_dll;

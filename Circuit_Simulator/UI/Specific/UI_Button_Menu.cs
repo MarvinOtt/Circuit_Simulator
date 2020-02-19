@@ -10,11 +10,11 @@ using static Circuit_Simulator.UI.UI_STRUCTS;
 
 namespace Circuit_Simulator.UI
 {
-    public class Button_Menu : UI_Button
+    public class UI_Button_Menu : UI_Button
     {
         string Title;
         float Title_height;
-        public Button_Menu(Pos pos, Point size, string Title, Generic_Conf conf) : base(pos, size, false, conf)
+        public UI_Button_Menu(Pos pos, Point size, string Title, Generic_Conf conf) : base(pos, size, false, conf)
         {  
             Vector2 title_dim = conf.font.MeasureString(Title);
             Title_height = title_dim.Y;

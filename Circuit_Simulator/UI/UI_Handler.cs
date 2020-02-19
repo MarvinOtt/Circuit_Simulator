@@ -110,30 +110,30 @@ namespace Circuit_Simulator
 
             // Initializing Menus for Toolbar
             ButtonMenu_File = new UI_TB_Dropdown(new Pos(0, 25));
-            string[] FileButton_Names = new string[] { "Save", "Save As", "Open", "Open Recent" };
+            string[] FileButton_Names = new string[] { "Save", "Save As", "Open"};
             for(int i = 0; i < FileButton_Names.Length; ++i)
-                ButtonMenu_File.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), FileButton_Names[i], toolbarddconf2));
+                ButtonMenu_File.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), FileButton_Names[i], toolbarddconf2));
 
             ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Pos(0, 25));
-            string[] ConfigButton_Names = new string[] { "Test", "Test", "Test" };
+            string[] ConfigButton_Names = new string[] { "Tiny Grid", "Small Grid", "Medium Grid", "Big Grid", "Large Grid" };
             for (int i = 0; i < ConfigButton_Names.Length; ++i)
-                ButtonMenu_Config.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ConfigButton_Names[i], toolbarddconf2));
+                ButtonMenu_Config.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ConfigButton_Names[i], toolbarddconf2));
 
             ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Pos(0, 25));
             string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Layer Hotbar" };
             for (int i = 0; i < ViewButton_Names.Length; ++i)
             {
-                ButtonMenu_View.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i], toolbarddconf1));
+                ButtonMenu_View.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i], toolbarddconf1));
             }
             ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Pos(0, 25));
-            string[] ToolsButton_Names = new string[] { "Libary Editor", "Project Libararies", "Test" };
+            string[] ToolsButton_Names = new string[] { "Libary Editor", "Project Libararies"};
             for (int i = 0; i < ToolsButton_Names.Length; ++i)
-                ButtonMenu_Tools.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf1));
+                ButtonMenu_Tools.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf1));
 
             ButtonMenu_Help = new UI_TB_Dropdown(Toolbar.ui_elements[4].pos + new Pos(0, 25));
-            string[] HelpButton_Names = new string[] { "Test", "Test", "Test" };
+            string[] HelpButton_Names = new string[] { "Developer Email: a.schoenhofer.business@gmail.com", "Developer Email: marvinott20@gmail.com", "User Guide in Application Folder" };
             for (int i = 0; i < HelpButton_Names.Length; ++i)
-                ButtonMenu_Help.Add_UI_Elements(new Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), HelpButton_Names[i], toolbarddconf2));
+                ButtonMenu_Help.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), HelpButton_Names[i], toolbarddconf2));
 
             //QuickHotbar
             QuickHotbar = new UI_QuickHBElement<UI_Element>(new Pos(0, Toolbar.size.Y));
@@ -280,10 +280,40 @@ namespace Circuit_Simulator
                     Game1.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
             });
 
+            //Config Button Configs
+            ((UI_Button_Menu)ButtonMenu_Config.ui_elements[0]).GotActivatedLeft += delegate (object sender)
+            {
+                Simulator.ProjectSizeX = 2048;
+                Simulator.ProjectSizeY = 2048;
+            };
+
+            ((UI_Button_Menu)ButtonMenu_Config.ui_elements[1]).GotActivatedLeft += delegate (object sender)
+            {
+                Simulator.ProjectSizeX = 4096;
+                Simulator.ProjectSizeY = 4096; 
+            };
+            ((UI_Button_Menu)ButtonMenu_Config.ui_elements[2]).GotActivatedLeft += delegate (object sender)
+            {
+                Simulator.ProjectSizeX = 6144;
+                Simulator.ProjectSizeY = 6144;
+            };
+            ((UI_Button_Menu)ButtonMenu_Config.ui_elements[3]).GotActivatedLeft += delegate (object sender)
+            {
+                Simulator.ProjectSizeX = 10240;
+                Simulator.ProjectSizeY = 10240;
+            };
+            ((UI_Button_Menu)ButtonMenu_Config.ui_elements[4]).GotActivatedLeft += delegate (object sender)
+            {
+                Simulator.ProjectSizeX = 16384;
+                Simulator.ProjectSizeY = 16384;
+            };
+
+
+
             // ComponentBox UI Toggle
             ButtonMenu_View.ui_elements[0].UpdateFunctions.Add(delegate () 
             {
-                Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[0];
+                UI_Button_Menu current = (UI_Button_Menu)ButtonMenu_View.ui_elements[0];
                 if (current.IsToggle)
                     ComponentBox.GetsUpdated = ComponentBox.GetsDrawn = current.IsActivated;
                 else
@@ -292,7 +322,7 @@ namespace Circuit_Simulator
             // Library Window UI Toggle
             ButtonMenu_Tools.ui_elements[0].UpdateFunctions.Add(delegate ()
             {
-                Button_Menu current = (Button_Menu)ButtonMenu_Tools.ui_elements[0];
+                UI_Button_Menu current = (UI_Button_Menu)ButtonMenu_Tools.ui_elements[0];
                 if (current.IsToggle)
                     LibraryEditWindow.GetsUpdated = LibraryEditWindow.GetsDrawn = current.IsActivated;
                 else
@@ -300,7 +330,7 @@ namespace Circuit_Simulator
             });
             ButtonMenu_Tools.ui_elements[1].UpdateFunctions.Add(delegate ()
             {
-                Button_Menu current = (Button_Menu)ButtonMenu_Tools.ui_elements[1];
+                UI_Button_Menu current = (UI_Button_Menu)ButtonMenu_Tools.ui_elements[1];
                 if (current.IsToggle)
                     ProjectLibWindow.GetsUpdated = ProjectLibWindow.GetsDrawn = current.IsActivated;
                 else
@@ -309,7 +339,7 @@ namespace Circuit_Simulator
             // QuickHotbar UI Toggle
             ButtonMenu_View.ui_elements[1].UpdateFunctions.Add(delegate ()
             {
-                Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[1];
+                UI_Button_Menu current = (UI_Button_Menu)ButtonMenu_View.ui_elements[1];
                 if (current.IsToggle)
                     QuickHotbar.GetsUpdated = QuickHotbar.GetsDrawn = current.IsActivated;
                 else
@@ -318,7 +348,7 @@ namespace Circuit_Simulator
             // Layer Select UI Toggle
             ButtonMenu_View.ui_elements[2].UpdateFunctions.Add(delegate ()
             {
-                Button_Menu current = (Button_Menu)ButtonMenu_View.ui_elements[2];
+                UI_Button_Menu current = (UI_Button_Menu)ButtonMenu_View.ui_elements[2];
                 if (current.IsToggle)
                     LayerSelectHotbar.GetsUpdated = LayerSelectHotbar.GetsDrawn = current.IsActivated;
                 else
