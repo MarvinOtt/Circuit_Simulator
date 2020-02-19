@@ -43,6 +43,7 @@ namespace Circuit_Simulator
 
                 stream.Write(BitConverter.GetBytes(Simulator.ProjectSizeX), 0, 4);
                 stream.Write(BitConverter.GetBytes(Simulator.ProjectSizeY), 0, 4);
+
                 #region Save Library & Comp Table
 
 
@@ -239,14 +240,17 @@ namespace Circuit_Simulator
                     FileStream stream = new FileStream(filename, FileMode.Open);
 
                     byte[] intbuffer = new byte[4];
-                    //stream.Read(intbuffer, 0, 4);
-                    //int XGridSize = BitConverter.ToInt32(intbuffer, 0);
-                    //Simulator.SIZEX = Simulator.ProjectSizeX = XGridSize;
-                    //Simulator.MAXCOO = Simulator.SIZEX - Simulator.BORDERSIZE;
+                    stream.Read(intbuffer, 0, 4);
+                    int XGridSize = BitConverter.ToInt32(intbuffer, 0);
+                    Simulator.SIZEX = Simulator.ProjectSizeX = XGridSize;
+                    Simulator.MAXCOO = Simulator.SIZEX - Simulator.BORDERSIZE;
 
-                    //stream.Read(intbuffer, 0, 4);
-                    //int YGridSize = BitConverter.ToInt32(intbuffer, 0);
-                    //Simulator.SIZEY = Simulator.ProjectSizeY = YGridSize;
+                    stream.Read(intbuffer, 0, 4);
+                    int YGridSize = BitConverter.ToInt32(intbuffer, 0);
+                    Simulator.SIZEY = Simulator.ProjectSizeY = YGridSize;
+                    Simulator.linedrawingmatrix = Matrix.CreateOrthographicOffCenter(0, Simulator.SIZEX + 0.01f, Simulator.SIZEY + 0.01f, 0, 0, 1);
+                    Simulator.sim_effect.Parameters["worldsizex"].SetValue(Simulator.SIZEX);
+                    Simulator.sim_effect.Parameters["worldsizey"].SetValue(Simulator.SIZEY);
 
                     Sim_Component.components = new Component[Sim_Component.components.Length];
                     Simulator.networks = new Network[Simulator.networks.Length];
@@ -279,7 +283,11 @@ namespace Circuit_Simulator
 
                     Simulator.sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
                     Simulator.logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
                     Sim_Component.CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Sim_Component.HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
+                    Sim_Component.IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+
                     Simulator.highestNetworkID = 4;
 
                     #region Load Tables and Check for Components

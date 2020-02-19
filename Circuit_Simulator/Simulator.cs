@@ -258,7 +258,7 @@ namespace Circuit_Simulator
 
         public static Effect sim_effect, line_effect, iswirerender_effect;
         Texture2D copyWiretex, copyComptex;
-        RenderTarget2D main_target, WireCalc_target;
+        public static RenderTarget2D main_target, WireCalc_target;
         public static RenderTarget2D logic_target, sec_target;
         public static Network CalcNetwork;
 
