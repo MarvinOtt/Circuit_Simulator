@@ -280,6 +280,7 @@ namespace Circuit_Simulator
 
         public static Point worldpos, copymouseoffset, copypos, copysize;
         public static int worldzoom = 0;
+        public static int cursimframe = 0;
 
         public static int toolmode = TOOL_WIRE, oldtoolmode = TOOL_WIRE, simspeed, simspeed_count, selectstate = 0, copystate;
         public static bool IsSimulating;
@@ -704,8 +705,11 @@ namespace Circuit_Simulator
         public void SetSimulationState(bool IsSimulating)
         {
             Simulator.IsSimulating = IsSimulating;
-            if (IsSimulating)
-                sim_inf_dll.GenerateSimulationData();
+            if (Simulator.cursimframe == 0)
+            {
+                cursimframe = 1;
+                Sim_INF_DLL.GenerateSimulationData();
+            }
         }
 
         public byte GetUILayers()
@@ -814,7 +818,7 @@ namespace Circuit_Simulator
                 Selection_Size = (end - start) + new Point(1);
                 selectstate = 2;
             }
-            if (!IsSimulating)
+            if (cursimframe == 0)
             {
                 // Copying
                 if (selectstate == 2)
@@ -1130,7 +1134,7 @@ namespace Circuit_Simulator
             }
 
             // Handling Tool Modes
-            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && !IsSimulating && selectstate == 0)
+            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && cursimframe == 0 && selectstate == 0)
             {
 
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.RightButton == ButtonState.Pressed)
@@ -1143,10 +1147,10 @@ namespace Circuit_Simulator
                     PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
                 }
 
-                if (!IsSimulating && IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0 && Game1.kb_states.IsKeyToggleDown(Keys.L))
-                {
-                    networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state ^= 1;
-                }
+                //if (!IsSimulating && IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0 && Game1.kb_states.IsKeyToggleDown(Keys.L))
+                //{
+                //    networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state ^= 1;
+                //}
 
                 // Placing Wires
                 if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)

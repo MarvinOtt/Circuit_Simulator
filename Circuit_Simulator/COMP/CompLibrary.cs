@@ -38,6 +38,7 @@ namespace Circuit_Simulator.COMP
         public static void ReloadComponentData()
         {
             Sim_Component.Components_Data.Clear();
+            Sim_Component.CompMayneedoverlay.Clear();
             for(int i = 0; i < AllUsedLibraries.Count; i++)
             {
                 for(int j = 0; j < AllUsedLibraries[i].Components.Count; j++)
