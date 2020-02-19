@@ -55,6 +55,8 @@ namespace Circuit_Simulator
         public static UI_QuickHBElement<UI_Element> QuickHotbar;
         public static UI_QuickHBElement<UI_Element> LayerSelectHotbar;
         public static UI_QuickHBElement<UI_TexButton> WireMaskHotbar;
+        public static UI_Window SignalAnalyze;
+        public static UI_SignalAnalyze signal;
         UI_Element[] toolbar_menus;
         public static UI_ComponentBox ComponentBox;
         public static UI_List<UI_TexButton> wire_ddbl;
@@ -237,7 +239,11 @@ namespace Circuit_Simulator
             parameterWindow = new UI_ParameterWindow(new Pos(400, 250), new Point(300, 250), new Point(300, 100), componentconf);
             parameterWindow.GetsUpdated = parameterWindow.GetsDrawn = false;
 
-            
+            //SignalAnalyze
+            SignalAnalyze = new UI_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point(800, 500), "Analyze", new Point(200, 80), componentconf, true);
+            signal = new UI_SignalAnalyze(new Pos(-5, UI_Window.headheight + 5, ORIGIN.TR, ORIGIN.TR, SignalAnalyze), new Point(500, 80));
+            SignalAnalyze.Add_UI_Elements(signal);
+            SignalAnalyze.GetsUpdated = SignalAnalyze.GetsDrawn = false;
             InitializeUISettings(spriteBatch);
             
         }

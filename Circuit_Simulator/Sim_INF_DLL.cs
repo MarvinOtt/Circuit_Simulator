@@ -35,6 +35,7 @@ namespace Circuit_Simulator
         public static int comp_num;
         public static int[] Comp2UpdateAfterSim, Comp2UpdateAfterSim_ID;
         public static int Comp2UpdateAfterSim_count;
+        public static bool IsSimStep = false;
 
         public static IntPtr SimDLL_Handle = IntPtr.Zero;
 
@@ -219,11 +220,13 @@ namespace Circuit_Simulator
 
         public void SimulateOneStep()
         {
+            IsSimStep = false;
             if (Simulator.simspeed >= 0)
             {
                 for (int i = 0; i < (int)Math.Pow(2, Simulator.simspeed); ++i)
                 {
                     DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
+                    IsSimStep = true;
                 }
             }
             else
@@ -233,6 +236,7 @@ namespace Circuit_Simulator
                 {
                     DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
                     Simulator.simspeed_count = 0;
+                    IsSimStep = true;
                 }
             }
             //fixed (int* p = CompInfos)

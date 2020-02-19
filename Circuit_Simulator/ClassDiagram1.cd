@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Circuit_Simulator.UI_Element" Collapsed="true">
+    <Position X="12.5" Y="9.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAwAAiAAgACBAgRIAICgAICQCADCIAAAAFAAABQAAAA=</HashCode>
+      <FileName>UI\UI_Element.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Button" Collapsed="true">
+    <Position X="14.75" Y="4.75" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="5.096" />
+        <Point X="14.75" Y="5.096" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAgAgCAgIAAAAACAAIBAAACBBAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>UI\UI_Button.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_StringButton" Collapsed="true">
+    <Position X="17.5" Y="6" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Button" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="5.125" />
+        <Point X="17.125" Y="5.125" />
+        <Point X="17.125" Y="6.346" />
+        <Point X="17.5" Y="6.346" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAACAAAQAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_StringButton.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI_MultiElement&lt;T&gt;" Collapsed="true">
+    <Position X="14.75" Y="9.25" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="9.531" />
+        <Point X="14.75" Y="9.531" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAgAACAAgAAAAAAAAAAABAAAAACAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_MultiElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Window" Collapsed="true">
+    <Position X="17.5" Y="8.5" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="8.846" />
+        <Point X="17.5" Y="8.846" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AIiAAToAgAAgBEACoogAAACDbgAAAAAAAAABAAEADAA=</HashCode>
+      <FileName>UI\UI_Window.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Button_Menu" Collapsed="true">
+    <Position X="17.5" Y="4.5" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Button" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="5.125" />
+        <Point X="17.125" Y="5.125" />
+        <Point X="17.125" Y="4.813" />
+        <Point X="17.5" Y="4.813" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAEAAAAAAAACAAAAAAAAAQAAAAAAAAAA=</HashCode>
+      <FileName>UI\Specific\UI_Button_Menu.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_Categorie&lt;T&gt;" Collapsed="true">
+    <Position X="17.5" Y="7" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="7.346" />
+        <Point X="17.5" Y="7.346" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>BAggBCAAwAAAAIQAAAAAAACQBAChACAAAAAAAgAAAAA=</HashCode>
+      <FileName>UI\Specific\UI_Categorie.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_Component" Collapsed="true">
+    <Position X="20.25" Y="6" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAgAAKAAgAAAgAAAAAAAAACAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Specific\UI_Component.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_Drag_Comp" Collapsed="true">
+    <Position X="14.75" Y="6.25" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="6.596" />
+        <Point X="14.75" Y="6.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAACAAAAAAQAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Specific\UI_Drag_Comp.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_GridPaint" Collapsed="true">
+    <Position X="14.75" Y="5.5" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="5.846" />
+        <Point X="14.75" Y="5.846" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>QAAQCDEAAjAAgAEQAIAAABCADCIAgQEAAAAQAAoAAEA=</HashCode>
+      <FileName>UI\Specific\UI_GridPaint.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_QuickHBElement&lt;T&gt;" Collapsed="true">
+    <Position X="17.5" Y="10" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="10.346" />
+        <Point X="17.5" Y="10.346" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAAACCAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Specific\UI_QuickHBElement.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Box&lt;T&gt;" Collapsed="true">
+    <Position X="17.5" Y="11.5" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="11.846" />
+        <Point X="17.5" Y="11.846" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAACCCAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_Box.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Configs" Collapsed="true">
+    <Position X="12.5" Y="8.75" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Nested Types" Collapsed="false" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_Configs.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI_Handler" Collapsed="true">
+    <Position X="12.5" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EYRCDhCKQkkQBwCRAFQARAACagIgENIEQkKxgCAtAUo=</HashCode>
+      <FileName>UI\UI_Handler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_InfoBox" Collapsed="true">
+    <Position X="20.25" Y="11.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAABAAAAACAAAAAACAAAQAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_InfoBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_List&lt;T&gt;" Collapsed="true">
+    <Position X="17.5" Y="10.75" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="11.096" />
+        <Point X="17.5" Y="11.096" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAgAACAAAAAAAAAAAAAAAAAQAACAAgAAAAAEAAAAgEA=</HashCode>
+      <FileName>UI\UI_List.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Scrollable&lt;T&gt;" Collapsed="true">
+    <Position X="17.5" Y="9.25" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="9.562" />
+        <Point X="17.5" Y="9.562" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAgAACAAAAAAQAAAIAAAAACAAAAAAgAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_Scrollable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_String" Collapsed="true">
+    <Position X="14.75" Y="7.75" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="8.096" />
+        <Point X="14.75" Y="8.096" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAIAAACABAAAACAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_String.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_STRUCTS" Collapsed="true">
+    <Position X="12.5" Y="8" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_STRUCTS.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_TB_Dropdown" Collapsed="true">
+    <Position X="17.5" Y="7.75" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_MultiElement&lt;T&gt;" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="9.625" />
+        <Point X="17.125" Y="9.625" />
+        <Point X="17.125" Y="8.096" />
+        <Point X="17.5" Y="8.096" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAAAAAACCCAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_TB_Dropdown.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_TextBox" Collapsed="true">
+    <Position X="14.75" Y="8.5" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="8.846" />
+        <Point X="14.75" Y="8.846" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AQAAACAAAAAAAAAAABAAACCAACAHAAAAAAQAAAgAAAA=</HashCode>
+      <FileName>UI\UI_TextBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_TexButton" Collapsed="true">
+    <Position X="17.5" Y="3.75" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Button" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="5.125" />
+        <Point X="17.125" Y="5.125" />
+        <Point X="17.125" Y="4.096" />
+        <Point X="17.5" Y="4.096" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAIAAAACgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_TexButton.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_ValueInput" Collapsed="true">
+    <Position X="14.75" Y="7" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" FixedFromPoint="true">
+      <Path>
+        <Point X="14" Y="9.812" />
+        <Point X="14.375" Y="9.812" />
+        <Point X="14.375" Y="7.346" />
+        <Point X="14.75" Y="7.346" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AQQAECQAAAAAGAAAAAAAAACAJEAAACEAAAAUAAAAAAA=</HashCode>
+      <FileName>UI\UI_ValueInput.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Dropdown_Button" Collapsed="true">
+    <Position X="17.5" Y="5.25" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Button" FixedFromPoint="true">
+      <Path>
+        <Point X="16.75" Y="5.125" />
+        <Point X="17.125" Y="5.125" />
+        <Point X="17.125" Y="5.596" />
+        <Point X="17.5" Y="5.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAgAACAAAAAAAAAAAIAAAACgAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\UI_Dropdown_Button.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_ProjectLibrary_Window" Collapsed="true">
+    <Position X="20.25" Y="7" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Window" FixedFromPoint="true">
+      <Path>
+        <Point X="19.5" Y="8.812" />
+        <Point X="19.875" Y="8.812" />
+        <Point X="19.875" Y="7.346" />
+        <Point X="20.25" Y="7.346" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAIAICgAAAAACIACAEAAAACAAAAAAAAACAEQAJAAAAQ=</HashCode>
+      <FileName>UI\Specific\UI_ProjectLibrary_Window.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_ParameterWindow" Collapsed="true">
+    <Position X="20.25" Y="7.75" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Window" FixedFromPoint="true">
+      <Path>
+        <Point X="19.5" Y="8.812" />
+        <Point X="19.875" Y="8.812" />
+        <Point X="19.875" Y="8.096" />
+        <Point X="20.25" Y="8.096" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAACAAAAAAAAAAAACgAACAAAAAABEAAAAAAAAAAAA=</HashCode>
+      <FileName>UI\Specific\UI_ParameterWindow.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_LibraryEdit_Window" Collapsed="true">
+    <Position X="20.25" Y="8.5" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Window" FixedFromPoint="true" FixedToPoint="true">
+      <Path>
+        <Point X="19.5" Y="8.812" />
+        <Point X="20.25" Y="8.812" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAIDICwIQQAEKIADQEAAAAiAAAAAAIAAAAAAAJEgAgQ=</HashCode>
+      <FileName>UI\Specific\UI_LibraryEdit_Window.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_EditComp_Window" Collapsed="true">
+    <Position X="20.25" Y="9.25" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Window" FixedFromPoint="true">
+      <Path>
+        <Point X="19.5" Y="8.812" />
+        <Point X="19.875" Y="8.812" />
+        <Point X="19.875" Y="9.596" />
+        <Point X="20.25" Y="9.596" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>BggABCAQBgAAIEQD1BAhAFCQCIIgARBAgEiAADFCAAA=</HashCode>
+      <FileName>UI\Specific\UI_EditComp_Window.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_ComponentBox" Collapsed="true">
+    <Position X="20.25" Y="10" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI.UI_Window" FixedFromPoint="true">
+      <Path>
+        <Point X="19.5" Y="8.812" />
+        <Point X="19.875" Y="8.812" />
+        <Point X="19.875" Y="10.346" />
+        <Point X="20.25" Y="10.346" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAAAYCAAAAAABAAAAAAAAACAAAAAAQAAAAAAAAEAAAA=</HashCode>
+      <FileName>UI\Specific\UI_ComponentBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

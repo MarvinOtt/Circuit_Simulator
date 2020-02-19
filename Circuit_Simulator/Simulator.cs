@@ -1211,6 +1211,15 @@ namespace Circuit_Simulator
 
                     
                 }
+                else //SignalAnalyze
+                {
+                    if(IsInGrid && Game1.mo_states.IsLeftButtonToggleOff() && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+                    {
+                        UI_Handler.signal.WireID = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
+                        UI_Handler.SignalAnalyze.GetsUpdated = UI_Handler.SignalAnalyze.GetsDrawn = true;
+                   
+                    }
+                }
 
             }
             if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && toolmode == TOOL_SELECT && selectstate == 0 && UI_Handler.UI_Active_State == 0)

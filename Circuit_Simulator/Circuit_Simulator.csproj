@@ -60,6 +60,7 @@
     <Compile Include="UI\Specific\UI_ParameterWindow.cs" />
     <Compile Include="UI\Specific\UI_GridPaint.cs" />
     <Compile Include="UI\Specific\UI_ProjectLibrary_Window.cs" />
+    <Compile Include="UI\Specific\UI_SignalAnalyze.cs" />
     <Compile Include="UI\UI_TextBox.cs" />
     <Compile Include="UI\Specific\UI_EditComp_Window.cs" />
     <Compile Include="UI\UI_STRUCTS.cs" />
@@ -107,6 +108,7 @@
     <MonoGameContentReference Include="Content\Content.mgcb" />
     <None Include="App.config" />
     <None Include="app.manifest" />
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
