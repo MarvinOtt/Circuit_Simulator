@@ -2,6 +2,7 @@
 using Circuit_Simulator.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -123,15 +124,19 @@ namespace Circuit_Simulator
             List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[newrotation];
             Rectangle area = Sim_Component.Components_Data[dataID].bounds[newrotation];
             area.Location += pos;
-            byte[,] data2place = new byte[area.Size.X, area.Size.Y];
-            Simulator.IsWire.GetArea(data2place, area);
+            byte[,] data2place = null;
+            if (!SkipNetworkRouting)
+            {
+                data2place = new byte[area.Size.X, area.Size.Y];
+                Simulator.IsWire.GetArea(data2place, area);
+            }
             for (int i = 0; i < datapixel.Count; ++i)
             {
                 Point currentcoo = pos + datapixel[i].pos;
                 Sim_Component.CompType[currentcoo.X, currentcoo.Y] = datapixel[i].type;
                 Sim_Component.CompTex.SetPixel(datapixel[i].type, currentcoo);
                 Sim_Component.IsEdgeTex.SetPixel(datapixel[i].IsEdge, currentcoo);
-                if (datapixel[i].type > Sim_Component.PINOFFSET)
+                if (datapixel[i].type > Sim_Component.PINOFFSET && !SkipNetworkRouting)
                 {
                     Point datapos = currentcoo - area.Location;
                     data2place[datapos.X, datapos.Y] |= 128;
@@ -165,7 +170,18 @@ namespace Circuit_Simulator
                         Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = (byte)Index;
                 }
             }
-            Game1.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
+            if (!SkipNetworkRouting)
+            {
+                Game1.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
+            }
+            else
+            {
+                for (int i = 0; i < datapixel.Count; ++i)
+                {
+                    if(datapixel[i].type > Sim_Component.PINOFFSET)
+                        Sim_Component.pins2check[Sim_Component.pins2check_length++] = new Point(datapixel[i].pos.X + pos.X, datapixel[i].pos.Y + pos.Y);
+                }
+            }
             watch.Stop();
             double milis = (1000.0 * watch.ElapsedTicks) / (double)Stopwatch.Frequency;
         }
@@ -232,6 +248,7 @@ namespace Circuit_Simulator
         public static RenderTarget2D CompTex, IsEdgeTex, HighlightTex;
         public bool IsCompDrag;
         List<VertexPositionLine> vertices = new List<VertexPositionLine>();
+        public static int curhighlightID = 0;
 
         public static List<CompData> Components_Data;
         public static Component[] components;
@@ -254,10 +271,10 @@ namespace Circuit_Simulator
             this.sim_effect = sim_effect;
             overlay_effect = Game1.content.Load<Effect>("overlay_effect");
             highlight_effect = Game1.content.Load<Effect>("UI\\highlight_effect");
-            placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 81, 81, false, SurfaceFormat.Alpha8);
-            CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
-            IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 81, 81, false, SurfaceFormat.HalfSingle);
+            CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
             CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
@@ -281,11 +298,11 @@ namespace Circuit_Simulator
               
                 Game1.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
                 IsCompDrag = true;
-                byte[] data = new byte[81 * 81];
+                HalfSingle[] data = new HalfSingle[81 * 81];
                 List<ComponentPixel> datapixel = Components_Data[ID].data[Components_Data[ID].currentrotation];
                 for (int i = 0; i < datapixel.Count; ++i)
                 {
-                    data[(datapixel[i].pos.Y + 40) * 81 + (datapixel[i].pos.X + 40)] = datapixel[i].type;
+                    data[(datapixel[i].pos.Y + 40) * 81 + (datapixel[i].pos.X + 40)] = new HalfSingle((float)datapixel[i].type);
                 }
 
                 placementtex.SetData(data);
@@ -408,8 +425,8 @@ namespace Circuit_Simulator
 
         public void Draw(SpriteBatch spritebatch)
         {
-            sim_effect.Parameters["comptex"].SetValue(CompTex);
-            sim_effect.Parameters["highlighttex"].SetValue(HighlightTex);
+            //sim_effect.Parameters["comptex"].SetValue(CompTex);
+            //sim_effect.Parameters["highlighttex"].SetValue(HighlightTex);
         }
 
         public void DrawLineOverlays(SpriteBatch spritebatch)
@@ -452,29 +469,41 @@ namespace Circuit_Simulator
                 int netID = Simulator.WireIDs[Simulator.mo_worldposx / 2, Simulator.mo_worldposy / 2, Simulator.currentlayer];
                 if (netID > 0 && (Simulator.IsWire[Simulator.mo_worldposx, Simulator.mo_worldposy] & (1 << Simulator.currentlayer)) > 0)
                 {
-                    Network netw = Simulator.networks[netID];
-                    vertices.Clear();
-                    for(int i = 0; i < netw.lines.Count; ++i)
+                    if (curhighlightID != netID)
                     {
-                        VertexPositionLine l1, l2;
-                        Line line = new Line(netw.lines[i].start, netw.lines[i].end);
-                        line.Convert2LineVertices(1, out l1, out l2);
-                        vertices.Add(l1);
-                        vertices.Add(l2);
-                    }
+                        Network netw = Simulator.networks[netID];
+                        vertices.Clear();
+                        for (int i = 0; i < netw.lines.Count; ++i)
+                        {
+                            VertexPositionLine l1, l2;
+                            Line line = new Line(netw.lines[i].start, netw.lines[i].end);
+                            line.Convert2LineVertices(2.0f, out l1, out l2);
+                            vertices.Add(l1);
+                            vertices.Add(l2);
+                        }
 
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(HighlightTex);
-                    Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
-                    highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
-                    highlight_effect.CurrentTechnique.Passes[0].Apply();
-                    Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.ToArray(), 0, vertices.Count / 2);
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                        Game1.graphics.GraphicsDevice.SetRenderTarget(HighlightTex);
+                        Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
+                        highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
+                        highlight_effect.CurrentTechnique.Passes[0].Apply();
+                        Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.ToArray(), 0, vertices.Count / 2);
+                        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                        //System.Threading.Thread.Sleep(100);
+                        spritebatch.Begin();
+                        spritebatch.Draw(Simulator.main_target, Vector2.Zero, Color.White);
+                        spritebatch.End();
+                    }
+                    curhighlightID = netID;
                 }
                 else
                 {
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(HighlightTex);
-                    Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                    if (curhighlightID != 0)
+                    {
+                        Game1.graphics.GraphicsDevice.SetRenderTarget(HighlightTex);
+                        Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
+                        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                    }
+                    curhighlightID = 0;
                 }
             }
 

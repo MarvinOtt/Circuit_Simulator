@@ -38,7 +38,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 	VertexShaderOutput output = (VertexShaderOutput)0;
 	//output.Position = (input.Position / float4(960, -540, 1, 1)) + float4(-1, 1, 0, 0);
 	output.Position = mul(input.Position, WorldViewProjection);
-	output.layers = input.layers / 256.0f;
+	output.layers = input.layers;
 	//output.Color = float4(1, 0, 0, 1);
 
 	return output;
@@ -47,7 +47,7 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
 
-	return float4(0, 0, 0, input.layers);
+	return float4(input.layers, 0, 0, 1);
 
 }
 

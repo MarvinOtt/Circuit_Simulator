@@ -21,17 +21,33 @@ namespace Circuit_Simulator.UI.Specific
         public UI_SignalAnalyze(Pos pos, Point size) :base(pos, size)
         {
             values = new int[1000];
+            Sim_INF_DLL.SimFrameStep += FrameStep;
+        }
+
+        public void Clear()
+        {
+            Array.Clear(values, 0, values.Length);
+        }
+
+        public void FrameStep(object sender)
+        {
+            if(parent.GetsUpdated)
+            {
+                int state = Sim_INF_DLL.GetWireState(WireID);
+                memorycounter = (memorycounter + 1) % 1000;
+                values[memorycounter] = state;
+            }
         }
 
         protected override void UpdateAlways()
         {
-            int state = Sim_INF_DLL.GetWireState(WireID);
-            if (Sim_INF_DLL.IsSimStep)
-            {
-                memorycounter = (memorycounter + 1) % 1000;
-                values[memorycounter] = state;
-                Sim_INF_DLL.IsSimStep = false;
-            }
+            //int state = Sim_INF_DLL.GetWireState(WireID);
+            //if (Sim_INF_DLL.IsSimStep)
+            //{
+            //    memorycounter = (memorycounter + 1) % 1000;
+            //    values[memorycounter] = state;
+            //    Sim_INF_DLL.IsSimStep = false;
+            //}
 
             base.UpdateAlways();          
         }

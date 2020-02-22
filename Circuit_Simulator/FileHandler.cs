@@ -258,6 +258,8 @@ namespace Circuit_Simulator
                     Simulator.IsWire = new byte[Simulator.SIZEX, Simulator.SIZEY];
                     Simulator.WireIDs = new int[Simulator.SIZEX / 2, Simulator.SIZEY / 2, Simulator.LAYER_NUM];
                     Simulator.WireIDPs = new int[Simulator.SIZEX, Simulator.SIZEY];
+                    Simulator.CalcGridData = new byte[Simulator.SIZEX, Simulator.SIZEY];
+                    Simulator.CalcGridStat = new byte[Simulator.SIZEX, Simulator.SIZEY];
                     Simulator.networks = new Network[10000000];
                     Simulator.emptyNetworkID = new int[10000000];
 
@@ -279,14 +281,17 @@ namespace Circuit_Simulator
 
                     Simulator.sec_target.Dispose();
                     Simulator.logic_target.Dispose();
+                    Simulator.WireCalc_target.Dispose();
                     Sim_Component.CompTex.Dispose();
+                    Sim_Component.HighlightTex.Dispose();
+                    Sim_Component.IsEdgeTex.Dispose();
 
-                    Simulator.sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Simulator.logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Simulator.WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Sim_Component.CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Sim_Component.HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
-                    Sim_Component.IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Sim_Component.CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Sim_Component.HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.DiscardContents);
+                    Sim_Component.IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
                     Simulator.highestNetworkID = 4;
 

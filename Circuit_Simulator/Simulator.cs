@@ -10,6 +10,8 @@ using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
 using Circuit_Simulator.COMP;
 using Circuit_Simulator.UI;
+using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 
 namespace Circuit_Simulator
 {
@@ -25,6 +27,7 @@ namespace Circuit_Simulator
 
         public void Convert2LineVertices(float layers, out VertexPositionLine line1, out VertexPositionLine line2)
         {
+            //layers /= 256.0f;
             if (start == end)
             {
                 line1 = new VertexPositionLine(start, layers);
@@ -181,6 +184,7 @@ namespace Circuit_Simulator
         {
             if (NeedsDrawing)
             {
+                
                 for (int i = 0; i < lines.Count; ++i)
                 {
                 
@@ -188,6 +192,8 @@ namespace Circuit_Simulator
                     {
                         if ((lines[i].layers & (1 << j)) > 0)
                         {
+                            if (Simulator.lines2draw_count[j] >= 500000)
+                                Simulator.DrawLines();
                             Line line = new Line(lines[i].start, lines[i].end);
                             VertexPositionLine line1, line2;
                             line.Convert2LineVertices((1 << j), out line1, out line2);
@@ -202,6 +208,9 @@ namespace Circuit_Simulator
                         line.Convert2LineVertices(128, out line1, out line2);
                         Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line1;
                         Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line2;
+
+                        if (Simulator.lines2draw_count[7] >= 500000)
+                            Simulator.DrawLines();
                     }
                 }
                 NeedsDrawing = false;
@@ -313,9 +322,9 @@ namespace Circuit_Simulator
             iswirerender_effect = Game1.content.Load<Effect>("iswirerender_effect");
 
             // Initializing Render Targets
-            sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.Alpha8, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
           
 
             FoundNetworks = new HashSet<int>();
@@ -340,7 +349,7 @@ namespace Circuit_Simulator
             lines2draw_count = new int[LAYER_NUM + 2];
             lines2draw = new VertexPositionLine[LAYER_NUM + 2][];
             for (int i = 0; i < LAYER_NUM + 2; ++i)
-                lines2draw[i] = new VertexPositionLine[600000];
+                lines2draw[i] = new VertexPositionLine[500500];
             linedrawingmatrix = Matrix.CreateOrthographicOffCenter(0, SIZEX + 0.01f, SIZEY + 0.01f, 0, 0, 1);
 
             //Initializing Simulator Parts
@@ -590,6 +599,7 @@ namespace Circuit_Simulator
 
         public void PlaceArea(Rectangle rec, byte[,] data, bool SkipNetworkDeletion = false)
         {
+            Sim_Component.curhighlightID = -1;
             HashSet<int> nets = new HashSet<int>();
             Rectangle Brec = rec;
             Brec.Location -= new Point(1);
@@ -662,6 +672,9 @@ namespace Circuit_Simulator
                 Line line = new Line(new Point(Brec.Left, Brec.Top + y), new Point(Brec.Right - 1, Brec.Top + y));
                 VertexPositionLine line1, line2;
                 line.Convert2LineVertices(0, out line1, out line2);
+
+                if (lines2draw_count[LAYER_NUM + 1] >= 500000)
+                    DrawLines();
 
                 lines2draw[LAYER_NUM + 1][lines2draw_count[LAYER_NUM + 1]++] = line1;
                 lines2draw[LAYER_NUM + 1][lines2draw_count[LAYER_NUM + 1]++] = line2;
@@ -960,10 +973,15 @@ namespace Circuit_Simulator
                                 copyWiretex.Dispose();
                             if (copyComptex != null && !copyComptex.IsDisposed)
                                 copyComptex.Dispose();
-                            copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                            copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                            copyWiretex.SetData(CopiedIsWire);
-                            copyComptex.SetData(CopiedCompType);
+                            copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                            copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                            HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+                            for (int i = 0; i < CopiedIsWire.Length; ++i)
+                                tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+                            copyWiretex.SetData(tempArray);
+                            for (int i = 0; i < CopiedCompType.Length; ++i)
+                                tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+                            copyComptex.SetData(tempArray);
                             copypos = new Point(mo_worldposx, mo_worldposy);
                             copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
                             copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
@@ -993,10 +1011,15 @@ namespace Circuit_Simulator
                             copyWiretex.Dispose();
                         if (copyComptex != null && !copyComptex.IsDisposed)
                             copyComptex.Dispose();
-                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                        copyWiretex.SetData(CopiedIsWire);
-                        copyComptex.SetData(CopiedCompType);
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+                        for (int i = 0; i < CopiedIsWire.Length; ++i)
+                            tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+                        copyWiretex.SetData(tempArray);
+                        for (int i = 0; i < CopiedCompType.Length; ++i)
+                            tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+                        copyComptex.SetData(tempArray);
                         for (int i = 0; i < CopiedCompIDs.Count; ++i)
                         {
                             CopiedCompRot[i] = CompData.rottable_ROT[CopiedCompRot[i]];
@@ -1025,10 +1048,15 @@ namespace Circuit_Simulator
                             copyWiretex.Dispose();
                         if (copyComptex != null && !copyComptex.IsDisposed)
                             copyComptex.Dispose();
-                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                        copyWiretex.SetData(CopiedIsWire);
-                        copyComptex.SetData(CopiedCompType);
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+                        for (int i = 0; i < CopiedIsWire.Length; ++i)
+                            tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+                        copyWiretex.SetData(tempArray);
+                        for (int i = 0; i < CopiedCompType.Length; ++i)
+                            tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+                        copyComptex.SetData(tempArray);
                         for (int i = 0; i < CopiedCompIDs.Count; ++i)
                         {
                             CopiedCompRot[i] = CompData.rottable_FLIPX[CopiedCompRot[i]];
@@ -1056,10 +1084,15 @@ namespace Circuit_Simulator
                             copyWiretex.Dispose();
                         if (copyComptex != null && !copyComptex.IsDisposed)
                             copyComptex.Dispose();
-                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.Alpha8);
-                        copyWiretex.SetData(CopiedIsWire);
-                        copyComptex.SetData(CopiedCompType);
+                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+                        for (int i = 0; i < CopiedIsWire.Length; ++i)
+                            tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+                        copyWiretex.SetData(tempArray);
+                        for (int i = 0; i < CopiedCompType.Length; ++i)
+                            tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+                        copyComptex.SetData(tempArray);
                         for (int i = 0; i < CopiedCompIDs.Count; ++i)
                         {
                             CopiedCompRot[i] = CompData.rottable_FLIPY[CopiedCompRot[i]];
@@ -1098,7 +1131,7 @@ namespace Circuit_Simulator
                                     IsValid = false;
                                 if (CopiedCompType[x + y * copysize.X] > 0 && CopiedCompType[x + y * copysize.X] <= Sim_Component.PINOFFSET && IsWire[xx, yy] > 0)
                                     IsValid = false;
-                                if (CopiedCompType[x + y * copysize.X] > Sim_Component.PINOFFSET && (Sim_Component.CompType[xx, yy] > 0 || IsWire[xx, yy] > 0))
+                                if (CopiedCompType[x + y * copysize.X] > Sim_Component.PINOFFSET && (Sim_Component.CompType[xx, yy] > 0))
                                     IsValid = false;
                             }
                         }
@@ -1178,6 +1211,8 @@ namespace Circuit_Simulator
                     VertexPositionLine line1, line2;
                     line.Convert2LineVertices(data[0, 0], out line1, out line2);
 
+                    if (lines2draw_count[LAYER_NUM] >= 500000)
+                        DrawLines();
                     lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line1;
                     lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line2;
 
@@ -1281,18 +1316,8 @@ namespace Circuit_Simulator
             }
         }
 
-        public void Draw(SpriteBatch spritebatch)
+        public static void DrawLines()
         {
-            spritebatch.End();
-            //Check Networks for Drawing
-            for(int i = 0; i < Network.CheckForDrawing.Count; ++i)
-            {
-                if(networks[Network.CheckForDrawing[i].ID] == Network.CheckForDrawing[i])
-                    Network.CheckForDrawing[i].Draw();
-            }
-            if (Network.CheckForDrawing.Count > 0)
-                Network.CheckForDrawing.Clear();
-
             for (int j = -1; j < LAYER_NUM + 1; ++j)
             {
                 int i = j;
@@ -1314,7 +1339,7 @@ namespace Circuit_Simulator
                     Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
 
                     Game1.graphics.GraphicsDevice.SetRenderTarget(null);
-                  
+
                 }
             }
 
@@ -1333,29 +1358,86 @@ namespace Circuit_Simulator
 
                     Game1.graphics.GraphicsDevice.SetRenderTarget(null);
                     lines2draw_count[i] = 0;
-           
+
                 }
             }
+        }
+
+        public void Draw(SpriteBatch spritebatch)
+        {
+            spritebatch.End();
+            //Check Networks for Drawing
+            for(int i = 0; i < Network.CheckForDrawing.Count; ++i)
+            {
+                if(networks[Network.CheckForDrawing[i].ID] == Network.CheckForDrawing[i])
+                    Network.CheckForDrawing[i].Draw();
+            }
+            if (Network.CheckForDrawing.Count > 0)
+                Network.CheckForDrawing.Clear();
+            DrawLines();
+
+            //for (int j = -1; j < LAYER_NUM + 1; ++j)
+            //{
+            //    int i = j;
+            //    if (i == -1)
+            //        i = LAYER_NUM + 1;
+            //    if (lines2draw_count[i] > 0)
+            //    {
+
+            //        Game1.graphics.GraphicsDevice.SetRenderTarget(sec_target);
+            //        line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+            //        line_effect.Parameters["tex"].SetValue(logic_target);
+            //        line_effect.CurrentTechnique.Passes[0].Apply();
+            //        Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+
+            //        Game1.graphics.GraphicsDevice.SetRenderTarget(logic_target);
+            //        line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+            //        line_effect.Parameters["tex"].SetValue(sec_target);
+            //        line_effect.CurrentTechnique.Passes[0].Apply();
+            //        Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+
+            //        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                  
+            //    }
+            //}
+
+            //for (int j = -1; j < LAYER_NUM + 1; ++j)
+            //{
+            //    int i = j;
+            //    if (i == -1)
+            //        i = LAYER_NUM + 1;
+            //    if (lines2draw_count[i] > 0)
+            //    {
+            //        Game1.graphics.GraphicsDevice.SetRenderTarget(WireCalc_target);
+            //        iswirerender_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
+            //        iswirerender_effect.Parameters["tex"].SetValue(logic_target);
+            //        iswirerender_effect.CurrentTechnique.Passes[0].Apply();
+            //        Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+
+            //        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+            //        lines2draw_count[i] = 0;
+           
+            //    }
+            //}
            
 
             sim_comp.DrawLineOverlays(spritebatch);
             sim_comp.Draw(spritebatch);
             
-
          
             sim_effect.Parameters["logictex"].SetValue(logic_target);
             sim_effect.Parameters["wirecalctex"].SetValue(WireCalc_target);
             sim_effect.Parameters["isedgetex"].SetValue(Sim_Component.IsEdgeTex);
-            spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, sim_effect, Matrix.Identity);
+            sim_effect.Parameters["comptex"].SetValue(Sim_Component.CompTex);
+            sim_effect.Parameters["highlighttex"].SetValue(Sim_Component.HighlightTex);
+            spritebatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, null, sim_effect, Matrix.Identity);
             spritebatch.Draw(main_target, Vector2.Zero, Color.White);
             spritebatch.End();
-
 
             spritebatch.Begin();
            
             sim_comp.DrawCompOverlays(spritebatch);
-
-         
+            //spritebatch.End();
         }
     }
 }

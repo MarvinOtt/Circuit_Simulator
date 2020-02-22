@@ -48,27 +48,27 @@ VertexShaderOutput MainVS(in VertexShaderInput input)
 float4 MainPS(VertexShaderOutput input) : COLOR
 {
 	float4 OUT = float4(0, 0, 0, 0);
-	uint tex_dat = tex[uint2(input.Position.x, input.Position.y)].a * 255.5f;
+	uint tex_dat = (uint)(tex[uint2(input.Position.x, input.Position.y)].r + 0.5f);
 
 	if (tex_dat)
-		OUT = float4(0, 0, 0, 0.5f);
+		OUT = float4(0.5f, 0, 0, 0.0f);
 
-	uint tex_datm1m1 = tex[uint2(input.Position.x - 1, input.Position.y - 1)].a * 255.5f;
-	uint tex_datp1m1 = tex[uint2(input.Position.x + 1, input.Position.y - 1)].a * 255.5f;
-	uint tex_datm1p1 = tex[uint2(input.Position.x - 1, input.Position.y + 1)].a * 255.5f;
-	uint tex_datp1p1 = tex[uint2(input.Position.x + 1, input.Position.y + 1)].a * 255.5f;
+	uint tex_datm1m1 = (uint)(tex[uint2(input.Position.x - 1, input.Position.y - 1)].r + 0.5f);
+	uint tex_datp1m1 = (uint)(tex[uint2(input.Position.x + 1, input.Position.y - 1)].r + 0.5f);
+	uint tex_datm1p1 = (uint)(tex[uint2(input.Position.x - 1, input.Position.y + 1)].r + 0.5f);
+	uint tex_datp1p1 = (uint)(tex[uint2(input.Position.x + 1, input.Position.y + 1)].r + 0.5f);
 
 
 	for (int i = 0; i < 8; ++i)
 	{
 		if ((tex_dat & (1 << i)) && (tex_datm1m1 & (1 << i)))
-			OUT = float4(0, 0, 0, 1.0f);
+			OUT = float4(1.0f, 0, 0, 1.0f);
 		if ((tex_dat & (1 << i)) && (tex_datp1m1 & (1 << i)))
-			OUT = float4(0, 0, 0, 1.0f);
+			OUT = float4(1.0f, 0, 0, 1.0f);
 		if ((tex_dat & (1 << i)) && (tex_datm1p1 & (1 << i)))
-			OUT = float4(0, 0, 0, 1.0f);
+			OUT = float4(1.0f, 0, 0, 1.0f);
 		if ((tex_dat & (1 << i)) && (tex_datp1p1 & (1 << i)))
-			OUT = float4(0, 0, 0, 1.0f);
+			OUT = float4(1.0f, 0, 0, 1.0f);
 	}
 
 	return OUT;

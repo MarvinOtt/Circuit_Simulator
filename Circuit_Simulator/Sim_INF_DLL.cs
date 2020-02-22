@@ -42,6 +42,9 @@ namespace Circuit_Simulator
         public delegate void DLL_SimOneStep_prototype(byte[] WireStatesIN, byte[] WireStatesOUT, int[] CompInfos, int[] CompID, int comp_num, int net_num);
         public delegate void InitSimulation_prototype(int comp_num);
 
+        public delegate void Sim_Steped_Handler(object sender);
+        public static event Sim_Steped_Handler SimFrameStep = delegate { };
+
         public static DLL_SimOneStep_prototype DLL_SimOneStep;
         public static InitSimulation_prototype InitSimulation;
 
@@ -125,6 +128,12 @@ namespace Circuit_Simulator
             //        code_withafterupdatefuncs = code_withafterupdatefuncs.Insert(afterupdatefuncpos, curdata.Code_AfterSim);
             //    }
             //}
+            if (SimDLL_Handle != IntPtr.Zero)
+            {
+                DLL_Methods.FreeLibrary(SimDLL_Handle);
+                SimDLL_Handle = (IntPtr)0;
+            }
+
             string pathtoexe = Directory.GetCurrentDirectory();
             File.WriteAllText(pathtoexe + @"\SIM_CODE\maincode.c", code_withinitfuncs);
           
@@ -137,7 +146,10 @@ namespace Circuit_Simulator
         public static void LoadSimDLL()
         {
             if (SimDLL_Handle != IntPtr.Zero)
+            {
                 DLL_Methods.FreeLibrary(SimDLL_Handle);
+                SimDLL_Handle = (IntPtr)0;
+            }
 
             string pathtoexe = Directory.GetCurrentDirectory();
             SimDLL_Handle = DLL_Methods.LoadLibrary(pathtoexe + @"\SIM_CODE\maincode.dll");
@@ -228,6 +240,7 @@ namespace Circuit_Simulator
                     Simulator.cursimframe++;
                     DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
                     IsSimStep = true;
+                    SimFrameStep(this);
                 }
             }
             else
@@ -239,6 +252,7 @@ namespace Circuit_Simulator
                     DLL_SimOneStep(WireStates, WireStates2, CompInfos, CompID, comp_num, WireStates_count);
                     Simulator.simspeed_count = 0;
                     IsSimStep = true;
+                    SimFrameStep(this);
                 }
             }
             //fixed (int* p = CompInfos)

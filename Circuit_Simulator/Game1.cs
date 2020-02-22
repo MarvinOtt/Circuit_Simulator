@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using ScintillaNET;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Permissions;
 
@@ -242,6 +243,8 @@ namespace Circuit_Simulator
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
+            Stopwatch watch = new Stopwatch();
+            watch.Start();
             GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin();
 
@@ -252,6 +255,8 @@ namespace Circuit_Simulator
             spriteBatch.End();
 
             base.Draw(gameTime);
+            watch.Stop();
+            Console.WriteLine(watch.ElapsedMilliseconds);
         }
     }
 }

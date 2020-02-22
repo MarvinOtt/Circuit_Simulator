@@ -240,7 +240,7 @@ namespace Circuit_Simulator
             parameterWindow.GetsUpdated = parameterWindow.GetsDrawn = false;
 
             //SignalAnalyze
-            SignalAnalyze = new UI_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point(800, 500), "Analyze", new Point(200, 80), componentconf, true);
+            SignalAnalyze = new UI_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point(800, 100), "Analyze", new Point(200, 80), componentconf, true);
             signal = new UI_SignalAnalyze(new Pos(-5, UI_Window.headheight + 5, ORIGIN.TR, ORIGIN.TR, SignalAnalyze), new Point(500, 80));
             SignalAnalyze.Add_UI_Elements(signal);
             SignalAnalyze.GetsUpdated = SignalAnalyze.GetsDrawn = false;

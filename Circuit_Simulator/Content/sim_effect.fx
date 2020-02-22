@@ -56,7 +56,7 @@ struct VertexShaderOutput
 };
 inline uint getWiresAtPos(uint2 pos)
 {
-	float type = logictex[pos].a * 255.0f;
+	float type = logictex[pos].r;
 	return (uint)(type + 0.5f);
 
 }
@@ -87,8 +87,8 @@ uint IsEdgeX(float x, float y)
 {
 	uint2 xy_m10 = uint2((uint)(x - 0.5f), (uint)(y));
 	uint2 xy_p10 = uint2((uint)(x + 0.5f), (uint)(y));
-	uint IsComp_m10 = (uint)(comptex[xy_m10].a * 255.5f);
-	uint IsComp_p10 = (uint)(comptex[xy_p10].a * 255.5f);
+	uint IsComp_m10 = (uint)(comptex[xy_m10].r + 0.5f);
+	uint IsComp_p10 = (uint)(comptex[xy_p10].r + 0.5f);
 	if (IsComp_m10 && IsComp_p10)
 	{
 		return 2;
@@ -102,8 +102,8 @@ uint IsEdgeY(float x, float y)
 {
 	uint2 xy_0m1 = uint2((uint)(x), (uint)(y - 0.5f));
 	uint2 xy_0p1 = uint2((uint)(x), (uint)(y + 0.5f));
-	uint IsComp_0m1 = (uint)(comptex[xy_0m1].a * 255.5f);
-	uint IsComp_0p1 = (uint)(comptex[xy_0p1].a * 255.5f);
+	uint IsComp_0m1 = (uint)(comptex[xy_0m1].r + 0.5f);
+	uint IsComp_0p1 = (uint)(comptex[xy_0p1].r + 0.5f);
 	if (IsComp_0m1 && IsComp_0p1)
 	{
 		return 2;
@@ -115,7 +115,7 @@ uint IsEdgeY(float x, float y)
 
 float4 ColorInPixel(uint type_int)
 {
-	if (type_int == 255)
+	if (type_int >= 128)
 		return float4(1, 1, 1, 1);
 	else if ((type_int & (1 << currentlayer)) == (1 << currentlayer))
 		return layercols[currentlayer];
@@ -136,13 +136,13 @@ float4 ColorInPixel(uint type_int)
 	else
 		return float4(0, 0, 0, 1);
 }
-float4 ColorInPixel_Comp(uint type_int)
+float4 ColorInPixel_Comp(uint type_int2)
 {
 	float4 OUT = float4(0, 0, 0, 0);
-	if (type_int != 0)
+	if (type_int2 != 0)
 	{
-		if (type_int <= 4)
-			OUT = compcols[type_int - 1];
+		if (type_int2 <= 4)
+			OUT = compcols[type_int2 - 1];
 		else
 			OUT = compcols[4];
 	}
@@ -252,19 +252,19 @@ float4 getcoloratpos(float x, float y)
 
 
 
-	float comptype = comptex[uint2(ux, uy)].a * 255.0f;
+	float comptype = comptex[uint2(ux, uy)].r;
 	uint comptype_int = (uint)(comptype + 0.5f);
 	if (comptype_int != 0)
 	{
-		uint comptype_p10 = (uint)(comptex[uint2(ux + 1, uy)].a * 255.5f);
-		uint comptype_m10 = (uint)(comptex[uint2(ux - 1, uy)].a * 255.5f);
-		uint comptype_0p1 = (uint)(comptex[uint2(ux, uy + 1)].a * 255.5f);
-		uint comptype_0m1 = (uint)(comptex[uint2(ux, uy - 1)].a * 255.5f);
+		uint comptype_p10 = (uint)(comptex[uint2(ux + 1, uy)].r + 0.5f);
+		uint comptype_m10 = (uint)(comptex[uint2(ux - 1, uy)].r + 0.5f);
+		uint comptype_0p1 = (uint)(comptex[uint2(ux, uy + 1)].r + 0.5f);
+		uint comptype_0m1 = (uint)(comptex[uint2(ux, uy - 1)].r + 0.5f);
 
-		uint comptype_m1m1 = (uint)(comptex[uint2(ux - 1, uy - 1)].a * 255.5f);
-		uint comptype_p1m1 = (uint)(comptex[uint2(ux + 1, uy - 1)].a * 255.5f);
-		uint comptype_p1p1 = (uint)(comptex[uint2(ux + 1, uy + 1)].a * 255.5f);
-		uint comptype_m1p1 = (uint)(comptex[uint2(ux - 1, uy + 1)].a * 255.5f);
+		uint comptype_m1m1 = (uint)(comptex[uint2(ux - 1, uy - 1)].r + 0.5f);
+		uint comptype_p1m1 = (uint)(comptex[uint2(ux + 1, uy - 1)].r + 0.5f);
+		uint comptype_p1p1 = (uint)(comptex[uint2(ux + 1, uy + 1)].r + 0.5f);
+		uint comptype_m1p1 = (uint)(comptex[uint2(ux - 1, uy + 1)].r + 0.5f);
 		
 
 
@@ -273,23 +273,23 @@ float4 getcoloratpos(float x, float y)
 		if (comptype_int > PINOFF)
 		{
 			edgewidth = 0.3f;
-			if ((((comptype_p10 > PINOFF && comptype_int != comptype_p10) || !comptype_p10) || !(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0))) && x % 1 > 1.0f - edgewidth)
+			if ((((comptype_p10 > PINOFF && comptype_int != comptype_p10) || !comptype_p10) || !(((uint)(isedgetex[uint2(ux + 1, uy)].r + 0.5f)) & (1 << 0))) && x % 1 > 1.0f - edgewidth)
 			{IsValid = 1;}
-			if ((((comptype_m10 > PINOFF && comptype_int != comptype_m10) || !comptype_m10) || !(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2))) && x % 1 < edgewidth)
+			if ((((comptype_m10 > PINOFF && comptype_int != comptype_m10) || !comptype_m10) || !(((uint)(isedgetex[uint2(ux - 1, uy)].r + 0.5f)) & (1 << 2))) && x % 1 < edgewidth)
 			{IsValid = 1;}
-			if ((((comptype_0p1 > PINOFF && comptype_int != comptype_0p1) || !comptype_0p1) || !(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1))) && y % 1 > 1.0f - edgewidth)
+			if ((((comptype_0p1 > PINOFF && comptype_int != comptype_0p1) || !comptype_0p1) || !(((uint)(isedgetex[uint2(ux, uy + 1)].r + 0.5f)) & (1 << 1))) && y % 1 > 1.0f - edgewidth)
 			{IsValid = 1;}
-			if ((((comptype_0m1 > PINOFF && comptype_int != comptype_0m1) || !comptype_0m1) || !(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3))) && y % 1 < edgewidth)
+			if ((((comptype_0m1 > PINOFF && comptype_int != comptype_0m1) || !comptype_0m1) || !(((uint)(isedgetex[uint2(ux, uy - 1)].r + 0.5f)) & (1 << 3))) && y % 1 < edgewidth)
 			{IsValid = 1;}
 		}
 
-		if (!(((uint)(isedgetex[uint2(ux + 1, uy)].a * 255.5f)) & (1 << 0)) && comptype_p10 <= 2 && comptype_p10 && x % 1 > 1.0f - edgewidth)
+		if (!(((uint)(isedgetex[uint2(ux + 1, uy)].r + 0.5f)) & (1 << 0)) && comptype_p10 <= 2 && comptype_p10 && x % 1 > 1.0f - edgewidth)
 			IsValid = 0;
-		if (!(((uint)(isedgetex[uint2(ux - 1, uy)].a * 255.5f)) & (1 << 2)) && comptype_m10 <= 2 && comptype_m10 && x % 1 < edgewidth)
+		if (!(((uint)(isedgetex[uint2(ux - 1, uy)].r + 0.5f)) & (1 << 2)) && comptype_m10 <= 2 && comptype_m10 && x % 1 < edgewidth)
 			IsValid = 0;
-		if (!(((uint)(isedgetex[uint2(ux, uy + 1)].a * 255.5f)) & (1 << 1)) && comptype_0p1 <= 2 && comptype_0p1 && y % 1 > 1.0f - edgewidth)
+		if (!(((uint)(isedgetex[uint2(ux, uy + 1)].r + 0.5f)) & (1 << 1)) && comptype_0p1 <= 2 && comptype_0p1 && y % 1 > 1.0f - edgewidth)
 			IsValid = 0;
-		if (!(((uint)(isedgetex[uint2(ux, uy - 1)].a * 255.5f)) & (1 << 3)) && comptype_0m1 <= 2 && comptype_0m1  && y % 1 < edgewidth)
+		if (!(((uint)(isedgetex[uint2(ux, uy - 1)].r + 0.5f)) & (1 << 3)) && comptype_0m1 <= 2 && comptype_0m1  && y % 1 < edgewidth)
 			IsValid = 0;
 
 		//if (!(((uint)(isedgetex[uint2(ux - 1, uy - 1)].a * 255.5f)) & (12)) && comptype_m1m1 <= 2 && comptype_m1m1  && x % 1 < edgewidth && y % 1 < edgewidth && !(comptype_int > 2 && comptype_m1m1 > 2))
@@ -325,12 +325,12 @@ float4 getcoloratpos(float x, float y)
 
 
 
-	uint NeedsWireCalc_int = (uint)(wirecalctex[uint2(ux, uy)].a * 255.5f);
-	float NeedsWireCalc_m1 = wirecalctex[uint2(ux - 1, uy)].a;
-	float NeedsWireCalc_p1 = wirecalctex[uint2(ux + 1, uy)].a;
+	float NeedsWireCalc = wirecalctex[uint2(ux, uy)].r;
+	float NeedsWireCalc_m1 = wirecalctex[uint2(ux - 1, uy)].r;
+	float NeedsWireCalc_p1 = wirecalctex[uint2(ux + 1, uy)].r;
 	//uint NeedsWireCalc_int = (uint)(NeedsWireCalc + 0.5f);
 	bool IsWireCalc = false;
-	[branch]if ((NeedsWireCalc_int || NeedsWireCalc_m1 > 0.75f || NeedsWireCalc_p1 > 0.75f) && OUT.a < 0.5f && zoom > 1)
+	[branch]if ((NeedsWireCalc > 0.1f || NeedsWireCalc_m1 > 0.75f || NeedsWireCalc_p1 > 0.75f) && OUT.a < 0.5f && zoom > 1)
 	{
 		IsWireCalc = true;
 		uint type_intm1m1 = getWiresAtPos(uint2(ux - 1, uy - 1));
@@ -530,7 +530,7 @@ float4 getcoloratpos(float x, float y)
 		uint posy = uy - mousepos_Y + 40;
 		if (posx >= 0 && posx < 82 && posy >= 0 && posy < 82)
 		{
-			type2 = (uint)(placementtex[uint2(posx, posy)].a * 255.0f + 0.5f);
+			type2 = (uint)(placementtex[uint2(posx, posy)].r + 0.5f);
 			if (type2 != 0)
 			{
 				if ((OUT.a > 0.5f && !IsWire) || (OUT.a > 0.5f && type2 <= 4))
@@ -579,8 +579,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	{
 		uint2 abscoo = uint2((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
 		OUT = getcoloratpos((xcoo - coos.x) / zoom, (ycoo - coos.y) / zoom);
-		uint highlight_state = (uint)(highlighttex[uint2(abscoo.x, abscoo.y)].a * 255.0f + 0.5f);
-		if (highlight_state > 0)
+		float highlight_state = highlighttex[uint2(abscoo.x, abscoo.y)].r;
+		if (highlight_state > 0.0001f)
 			OUT = OUT * 0.5f + float4(1, 1, 1, 1) * 0.5f;
 
 		if (selectstate >= 1 && selectstate <= 2)
@@ -594,8 +594,8 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 		{
 			if (abscoo.x >= copyposX && abscoo.x <= selection_endX && abscoo.y >= copyposY && abscoo.y <= selection_endY)
 			{
-				uint wire_type_int2 = (uint)(copywiretex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].a * 255.0f + 0.5f);
-				uint comp_type_int2 = (uint)(copycomptex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].a * 255.0f + 0.5f);
+				uint wire_type_int2 = (uint)(copywiretex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].r + 0.5f);
+				uint comp_type_int2 = (uint)(copycomptex[uint2(abscoo.x - copyposX, abscoo.y - copyposY)].r + 0.5f);
 				float4 newcol = ColorInPixel(wire_type_int2);
 				float4 compcol = ColorInPixel_Comp(comp_type_int2);
 				if (compcol.a > 0.5f)

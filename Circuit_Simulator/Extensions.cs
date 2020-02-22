@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Graphics.PackedVector;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
@@ -161,12 +162,12 @@ namespace Circuit_Simulator
         }
 
         // Textures
-        private static byte[] pixelbyte = new byte[4];
+        private static HalfSingle[] pixelbyte = new HalfSingle[1];
         public static void SetPixel(this Texture2D tex, byte data, Point pos)
         {
-            pixelbyte[3] = data;
+            pixelbyte[0] = new HalfSingle(data);
             int mulpos = pos.Y * tex.Width + pos.X;
-            tex.SetData(0, new Rectangle(pos, new Point(1)), pixelbyte, 0, 4);
+            tex.SetData<HalfSingle>(0, new Rectangle(pos, new Point(1)), pixelbyte, 0, 1);
         }
 
         // Arrays
@@ -215,7 +216,7 @@ namespace Circuit_Simulator
             p.StartInfo.UseShellExecute = false;
             p.Start();
             p.WaitForExit();
-
+            System.Threading.Thread.Sleep(25);
         }
 
         public static string MakeRelativePath(string workingDirectory, string fullPath)

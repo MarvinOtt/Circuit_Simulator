@@ -55,10 +55,10 @@ float4 MainPS(VertexShaderOutput input) : COLOR
 	if (input.layers < 0.5f)
 		return float4(0, 0, 0, 0);
 
-	uint tex_dat = tex[uint2(input.Position.x, input.Position.y)].a * 255.0f;
-	uint layers_uint = input.layers;
+	uint tex_dat = (uint)(tex[uint2(input.Position.x, input.Position.y)].r + 0.5f);
+	uint layers_uint = (uint)(input.layers + 0.5f);
 	uint res = tex_dat | layers_uint;
-	return float4(1, 1, 1, res / 255.0f);
+	return float4((float)res, 1, 1, 1);
 	//OUT.OUT2 = float4(0, 0, 0, (res > 0.5f) ? 1.0f : 0.0f);
 
 }
