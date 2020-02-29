@@ -49,8 +49,7 @@ namespace Circuit_Simulator.UI
                     {
                         ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += 20 * (App.mo_states.New.ScrollWheelValue - App.mo_states.Old.ScrollWheelValue) / 120; } });
                         UpdatePos();
-                        int maxypos = 0;
-                        maxypos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
+                        int maxypos = ui_elements.Max(x => x.pos.Y_abs - pos.Y_abs + x.size.Y);
                         if (maxypos < size.Y)
                             ui_elements.ForEach(x => { if (x.pos.parent == this) { x.pos.Y += size.Y - maxypos; } });
                     }
