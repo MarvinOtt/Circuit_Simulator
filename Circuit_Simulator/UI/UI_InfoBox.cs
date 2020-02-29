@@ -24,7 +24,7 @@ namespace Circuit_Simulator.UI
         public  void ShowInfo()
         {
             
-            pos.pos = Game1.mo_states.New.Position + new Point(10, 10);
+            pos.pos = App.mo_states.New.Position + new Point(10, 10);
             absolutpos = pos.pos;
             size.X = values.size.X + 4;
             size.Y = values.size.Y + 4;

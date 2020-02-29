@@ -49,7 +49,7 @@ namespace Circuit_Simulator
         public int ID;
         public int dataID;
         public Point pos;
-        public int rotation;
+        public byte rotation;
         public int[] pinNetworkIDs;
         public int[] internalstates;
 
@@ -114,7 +114,7 @@ namespace Circuit_Simulator
             return IsPlacementValid;
         }
 
-        public void Place(Point pos, int newrotation, bool SkipNetworkRouting = false)
+        public void Place(Point pos, byte newrotation, bool SkipNetworkRouting = false)
         {
             FileHandler.IsUpToDate = false;
             Stopwatch watch = new Stopwatch();
@@ -134,8 +134,8 @@ namespace Circuit_Simulator
             {
                 Point currentcoo = pos + datapixel[i].pos;
                 Sim_Component.CompType[currentcoo.X, currentcoo.Y] = datapixel[i].type;
-                Sim_Component.CompTex.SetPixel(datapixel[i].type, currentcoo);
-                Sim_Component.IsEdgeTex.SetPixel(datapixel[i].IsEdge, currentcoo);
+                Sim_Component.Comp_target.SetPixel(datapixel[i].type, currentcoo);
+                Sim_Component.IsEdge_target.SetPixel(datapixel[i].IsEdge, currentcoo);
                 if (datapixel[i].type > Sim_Component.PINOFFSET && !SkipNetworkRouting)
                 {
                     Point datapos = currentcoo - area.Location;
@@ -145,7 +145,7 @@ namespace Circuit_Simulator
                 Point gridpos = new Point(currentcoo.X / 32, currentcoo.Y / 32);
                 if (Sim_Component.CompGrid[gridpos.X, gridpos.Y] == null)
                 {
-                    Sim_Component.CompGrid[gridpos.X, gridpos.Y] = new int[200];
+                    Sim_Component.CompGrid[gridpos.X, gridpos.Y] = new int[256];
                     Sim_Component.CompGrid[gridpos.X, gridpos.Y][0] = ID;
                     Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y] = 0;
                 }
@@ -172,7 +172,7 @@ namespace Circuit_Simulator
             }
             if (!SkipNetworkRouting)
             {
-                Game1.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
+                App.simulator.PlaceArea(area, data2place, SkipNetworkRouting);
             }
             else
             {
@@ -200,7 +200,7 @@ namespace Circuit_Simulator
             for (int i = 0; i < datapixel.Count; ++i)
             {
                 Point currentcoo = pos + datapixel[i].pos;
-                Sim_Component.CompTex.SetPixel(0, currentcoo);
+                Sim_Component.Comp_target.SetPixel(0, currentcoo);
                 Sim_Component.CompType[currentcoo.X, currentcoo.Y] = 0;
                 Point gridpos = new Point(currentcoo.X / 32, currentcoo.Y / 32);
                 Sim_Component.CompGrid[gridpos.X, gridpos.Y][Sim_Component.CompNetwork[currentcoo.X, currentcoo.Y]] = 0;
@@ -211,7 +211,7 @@ namespace Circuit_Simulator
                     data2place[datapos.X, datapos.Y] &= 127;
                 }
             }
-            Game1.simulator.PlaceArea(area, data2place);
+            App.simulator.PlaceArea(area, data2place);
 
             Sim_Component.emptyComponentID[Sim_Component.emptyComponentID_count++] = ID;
             Sim_Component.components[ID] = null;
@@ -245,7 +245,7 @@ namespace Circuit_Simulator
         Simulator sim;
         Effect sim_effect;
         Texture2D placementtex;
-        public static RenderTarget2D CompTex, IsEdgeTex, HighlightTex;
+        public static RenderTarget2D Comp_target, IsEdge_target, Highlight_target;
         public bool IsCompDrag;
         List<VertexPositionLine> vertices = new List<VertexPositionLine>();
         public static int curhighlightID = 0;
@@ -269,19 +269,19 @@ namespace Circuit_Simulator
         {
             this.sim = sim;
             this.sim_effect = sim_effect;
-            overlay_effect = Game1.content.Load<Effect>("overlay_effect");
-            highlight_effect = Game1.content.Load<Effect>("UI\\highlight_effect");
-            placementtex = new Texture2D(Game1.graphics.GraphicsDevice, 81, 81, false, SurfaceFormat.HalfSingle);
-            CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            overlay_effect = App.content.Load<Effect>("overlay_effect");
+            highlight_effect = App.content.Load<Effect>("UI\\highlight_effect");
+            placementtex = new Texture2D(App.graphics.GraphicsDevice, 81, 81, false, SurfaceFormat.HalfSingle);
+            Comp_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            Highlight_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            IsEdge_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
             CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
-            components = new Component[1000000];
-            pins2check = new Point[4000000];
+            components = new Component[10000000];
+            pins2check = new Point[20000000];
             overlaylines = new VertexPositionLine[1000000];
-            emptyComponentID = new int[1000000];
+            emptyComponentID = new int[10000000];
             CompMayneedoverlay = new List<int>();
             Components_Data = new List<CompData>();
             string[] Libraries2Load = Directory.GetFiles(@"LIBRARIES\", "*.dcl");
@@ -296,7 +296,7 @@ namespace Circuit_Simulator
             {
                 UI_Handler.UI_IsWindowHide = true;
               
-                Game1.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
+                App.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
                 IsCompDrag = true;
                 HalfSingle[] data = new HalfSingle[81 * 81];
                 List<ComponentPixel> datapixel = Components_Data[ID].data[Components_Data[ID].currentrotation];
@@ -317,17 +317,17 @@ namespace Circuit_Simulator
                 sim_effect.Parameters["currenttype"].SetValue(1);
 
                 // Rotating Component clock-wise
-                if (Game1.kb_states.IsKeyToggleDown(Keys.R))
+                if (App.kb_states.IsKeyToggleDown(Keys.R))
                 {
                     Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = CompData.rottable_ROT[Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation];
                     InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
                 }
-                if (Game1.kb_states.IsKeyToggleDown(Keys.X))
+                if (App.kb_states.IsKeyToggleDown(Keys.X))
                 {
                     Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = CompData.rottable_FLIPX[Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation];
                     InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
                 }
-                if (Game1.kb_states.IsKeyToggleDown(Keys.Y))
+                if (App.kb_states.IsKeyToggleDown(Keys.Y))
                 {
                     Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation = CompData.rottable_FLIPY[Components_Data[UI_Handler.dragcomp.comp.ID].currentrotation];
                     InizializeComponentDrag(UI_Handler.dragcomp.comp.ID);
@@ -336,7 +336,7 @@ namespace Circuit_Simulator
             else
                 sim_effect.Parameters["currenttype"].SetValue(0);
 
-            if (Game1.kb_states.IsKeyToggleDown(Keys.Escape) || Game1.mo_states.IsRightButtonToggleOff())
+            if (App.kb_states.IsKeyToggleDown(Keys.Escape) || App.mo_states.IsRightButtonToggleOff())
             {
                 UI_Handler.dragcomp.GetsDrawn = false;
                 UI_Handler.dragcomp.GetsUpdated = false;
@@ -348,14 +348,14 @@ namespace Circuit_Simulator
         public void ComponentDrop(int dataID)
         {
             Point pos = Point.Zero;
-            Game1.simulator.Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
+            App.simulator.Screen2worldcoo_int(App.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
             ComponentDropAtPos(dataID, pos);
         }
         public static void ComponentDropAtPos(int dataID, Point pos)
         {
             ComponentDropAtPos(dataID, pos, Components_Data[dataID].currentrotation);
         }
-        public static Component ComponentDropAtPos(int dataID, Point pos, int rotation)
+        public static Component ComponentDropAtPos(int dataID, Point pos, byte rotation)
         {
             Component newcomp = null;
             if (Component.IsValidPlacement(dataID, pos, rotation))
@@ -376,7 +376,7 @@ namespace Circuit_Simulator
             UI_Handler.UI_IsWindowHide = false;
             IsCompDrag = false;
             sim_effect.Parameters["currenttype"].SetValue(0);
-            Game1.simulator.ChangeToolmode(Simulator.oldtoolmode);
+            App.simulator.ChangeToolmode(Simulator.oldtoolmode);
         }
 
         public static int GetComponentID(Point pos)
@@ -457,11 +457,11 @@ namespace Circuit_Simulator
             
             if(count > 0)
             {
-                Game1.graphics.GraphicsDevice.SetRenderTarget(CompTex);
+                App.graphics.GraphicsDevice.SetRenderTarget(Comp_target);
                 overlay_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
                 overlay_effect.CurrentTechnique.Passes[0].Apply();
-                Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, overlaylines, 0, count / 2);
-                Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, overlaylines, 0, count / 2);
+                App.graphics.GraphicsDevice.SetRenderTarget(null);
             }
             bool IsInGrid = Simulator.mo_worldposx > 0 && Simulator.mo_worldposy > 0 && Simulator.mo_worldposx < Simulator.SIZEX - 1 && Simulator.mo_worldposy < Simulator.SIZEY - 1;
             if (IsInGrid)
@@ -482,12 +482,12 @@ namespace Circuit_Simulator
                             vertices.Add(l2);
                         }
 
-                        Game1.graphics.GraphicsDevice.SetRenderTarget(HighlightTex);
-                        Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
+                        App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
+                        App.graphics.GraphicsDevice.Clear(Color.Transparent);
                         highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
                         highlight_effect.CurrentTechnique.Passes[0].Apply();
-                        Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.ToArray(), 0, vertices.Count / 2);
-                        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                        App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.ToArray(), 0, vertices.Count / 2);
+                        App.graphics.GraphicsDevice.SetRenderTarget(null);
                         //System.Threading.Thread.Sleep(100);
                         spritebatch.Begin();
                         spritebatch.Draw(Simulator.main_target, Vector2.Zero, Color.White);
@@ -499,9 +499,9 @@ namespace Circuit_Simulator
                 {
                     if (curhighlightID != 0)
                     {
-                        Game1.graphics.GraphicsDevice.SetRenderTarget(HighlightTex);
-                        Game1.graphics.GraphicsDevice.Clear(Color.Transparent);
-                        Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                        App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
+                        App.graphics.GraphicsDevice.Clear(Color.Transparent);
+                        App.graphics.GraphicsDevice.SetRenderTarget(null);
                     }
                     curhighlightID = 0;
                 }
@@ -522,7 +522,7 @@ namespace Circuit_Simulator
                         {
                             float pow = (float)Math.Pow(2, Simulator.worldzoom);
                             Vector2 screencoo = Simulator.worldpos.ToVector2() + pow * (components[i].pos.ToVector2() + new Vector2(0.5f));
-                            spritebatch.DrawString(Game1.basefont, compdata.name, screencoo - compdata.overlaysize.ToVector2() / 2, Color.Black);
+                            spritebatch.DrawString(App.basefont, compdata.name, screencoo - compdata.overlaysize.ToVector2() / 2, Color.Black);
                         }
                         if (compdata.OverlayText.Length > 0)
                         {

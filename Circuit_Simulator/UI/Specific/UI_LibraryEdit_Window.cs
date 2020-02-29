@@ -158,7 +158,7 @@ namespace Circuit_Simulator.UI.Specific
             CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys[curUIlib.ID];
             UI_Handler.EditLib.ID_Name = curlib.name;
             UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
-            UI_Handler.EditLib.pos.pos = Game1.mo_states.New.Position + new Point(5, 5);
+            UI_Handler.EditLib.pos.pos = App.mo_states.New.Position + new Point(5, 5);
             UI_Handler.EditLib.UpdatePos();
         }
 
@@ -264,7 +264,7 @@ namespace Circuit_Simulator.UI.Specific
             UI_Component curUIcomp = sender as UI_Component;
             UI_Handler.EditComp.ID_Name = curUIcomp.ID_Name;
             UI_Handler.EditComp.GetsUpdated = UI_Handler.EditComp.GetsDrawn = true;
-            UI_Handler.EditComp.pos.pos = Game1.mo_states.New.Position + new Point(5, 5);
+            UI_Handler.EditComp.pos.pos = App.mo_states.New.Position + new Point(5, 5);
         }
 
         public void RenameComp(object sender)

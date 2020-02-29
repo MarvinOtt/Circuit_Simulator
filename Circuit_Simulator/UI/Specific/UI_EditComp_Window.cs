@@ -76,7 +76,7 @@ namespace Circuit_Simulator.UI.Specific
             gridpaint = new UI_GridPaint(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, rotbuttons[0]), new Point(450), 300, new Point(150), new Point(-2, 6), UI_Handler.gridpaintbuttonconf);
             gridpaint.UpdateFunctions.Add(delegate ()
             {
-                if (new Rectangle(gridpaint.absolutpos, gridpaint.size).Contains(Game1.mo_states.New.Position))
+                if (new Rectangle(gridpaint.absolutpos, gridpaint.size).Contains(App.mo_states.New.Position))
                     Features.DenyScroll = true;
             });
             gridpaint.PixelChanged += PixelChanged;

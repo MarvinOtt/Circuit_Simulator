@@ -54,11 +54,11 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void UpdateSpecific()
         {
-            if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue)
+            if (App.mo_states.New.ScrollWheelValue < App.mo_states.Old.ScrollWheelValue)
             {
                 scale_log--;
             }
-            else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue)
+            else if (App.mo_states.New.ScrollWheelValue > App.mo_states.Old.ScrollWheelValue)
             {
                 scale_log++;
             }

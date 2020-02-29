@@ -33,10 +33,13 @@ namespace Circuit_Simulator
 
         public static void SaveToPath(string path)
         {
+            FileStream s = null;
             try
             {
                 FileStream stream = new FileStream(path, FileMode.Create);
+                s = stream;
                 List<byte> bytestosave = new List<byte>();
+                byte[] bytearray2 = new byte[1];
                 int compcount = 0;
                 int wirecount = 0;
                 byte[] bytearray;
@@ -130,7 +133,8 @@ namespace Circuit_Simulator
                         stream.Write(BitConverter.GetBytes(Sim_Component.components[i].dataID), 0, 4);
                         stream.Write(BitConverter.GetBytes(Sim_Component.components[i].pos.X), 0, 4);
                         stream.Write(BitConverter.GetBytes(Sim_Component.components[i].pos.Y), 0, 4);
-                        stream.Write(BitConverter.GetBytes(Sim_Component.components[i].rotation), 0, 4);
+                        bytearray2[0] = Sim_Component.components[i].rotation;
+                        stream.Write(bytearray2, 0, 1);
                         CompData compdata = Sim_Component.Components_Data[Sim_Component.components[i].dataID];
                         stream.Write(BitConverter.GetBytes(compdata.valuebox_length), 0, 4);
                         for (int j = 0; j < compdata.valuebox_length; ++j)
@@ -151,7 +155,8 @@ namespace Circuit_Simulator
             catch (Exception exp)
             {
                 Console.WriteLine("Saving failed: {0}", exp);
-
+                if (s != null)
+                    s.Close();
                 System.Windows.Forms.MessageBox.Show("Saving failed", null, MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
@@ -261,17 +266,17 @@ namespace Circuit_Simulator
                     Simulator.CalcGridData = new byte[Simulator.SIZEX, Simulator.SIZEY];
                     Simulator.CalcGridStat = new byte[Simulator.SIZEX, Simulator.SIZEY];
                     Simulator.networks = new Network[10000000];
-                    Simulator.emptyNetworkID = new int[10000000];
+                    Simulator.emptyNetworkIDs = new int[10000000];
 
                     Sim_Component.CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
                     Sim_Component.CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
-                    Sim_Component.components = new Component[1000000];
-                    Sim_Component.pins2check = new Point[4000000];
+                    Sim_Component.components = new Component[10000000];
+                    Sim_Component.pins2check = new Point[20000000];
                     Sim_Component.overlaylines = new VertexPositionLine[1000000];
-                    Sim_Component.emptyComponentID = new int[1000000];
+                    Sim_Component.emptyComponentID = new int[10000000];
                     Sim_Component.CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
 
-                    Simulator.emptyNetworkID_count = 0;
+                    Simulator.emptyNetworkIDs_count = 0;
                     Sim_Component.emptyComponentID_count = 0;
                     Sim_Component.CompMayneedoverlay.Clear();
                     
@@ -279,19 +284,19 @@ namespace Circuit_Simulator
                     Sim_INF_DLL.Comp2UpdateAfterSim_count = 0;
                     Simulator.cursimframe = 0;
 
-                    Simulator.sec_target.Dispose();
+                    Simulator.seclogic_target.Dispose();
                     Simulator.logic_target.Dispose();
                     Simulator.WireCalc_target.Dispose();
-                    Sim_Component.CompTex.Dispose();
-                    Sim_Component.HighlightTex.Dispose();
-                    Sim_Component.IsEdgeTex.Dispose();
+                    Sim_Component.Comp_target.Dispose();
+                    Sim_Component.Highlight_target.Dispose();
+                    Sim_Component.IsEdge_target.Dispose();
 
-                    Simulator.sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Simulator.logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Simulator.WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Sim_Component.CompTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Sim_Component.HighlightTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-                    Sim_Component.IsEdgeTex = new RenderTarget2D(Game1.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.seclogic_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.logic_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Simulator.WireCalc_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Sim_Component.Comp_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Sim_Component.Highlight_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    Sim_Component.IsEdge_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
                     Simulator.highestNetworkID = 4;
 
@@ -425,8 +430,8 @@ namespace Circuit_Simulator
                         int posX = BitConverter.ToInt32(intbuffer, 0);
                         stream.Read(intbuffer, 0, 4);
                         int posY = BitConverter.ToInt32(intbuffer, 0);
-                        stream.Read(intbuffer, 0, 4);
-                        int rotation = BitConverter.ToInt32(intbuffer, 0);
+                        stream.Read(intbuffer, 0, 1);
+                        int rotation = intbuffer[0];
                         stream.Read(intbuffer, 0, 4);
                         int valuebox_length = BitConverter.ToInt32(intbuffer, 0);
 
@@ -437,9 +442,9 @@ namespace Circuit_Simulator
                             int curval = BitConverter.ToInt32(intbuffer, 0);
                             buffercomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = curval;
                         }
-
+						
                         Sim_Component.components[i] = buffercomp;
-                        buffercomp.Place(new Point(posX, posY), rotation, true);
+                        buffercomp.Place(new Point(posX, posY), (byte)rotation, true);
                     }
                     Network.Delete(Simulator.FoundNetworks);
                     Simulator.FoundNetworks.Clear();
@@ -447,7 +452,7 @@ namespace Circuit_Simulator
 
                     stream.Close();
                     stream.Dispose();
-
+                    
 
                     Console.WriteLine("Loading suceeded. Filename: {0}", filename);
                     IsUpToDate = true;

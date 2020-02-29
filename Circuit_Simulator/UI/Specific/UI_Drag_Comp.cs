@@ -22,9 +22,9 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void UpdateSpecific()
         {
-            pos.pos = Game1.mo_states.New.Position;
+            pos.pos = App.mo_states.New.Position;
             UI_Handler.UI_Active_State = 2;
-            if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+            if (App.mo_states.New.LeftButton == ButtonState.Pressed)
             {
               
                 Sim_Component.DropComponent = true;
@@ -34,7 +34,7 @@ namespace Circuit_Simulator.UI.Specific
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
      
-            spritebatch.DrawString(comp.conf.font, comp.text, Game1.mo_states.New.Position.ToVector2(), comp.conf.font_color);
+            spritebatch.DrawString(comp.conf.font, comp.text, App.mo_states.New.Position.ToVector2(), comp.conf.font_color);
 
         }
     }

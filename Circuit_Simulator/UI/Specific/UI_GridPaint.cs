@@ -48,10 +48,10 @@ namespace Circuit_Simulator.UI.Specific
             pinpositions = new List<Vector2>();
             ledsegmentpositions = new List<Vector2>();
             pixel = new List<ComponentPixel>();
-            tex = new Texture2D(Game1.graphics.GraphicsDevice, size.X, size.Y);
-            logictex = new Texture2D(Game1.graphics.GraphicsDevice, GridSize, GridSize, false, SurfaceFormat.Alpha8);
+            tex = new Texture2D(App.graphics.GraphicsDevice, size.X, size.Y);
+            logictex = new Texture2D(App.graphics.GraphicsDevice, GridSize, GridSize, false, SurfaceFormat.Alpha8);
             data = new byte[logictex.Width * logictex.Height];
-            effect = Game1.content.Load<Effect>("UI\\GridPaint_effect");
+            effect = App.content.Load<Effect>("UI\\GridPaint_effect");
             effect.Parameters["worldsizex"].SetValue(GridSize);
             effect.Parameters["worldsizey"].SetValue(GridSize);
             effect.Parameters["Screenwidth"].SetValue(size.X);
@@ -108,44 +108,44 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void UpdateSpecific()
         {
-            if (new Rectangle(pos.pos, size).Contains(Game1.mo_states.New.Position) && !DenyInteraction && !(UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)))
+            if (new Rectangle(pos.pos, size).Contains(App.mo_states.New.Position) && !DenyInteraction && !(UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(App.mo_states.New.Position)))
             {
                 #region Position and Zoom
 
-                if (Game1.kb_states.New.IsKeyDown(Keys.W))
+                if (App.kb_states.New.IsKeyDown(Keys.W))
                     worldpos.Y += 10;
-                if (Game1.kb_states.New.IsKeyDown(Keys.S))
+                if (App.kb_states.New.IsKeyDown(Keys.S))
                     worldpos.Y -= 10;
-                if (Game1.kb_states.New.IsKeyDown(Keys.A))
+                if (App.kb_states.New.IsKeyDown(Keys.A))
                     worldpos.X += 10;
-                if (Game1.kb_states.New.IsKeyDown(Keys.D))
+                if (App.kb_states.New.IsKeyDown(Keys.D))
                     worldpos.X -= 10;
 
                 worldpos.X = (int)(worldpos.X);
                 worldpos.Y = (int)(worldpos.Y);
 
-                if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
+                if (App.mo_states.New.ScrollWheelValue != App.mo_states.Old.ScrollWheelValue)
                 {
-                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && zoom > minmaxzoom.X) // Zooming Out
+                    if (App.mo_states.New.ScrollWheelValue < App.mo_states.Old.ScrollWheelValue && zoom > minmaxzoom.X) // Zooming Out
                     {
                         zoom -= 1;
-                        Vector2 diff = worldpos - (Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2());
-                        worldpos = (Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2()) + diff / 2;
+                        Vector2 diff = worldpos - (App.mo_states.New.Position.ToVector2() - pos.pos.ToVector2());
+                        worldpos = (App.mo_states.New.Position.ToVector2() - pos.pos.ToVector2()) + diff / 2;
                         UpdatePinTextPos();
                     }
-                    else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && zoom < minmaxzoom.Y) // Zooming In
+                    else if (App.mo_states.New.ScrollWheelValue > App.mo_states.Old.ScrollWheelValue && zoom < minmaxzoom.Y) // Zooming In
                     {
                         zoom += 1;
-                        Vector2 diff = worldpos - (Game1.mo_states.New.Position.ToVector2() - pos.pos.ToVector2());
+                        Vector2 diff = worldpos - (App.mo_states.New.Position.ToVector2() - pos.pos.ToVector2());
                         worldpos += diff;
                         UpdatePinTextPos();
                     }
                 }
                 int mouse_worldpos_X, mouse_worldpos_Y;
-                Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
+                Screen2worldcoo_int(App.mo_states.New.Position.ToVector2() - absolutpos.ToVector2(), out mouse_worldpos_X, out mouse_worldpos_Y);
                 if (mouse_worldpos_X >= 0 && mouse_worldpos_X < GridSize && mouse_worldpos_Y >= 0 && mouse_worldpos_Y < GridSize && currot == 0 && !UI_EditComp_Window.IsInOverlayMode)
                 {
-                    if (Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+                    if (App.mo_states.New.LeftButton == ButtonState.Pressed)
                     {
                         // Place Pixel
                         if (pixel.Exists(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y))
@@ -185,7 +185,7 @@ namespace Circuit_Simulator.UI.Specific
                         {
                             for (int i = 0; i < 10; ++i)
                             {
-                                if (Game1.kb_states.IsKeyToggleDown(Keys.D0 + i))
+                                if (App.kb_states.IsKeyToggleDown(Keys.D0 + i))
                                 {
                                     int index = pixel.FindIndex(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y);
                                     ComponentPixel cur = pixel[index];
@@ -200,7 +200,7 @@ namespace Circuit_Simulator.UI.Specific
                                     }
                                 }
                             }
-                            if (Game1.kb_states.IsKeyToggleDown(Keys.Back))
+                            if (App.kb_states.IsKeyToggleDown(Keys.Back))
                             {
                                 int index = pixel.FindIndex(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y);
                                 if (pixel[index].type > Sim_Component.PINOFFSET)
@@ -209,7 +209,7 @@ namespace Circuit_Simulator.UI.Specific
                                     ApplyPixel();
                                 }
                             }
-                            else if (Game1.kb_states.IsKeyToggleDown(Keys.Escape))
+                            else if (App.kb_states.IsKeyToggleDown(Keys.Escape))
                             {
                                 int index = pixel.FindIndex(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y);
                                 if (pixel[index].type > Sim_Component.PINOFFSET)
@@ -223,7 +223,7 @@ namespace Circuit_Simulator.UI.Specific
                         {
                             for (int i = 0; i < 10; ++i)
                             {
-                                if (Game1.kb_states.IsKeyToggleDown(Keys.D0 + i))
+                                if (App.kb_states.IsKeyToggleDown(Keys.D0 + i))
                                 {
                                     int index = pixel.FindIndex(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y);
                                     ComponentPixel cur = pixel[index];
@@ -241,7 +241,7 @@ namespace Circuit_Simulator.UI.Specific
                                     }
                                 }
                             }
-                            if (Game1.kb_states.IsKeyToggleDown(Keys.Back))
+                            if (App.kb_states.IsKeyToggleDown(Keys.Back))
                             {
                                 int index = pixel.FindIndex(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y);
                                 if (pixel[index].type == 4)
@@ -251,7 +251,7 @@ namespace Circuit_Simulator.UI.Specific
                                     ApplyPixel();
                                 }
                             }
-                            else if (Game1.kb_states.IsKeyToggleDown(Keys.Escape))
+                            else if (App.kb_states.IsKeyToggleDown(Keys.Escape))
                             {
                                 int index = pixel.FindIndex(x => x.pos.X == mouse_worldpos_X - Origin.X && x.pos.Y == mouse_worldpos_Y - Origin.Y);
                                 if (pixel[index].type == 4)
@@ -263,7 +263,7 @@ namespace Circuit_Simulator.UI.Specific
                             }
                         }
                     }
-                    if (Game1.mo_states.New.RightButton == ButtonState.Pressed)
+                    if (App.mo_states.New.RightButton == ButtonState.Pressed)
                     {
                         int index = pixel.FindIndex(x => x.pos.X == (mouse_worldpos_X - Origin.X) && x.pos.Y == (mouse_worldpos_Y - Origin.Y));
                         if (index >= 0)
@@ -282,13 +282,13 @@ namespace Circuit_Simulator.UI.Specific
                     CompData compdata = UI_EditComp_Window.rootcomp;
                     Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText) * compdata.OverlayTextSize[currot] * (float)Math.Pow(2, zoom);
                     Vector2 pos = absolutpos.ToVector2() + new Vector2((compdata.OverlayTextPos[currot].X + Origin.X + 0.5f) * (float)Math.Pow(2, zoom) + worldpos.X, (compdata.OverlayTextPos[currot].Y + Origin.Y + 0.5f) * (float)Math.Pow(2, zoom) + worldpos.Y) - size / 2;
-                    if (Game1.mo_states.New.LeftButton == ButtonState.Pressed && Game1.kb_states.New.IsKeyDown(Keys.LeftControl))
+                    if (App.mo_states.New.LeftButton == ButtonState.Pressed && App.kb_states.New.IsKeyDown(Keys.LeftControl))
                     {
-                        compdata.OverlayTextSize[currot] += (((float)(Game1.mo_states.New.Position.Y - Game1.mo_states.Old.Position.Y)) / (float)Math.Pow(2, zoom)) * 0.01f;
+                        compdata.OverlayTextSize[currot] += (((float)(App.mo_states.New.Position.Y - App.mo_states.Old.Position.Y)) / (float)Math.Pow(2, zoom)) * 0.01f;
                     }
-                    else if ((new Rectangle(pos.ToPoint(), size.ToPoint())).Contains(Game1.mo_states.New.Position) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+                    else if ((new Rectangle(pos.ToPoint(), size.ToPoint())).Contains(App.mo_states.New.Position) && App.mo_states.New.LeftButton == ButtonState.Pressed)
                     {
-                        compdata.OverlayTextPos[currot] += (Game1.mo_states.New.Position - Game1.mo_states.Old.Position).ToVector2() / (float)Math.Pow(2, zoom);
+                        compdata.OverlayTextPos[currot] += (App.mo_states.New.Position - App.mo_states.Old.Position).ToVector2() / (float)Math.Pow(2, zoom);
                     }
                     
                 }
@@ -309,8 +309,8 @@ namespace Circuit_Simulator.UI.Specific
             effect.Parameters["logictex"].SetValue(logictex);
 
             Matrix matrix = Matrix.Identity;
-            if (Game1.Render_PreviousMatrix_Index > 0)
-                matrix = Game1.Render_PreviousMatrix[Game1.Render_PreviousMatrix_Index - 1];
+            if (App.Render_PreviousMatrix_Index > 0)
+                matrix = App.Render_PreviousMatrix[App.Render_PreviousMatrix_Index - 1];
             spritebatch.Begin(SpriteSortMode.Deferred, null, null, null, null, effect, matrix);
             spritebatch.Draw(tex, pos.pos.ToVector2(), Color.White);
 

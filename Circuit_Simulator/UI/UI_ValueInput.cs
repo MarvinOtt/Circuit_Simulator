@@ -72,27 +72,27 @@ namespace Circuit_Simulator.UI
 
 
 
-            if (hitbox.Contains(Game1.mo_states.New.Position))
+            if (hitbox.Contains(App.mo_states.New.Position))
             {
-                if (Game1.mo_states.IsLeftButtonToggleOn())
+                if (App.mo_states.IsLeftButtonToggleOn())
                 {
                     IsTyping = true;
                 }
             }
-            else if (!hitbox.Contains(Game1.mo_states.New.Position) && IsTyping)
+            else if (!hitbox.Contains(App.mo_states.New.Position) && IsTyping)
             {
-                if (Game1.mo_states.IsLeftButtonToggleOff() || Game1.mo_states.IsRightButtonToggleOff())
+                if (App.mo_states.IsLeftButtonToggleOff() || App.mo_states.IsRightButtonToggleOff())
                 {
                     IsTyping = false;
                     ValueChanged(this);
                 }
             }
-            if (IsTyping && Game1.kb_states.New.IsKeyDown(Keys.Enter))
+            if (IsTyping && App.kb_states.New.IsKeyDown(Keys.Enter))
             {
                 IsTyping = false;
                 ValueChanged(this);
             }
-            if (IsTyping && Game1.kb_states.New.IsKeyDown(Keys.Escape))
+            if (IsTyping && App.kb_states.New.IsKeyDown(Keys.Escape))
             {
                 IsTyping = false;
                 value = oldvalue;
@@ -102,9 +102,9 @@ namespace Circuit_Simulator.UI
             if (IsTyping)
             {
                 UI_Handler.UI_Active_State = UI_Handler.UI_Active_Main;
-                newkeys = Game1.kb_states.New.GetPressedKeys();
-                oldkeys = Game1.kb_states.Old.GetPressedKeys();
-                bool IsShift = Game1.kb_states.New.AreKeysDown(Keys.LeftShift) || Game1.kb_states.New.AreKeysDown(Keys.RightShift);
+                newkeys = App.kb_states.New.GetPressedKeys();
+                oldkeys = App.kb_states.Old.GetPressedKeys();
+                bool IsShift = App.kb_states.New.AreKeysDown(Keys.LeftShift) || App.kb_states.New.AreKeysDown(Keys.RightShift);
                 for (int i = 0; i < newkeys.Length; i++)
                 {
                     if (!oldkeys.Contains(newkeys[i]))

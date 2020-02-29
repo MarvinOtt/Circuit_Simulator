@@ -39,7 +39,7 @@ namespace Circuit_Simulator.UI.Specific
             CompLibrary curlib = CompLibrary.AllUsedLibraries[curUIlib.ID];
             UI_Handler.EditProjectLib.ID_Name = curlib.name;
             UI_Handler.EditProjectLib.GetsUpdated = UI_Handler.EditProjectLib.GetsDrawn = true;
-            UI_Handler.EditProjectLib.pos.pos = Game1.mo_states.New.Position + new Point(5, 5);
+            UI_Handler.EditProjectLib.pos.pos = App.mo_states.New.Position + new Point(5, 5);
             UI_Handler.EditProjectLib.UpdatePos();
         }
         public void OpenLib(object sender)

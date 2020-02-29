@@ -38,7 +38,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
 
-            if (!hitbox.Contains(Game1.mo_states.New.Position))
+            if (!hitbox.Contains(App.mo_states.New.Position))
                 IsHovered = false;
             base.UpdateAlways();
         }

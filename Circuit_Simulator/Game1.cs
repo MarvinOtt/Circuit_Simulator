@@ -66,11 +66,11 @@ namespace Circuit_Simulator
     }
 
 
-    public class Game1 : Game
+    public class App : Game
     {
         public static GraphicsDeviceManager graphics;
         public static ContentManager content;
-        public static Game1 ME;
+        public static App ME;
         public static System.Windows.Forms.Form form;
         public static event EventHandler GraphicsChanged;
         public static Simulator simulator;
@@ -143,7 +143,7 @@ namespace Circuit_Simulator
             // Stop the threads
         }
 
-        public Game1()
+        public App()
         {
             // Graphic Initialization
             ME = this;
@@ -179,6 +179,11 @@ namespace Circuit_Simulator
             base.Initialize();
         }
 
+        public void ExitApplication()
+        {
+            Environment.Exit(0);
+        }
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -188,6 +193,15 @@ namespace Circuit_Simulator
             Color[] colors = new Color[1];
             colors[0] = Color.White;
             pixel.SetData(colors);
+
+            // Check for write permissions for the simulation files
+            bool WriteAccessToMainFolder = Extensions.HasWritePermissions(Directory.GetCurrentDirectory());
+            if(!WriteAccessToMainFolder)
+            {
+                Console.WriteLine("Could not write important simulation files. Run the application in adminstrator mode or check the permissions of the application folder to fix this.");
+                System.Windows.Forms.MessageBox.Show("Could not write important simulation files. Run the application in adminstrator mode or check the permissions of the application folder to fix this.", null, System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Error);
+                ExitApplication();
+            }
 
             UI_handler = new UI_Handler(Content);
             UI_handler.Initialize(spriteBatch);
@@ -256,7 +270,6 @@ namespace Circuit_Simulator
 
             base.Draw(gameTime);
             watch.Stop();
-            Console.WriteLine(watch.ElapsedMilliseconds);
         }
     }
 }

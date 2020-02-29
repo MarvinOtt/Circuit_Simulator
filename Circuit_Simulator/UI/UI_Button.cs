@@ -31,10 +31,10 @@ namespace Circuit_Simulator.UI
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
             IsToggle = false;
-            if (hitbox.Contains(Game1.mo_states.New.Position))
+            if (hitbox.Contains(App.mo_states.New.Position))
             {
                 IsHovered = true;
-                if (Game1.mo_states.IsLeftButtonToggleOff())
+                if (App.mo_states.IsLeftButtonToggleOff())
                 {
                     IsActivated ^= true;
                     IsToggle = true;
@@ -43,7 +43,7 @@ namespace Circuit_Simulator.UI
                     GotToggledLeft(this);
                 }
 
-                if (Game1.mo_states.IsRightButtonToggleOff())
+                if (App.mo_states.IsRightButtonToggleOff())
                 {
                     GotActivatedRight(this);
                 }
@@ -54,7 +54,7 @@ namespace Circuit_Simulator.UI
         protected override void UpdateAlways()
         {
             Rectangle hitbox = new Rectangle(absolutpos, size);
-            if (!hitbox.Contains(Game1.mo_states.New.Position) || UI_Handler.UI_Element_Pressed || (UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(Game1.mo_states.New.Position)))
+            if (!hitbox.Contains(App.mo_states.New.Position) || UI_Handler.UI_AlreadyActivated || (UI_Handler.IsInScrollable && !UI_Handler.IsInScrollable_Bounds.Contains(App.mo_states.New.Position)))
                 IsHovered = false;
             if (conf.behav == 2)
                 IsActivated = false;

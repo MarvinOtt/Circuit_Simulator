@@ -57,7 +57,7 @@ namespace Circuit_Simulator.UI.Specific
             UI_Handler.dragcomp.comp = comp;
             UI_Handler.ZaWarudo = UI_Handler.dragcomp;
             UI_Handler.UI_Active_State = UI_Handler.UI_Active_CompDrag;
-            Game1.simulator.sim_comp.InizializeComponentDrag(comp.ID);
+            App.simulator.sim_comp.InizializeComponentDrag(comp.ID);
             System.Windows.Forms.Cursor.Current = System.Windows.Forms.Cursors.Hand;
         }
 

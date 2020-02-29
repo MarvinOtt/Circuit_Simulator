@@ -92,132 +92,6 @@ namespace Circuit_Simulator
         }
     }
 
-    public class Network
-    {
-        public static List<Network> CheckForDrawing = new List<Network>();
-        public List<Line_Netw> lines;
-        public int ID;
-        public byte state;
-        public static bool HasRealWires;
-        public bool NeedsDrawing;
-
-        public Network(int ID)
-        {
-            NeedsDrawing = true;
-            CheckForDrawing.Add(this);
-            this.ID = ID;
-            if (ID > Simulator.highestNetworkID)
-                Simulator.highestNetworkID = ID;
-            lines = new List<Line_Netw>();
-        }
-
-        public static void Delete(IEnumerable<int> nets)
-        {
-            foreach(int net in nets)
-            {
-                if (Simulator.networks[net] != null)
-                {
-                    Network curnet = Simulator.networks[net];
-                    for (int i = 0; i < curnet.lines.Count; ++i)
-                    {
-                        Point curpos = curnet.lines[i].start;
-                        for (int j = 0; j < curnet.lines[i].length; ++j)
-                        {
-                            byte linelayers = curnet.lines[i].layers;
-                            for(int k = 0; k < 7; ++k)
-                            {
-                                if (((linelayers >> k) & 1) > 0)
-                                    Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, k] = 0;
-                            }
-                            if(linelayers >= 128)
-                                Simulator.WireIDPs[curpos.X, curpos.Y] = 0;
-
-
-                            curpos += curnet.lines[i].dir;
-                        }
-
-                    }
-                    Simulator.emptyNetworkID[Simulator.emptyNetworkID_count++] = net;
-                }
-                Simulator.networks[net] = null;
-            }
-        }
-
-        public void ClearCalcGrid()
-        {
-            for(int i = 0; i < lines.Count; ++i)
-            {
-                for(int l = 0; l < lines[i].length; ++l)
-                {
-                    int x = lines[i].start.X + lines[i].dir.X * l;
-                    int y = lines[i].start.Y + lines[i].dir.Y * l;
-                    Simulator.CalcGridData[x, y] = Simulator.CalcGridStat[x, y] = 0;
-                  
-                }
-            }
-        }
-
-        public void PlaceNetwork()
-        {
-            for(int i = 0; i < lines.Count; ++i)
-            {
-                Point curpos = lines[i].start;
-                for(int j = 0; j < lines[i].length; ++j)
-                {
-                    byte linelayers = lines[i].layers;
-                    Simulator.IsWire[curpos.X, curpos.Y] |= linelayers;
-
-                    for (int b = 0; b < 7; ++b)
-                        if (((linelayers >> b) & 1) != 0)
-                            Simulator.WireIDs[curpos.X / 2, curpos.Y / 2, b] = ID;
-                    if (linelayers >= 128)
-                        Simulator.WireIDPs[curpos.X, curpos.Y] = ID;
-
-                    curpos += lines[i].dir;
-                }
-                
-            }
-            Draw();
-        }
-
-        public void Draw()
-        {
-            if (NeedsDrawing)
-            {
-                
-                for (int i = 0; i < lines.Count; ++i)
-                {
-                
-                    for (int j = 0; j < Simulator.LAYER_NUM; ++j)
-                    {
-                        if ((lines[i].layers & (1 << j)) > 0)
-                        {
-                            if (Simulator.lines2draw_count[j] >= 500000)
-                                Simulator.DrawLines();
-                            Line line = new Line(lines[i].start, lines[i].end);
-                            VertexPositionLine line1, line2;
-                            line.Convert2LineVertices((1 << j), out line1, out line2);
-                            Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line1;
-                            Simulator.lines2draw[j][Simulator.lines2draw_count[j]++] = line2;
-                        }
-                    }
-                    if ((lines[i].layers & (1 << 7)) > 0)
-                    {
-                        Line line = new Line(lines[i].start, lines[i].end);
-                        VertexPositionLine line1, line2;
-                        line.Convert2LineVertices(128, out line1, out line2);
-                        Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line1;
-                        Simulator.lines2draw[7][Simulator.lines2draw_count[7]++] = line2;
-
-                        if (Simulator.lines2draw_count[7] >= 500000)
-                            Simulator.DrawLines();
-                    }
-                }
-                NeedsDrawing = false;
-            }
-        }
-    }
-
     public struct VertexPositionLine : IVertexType
     {
         public Vector3 Position;
@@ -268,7 +142,7 @@ namespace Circuit_Simulator
         public static Effect sim_effect, line_effect, iswirerender_effect;
         Texture2D copyWiretex, copyComptex;
         public static RenderTarget2D main_target, WireCalc_target;
-        public static RenderTarget2D logic_target, sec_target;
+        public static RenderTarget2D logic_target, seclogic_target;
         public static Network CalcNetwork;
 
         public static Network[] networks;
@@ -276,9 +150,9 @@ namespace Circuit_Simulator
         public static int[] lines2draw_count;
         public static Matrix linedrawingmatrix;
         public static int highestNetworkID = 3;
-        public static int[] emptyNetworkID;
-        public static int emptyNetworkID_count;
-        public static byte[,] IsWire, CalcGridData, CalcGridStat, IsChange;
+        public static int[] emptyNetworkIDs;
+        public static int emptyNetworkIDs_count;
+        public static byte[,] IsWire, CalcGridData, CalcGridStat;
 
         public static HashSet<int> FoundNetworks;
         public static int[] CalcOccurNetw;
@@ -314,17 +188,17 @@ namespace Circuit_Simulator
 
         public Simulator()
         {
-            Game1.GraphicsChanged += Window_Graphics_Changed;
+            App.GraphicsChanged += Window_Graphics_Changed;
 
             // Loading Effects
-            sim_effect = Game1.content.Load<Effect>("sim_effect");
-            line_effect = Game1.content.Load<Effect>("line_effect");
-            iswirerender_effect = Game1.content.Load<Effect>("iswirerender_effect");
+            sim_effect = App.content.Load<Effect>("sim_effect");
+            line_effect = App.content.Load<Effect>("line_effect");
+            iswirerender_effect = App.content.Load<Effect>("iswirerender_effect");
 
             // Initializing Render Targets
-            sec_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            logic_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
-            WireCalc_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            seclogic_target = new RenderTarget2D(App.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            logic_target = new RenderTarget2D(App.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+            WireCalc_target = new RenderTarget2D(App.graphics.GraphicsDevice, SIZEX, SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
           
 
             FoundNetworks = new HashSet<int>();
@@ -334,13 +208,12 @@ namespace Circuit_Simulator
             IsWire = new byte[SIZEX, SIZEY];
             CalcGridData = new byte[SIZEX, SIZEY];
             CalcGridStat = new byte[SIZEX, SIZEY];
-            IsChange = new byte[SIZEX, SIZEY];
             CalcOccurNetw = new int[10000];
             WireIDs = new int[SIZEX / 2, SIZEY / 2, LAYER_NUM];
             WireIDPs = new int[SIZEX, SIZEY];
             networks = new Network[10000000];
             
-            emptyNetworkID = new int[10000000];
+            emptyNetworkIDs = new int[10000000];
             revshiftarray = new byte[256];
             for (int i = 0; i < 8; ++i)
                 for(int j = 0; j < (1 << i); ++j)
@@ -360,10 +233,10 @@ namespace Circuit_Simulator
         public void Window_Graphics_Changed(object sender, EventArgs e)
         {
             main_target?.Dispose();
-            main_target = new RenderTarget2D(Game1.graphics.GraphicsDevice, Game1.Screenwidth, Game1.Screenheight);
+            main_target = new RenderTarget2D(App.graphics.GraphicsDevice, App.Screenwidth, App.Screenheight);
 
-            sim_effect.Parameters["Screenwidth"].SetValue(Game1.Screenwidth);
-            sim_effect.Parameters["Screenheight"].SetValue(Game1.Screenheight);
+            sim_effect.Parameters["Screenwidth"].SetValue(App.Screenwidth);
+            sim_effect.Parameters["Screenheight"].SetValue(App.Screenheight);
             sim_effect.Parameters["worldsizex"].SetValue(SIZEX);
             sim_effect.Parameters["worldsizey"].SetValue(SIZEY);
         }
@@ -401,8 +274,6 @@ namespace Circuit_Simulator
             byte curval = (byte)(IsWire[x, y] & mask);
             if (IsWire[x, y] >= 128)
                 curval = IsWire[x, y];
-            if (IsWire[x, y] != 128 || (IsWire[x, y] == 128 && Sim_Component.CompType[x, y] == 0))
-                Network.HasRealWires = true;
 
             CalcGridData[x, y] |= curval;
             byte comptype_cur = Sim_Component.CompType[x, y];
@@ -547,13 +418,9 @@ namespace Circuit_Simulator
             int curvalue = CalcGridData[x, y] & layermask;
             if (curvalue == 0)
                 return -1;
-            if(!Network.HasRealWires)
-            {
-              
-            }
             int ID = 0;
-            if (emptyNetworkID_count > 0)
-                ID = emptyNetworkID[--emptyNetworkID_count];
+            if (emptyNetworkIDs_count > 0)
+                ID = emptyNetworkIDs[--emptyNetworkIDs_count];
             else
                 ID = highestNetworkID + 1;
            
@@ -566,7 +433,6 @@ namespace Circuit_Simulator
         public static void CalculateNetworkAt(int x, int y, byte layermask)
         {
             CalcOccurNetw_Pos = 0;
-            Network.HasRealWires = false;
             Array.Clear(CalcOccurNetw, 0, CalcOccurNetw.Length);
 
             // Flood Fill CalcGrid
@@ -751,7 +617,7 @@ namespace Circuit_Simulator
         {
 
 
-            Screen2worldcoo_int(Game1.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
+            Screen2worldcoo_int(App.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
             Point mo_worldpos = new Point(mo_worldposx, mo_worldposy);
             IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
@@ -762,19 +628,19 @@ namespace Circuit_Simulator
             if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
             {
                 #region INPUT
-                if (Game1.kb_states.New.IsKeyDown(Keys.W))
+                if (App.kb_states.New.IsKeyDown(Keys.W))
                     worldpos.Y += 10;
-                if (Game1.kb_states.New.IsKeyDown(Keys.S))
+                if (App.kb_states.New.IsKeyDown(Keys.S))
                     worldpos.Y -= 10;
-                if (Game1.kb_states.New.IsKeyDown(Keys.A))
+                if (App.kb_states.New.IsKeyDown(Keys.A))
                     worldpos.X += 10;
-                if (Game1.kb_states.New.IsKeyDown(Keys.D))
+                if (App.kb_states.New.IsKeyDown(Keys.D))
                     worldpos.X -= 10;
-                if (Game1.kb_states.IsKeyToggleDown(Keys.Up))
+                if (App.kb_states.IsKeyToggleDown(Keys.Up))
                     simspeed++;
-                if (Game1.kb_states.IsKeyToggleDown(Keys.Down))
+                if (App.kb_states.IsKeyToggleDown(Keys.Down))
                     simspeed--;
-                if (Game1.kb_states.IsKeyToggleDown(Keys.Add))
+                if (App.kb_states.IsKeyToggleDown(Keys.Add))
                 {
                     (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
                   
@@ -785,7 +651,7 @@ namespace Circuit_Simulator
                     }
                     (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
-                if (Game1.kb_states.IsKeyToggleDown(Keys.Subtract))
+                if (App.kb_states.IsKeyToggleDown(Keys.Subtract))
                 {
                     (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
                    
@@ -797,30 +663,30 @@ namespace Circuit_Simulator
                     (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
                 }
 
-                if (Game1.mo_states.New.ScrollWheelValue != Game1.mo_states.Old.ScrollWheelValue)
+                if (App.mo_states.New.ScrollWheelValue != App.mo_states.Old.ScrollWheelValue)
                 {
-                    if (Game1.mo_states.New.ScrollWheelValue < Game1.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
+                    if (App.mo_states.New.ScrollWheelValue < App.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
                     {
                         worldzoom -= 1;
-                        Point diff = Game1.mo_states.New.Position - worldpos;
+                        Point diff = App.mo_states.New.Position - worldpos;
                         worldpos += new Point(diff.X / 2, diff.Y / 2);
                     }
-                    else if (Game1.mo_states.New.ScrollWheelValue > Game1.mo_states.Old.ScrollWheelValue && worldzoom < 10) // Zooming In
+                    else if (App.mo_states.New.ScrollWheelValue > App.mo_states.Old.ScrollWheelValue && worldzoom < 10) // Zooming In
                     {
                         worldzoom += 1;
-                        Point diff = Game1.mo_states.New.Position - worldpos;
+                        Point diff = App.mo_states.New.Position - worldpos;
                         worldpos -= diff;
                     }
                 }
                 #endregion
             }
 
-            if (selectstate > 0 && Game1.kb_states.IsKeyToggleDown(Keys.Escape))
+            if (selectstate > 0 && App.kb_states.IsKeyToggleDown(Keys.Escape))
             {
                 selectstate = 0;
             }
             // Finishing Selection
-            if (Game1.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
+            if (App.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
             {
                 Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
                 Selection_EndPos.Y = MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO);
@@ -836,7 +702,7 @@ namespace Circuit_Simulator
                 // Copying
                 if (selectstate == 2)
                 {
-                    if (Game1.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C) && !Game1.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.C))
+                    if (App.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C) && !App.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.C))
                     {
                         copysize = Selection_Size;
                         CopiedIsWire = new byte[Selection_Size.X * Selection_Size.Y];
@@ -905,7 +771,7 @@ namespace Circuit_Simulator
                             //CopiedParameterStates = new int[parametercount + 1];
                         }
                     }
-                    if (Game1.kb_states.IsKeyToggleDown(Keys.Delete))
+                    if (App.kb_states.IsKeyToggleDown(Keys.Delete))
                     {
                         selectstate = copystate = 0;
 
@@ -951,10 +817,10 @@ namespace Circuit_Simulator
                     }
                 }
 
-                if (Game1.kb_states.New.IsKeyDown(Keys.LeftControl))
+                if (App.kb_states.New.IsKeyDown(Keys.LeftControl))
                 {
                     // Starting Selection
-                    if (IsInGrid && Game1.mo_states.IsLeftButtonToggleOn() && (selectstate == 0 || selectstate == 2))
+                    if (IsInGrid && App.mo_states.IsLeftButtonToggleOn() && (selectstate == 0 || selectstate == 2))
                     {
                         selectstate = 1;
                         Selection_StartPos = mo_worldpos;
@@ -965,7 +831,7 @@ namespace Circuit_Simulator
                     // Placing Copy Shadow
                     if (CopiedIsWire != null)
                     {
-                        if (Game1.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.V) && !Game1.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.V))
+                        if (App.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.V) && !App.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.V))
                         {
                             selectstate = 4;
                             copystate = 0;
@@ -973,8 +839,8 @@ namespace Circuit_Simulator
                                 copyWiretex.Dispose();
                             if (copyComptex != null && !copyComptex.IsDisposed)
                                 copyComptex.Dispose();
-                            copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                            copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                            copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                            copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
                             HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
                             for (int i = 0; i < CopiedIsWire.Length; ++i)
                                 tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
@@ -991,7 +857,7 @@ namespace Circuit_Simulator
                 // Moving Copy
                 if (selectstate == 4)
                 {
-                    if(Game1.kb_states.IsKeyToggleDown(Keys.R)) // Rotating Copy
+                    if(App.kb_states.IsKeyToggleDown(Keys.R)) // Rotating Copy
                     {
                         byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
                         byte[] newCopiedCompType = new byte[CopiedCompType.Length];
@@ -1011,8 +877,8 @@ namespace Circuit_Simulator
                             copyWiretex.Dispose();
                         if (copyComptex != null && !copyComptex.IsDisposed)
                             copyComptex.Dispose();
-                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
                         HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
                         for (int i = 0; i < CopiedIsWire.Length; ++i)
                             tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
@@ -1027,7 +893,7 @@ namespace Circuit_Simulator
                         }
                     }
 
-                    if (Game1.kb_states.IsKeyToggleDown(Keys.X)) // Flipping Copy X
+                    if (App.kb_states.IsKeyToggleDown(Keys.X)) // Flipping Copy X
                     {
                         byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
                         byte[] newCopiedCompType = new byte[CopiedCompType.Length];
@@ -1048,8 +914,8 @@ namespace Circuit_Simulator
                             copyWiretex.Dispose();
                         if (copyComptex != null && !copyComptex.IsDisposed)
                             copyComptex.Dispose();
-                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
                         HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
                         for (int i = 0; i < CopiedIsWire.Length; ++i)
                             tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
@@ -1063,7 +929,7 @@ namespace Circuit_Simulator
                             CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].X - 1, CopiedCompPos[i].Y);
                         }
                     }
-                    if (Game1.kb_states.IsKeyToggleDown(Keys.Y)) // Flipping Copy Y
+                    if (App.kb_states.IsKeyToggleDown(Keys.Y)) // Flipping Copy Y
                     {
                         byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
                         byte[] newCopiedCompType = new byte[CopiedCompType.Length];
@@ -1084,8 +950,8 @@ namespace Circuit_Simulator
                             copyWiretex.Dispose();
                         if (copyComptex != null && !copyComptex.IsDisposed)
                             copyComptex.Dispose();
-                        copyWiretex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        copyComptex = new Texture2D(Game1.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+                        copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
                         HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
                         for (int i = 0; i < CopiedIsWire.Length; ++i)
                             tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
@@ -1101,14 +967,14 @@ namespace Circuit_Simulator
                     }
 
 
-                    if (Game1.mo_states.IsLeftButtonToggleOn() && (new Rectangle(copypos, copysize)).Contains(mo_worldpos))
+                    if (App.mo_states.IsLeftButtonToggleOn() && (new Rectangle(copypos, copysize)).Contains(mo_worldpos))
                     {
                         copystate = 1;
                         copymouseoffset = copypos - mo_worldpos;
                     }
                     if (copystate == 1)
                     {
-                        if (Game1.mo_states.New.LeftButton == ButtonState.Released)
+                        if (App.mo_states.New.LeftButton == ButtonState.Released)
                             copystate = 0;
 
                         copypos = mo_worldpos + copymouseoffset;
@@ -1117,7 +983,7 @@ namespace Circuit_Simulator
                     }
 
                     // Placing Copy
-                    if (Game1.kb_states.IsKeyToggleDown(Keys.Enter))
+                    if (App.kb_states.IsKeyToggleDown(Keys.Enter))
                     {
                         // Check if placement is valid
                         bool IsValid = true;
@@ -1151,7 +1017,7 @@ namespace Circuit_Simulator
                             PlaceArea(new Rectangle(copypos, copysize), data);
                             for (int i = 0; i < CopiedCompIDs.Count; ++i)
                             {
-                                Component comp = Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, CopiedCompRot[i]);
+                                Component comp = Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, (byte)CopiedCompRot[i]);
                                 CompData compdata = Sim_Component.Components_Data[CopiedCompIDs[i]];
                                 if (comp != null)
                                 {
@@ -1170,7 +1036,7 @@ namespace Circuit_Simulator
             if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && cursimframe == 0 && selectstate == 0)
             {
 
-                if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.RightButton == ButtonState.Pressed)
+                if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.RightButton == ButtonState.Pressed)
                 {
                     FileHandler.IsUpToDate = false;
                     byte[,] data = new byte[1, 1];
@@ -1186,7 +1052,7 @@ namespace Circuit_Simulator
                 //}
 
                 // Placing Wires
-                if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.New.LeftButton == ButtonState.Pressed)
+                if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
                 {
                     FileHandler.IsUpToDate = false;
                     byte layers = GetUILayers();
@@ -1199,7 +1065,7 @@ namespace Circuit_Simulator
                 }
 
                 // Placing Via
-                if (IsValidPlacementCoo(mo_worldpos) && Game1.mo_states.IsMiddleButtonToggleOn())
+                if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())
                 {
                     FileHandler.IsUpToDate = false;
                     byte[,] data = new byte[1, 1];
@@ -1231,7 +1097,7 @@ namespace Circuit_Simulator
                 }
                 if (!IsSimulating)
                 {
-                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsRightButtonToggleOff())
+                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsRightButtonToggleOff())
                     {
                         int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                         int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
@@ -1239,7 +1105,7 @@ namespace Circuit_Simulator
                         Sim_Component.components[compID].Delete();
                     }
 
-                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && Game1.mo_states.IsLeftButtonToggleOff())
+                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsLeftButtonToggleOff())
                     {
                         int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
                         int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
@@ -1252,7 +1118,7 @@ namespace Circuit_Simulator
                 }
                 else //SignalAnalyze
                 {
-                    if(IsInGrid && Game1.mo_states.IsLeftButtonToggleOff() && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+                    if(IsInGrid && App.mo_states.IsLeftButtonToggleOff() && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
                     {
                         UI_Handler.signal.WireID = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
                         UI_Handler.SignalAnalyze.GetsUpdated = UI_Handler.SignalAnalyze.GetsDrawn = true;
@@ -1326,19 +1192,19 @@ namespace Circuit_Simulator
                 if (lines2draw_count[i] > 0)
                 {
 
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(sec_target);
+                    App.graphics.GraphicsDevice.SetRenderTarget(seclogic_target);
                     line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
                     line_effect.Parameters["tex"].SetValue(logic_target);
                     line_effect.CurrentTechnique.Passes[0].Apply();
-                    Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+                    App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
 
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(logic_target);
+                    App.graphics.GraphicsDevice.SetRenderTarget(logic_target);
                     line_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
-                    line_effect.Parameters["tex"].SetValue(sec_target);
+                    line_effect.Parameters["tex"].SetValue(seclogic_target);
                     line_effect.CurrentTechnique.Passes[0].Apply();
-                    Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+                    App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
 
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                    App.graphics.GraphicsDevice.SetRenderTarget(null);
 
                 }
             }
@@ -1350,13 +1216,13 @@ namespace Circuit_Simulator
                     i = LAYER_NUM + 1;
                 if (lines2draw_count[i] > 0)
                 {
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(WireCalc_target);
+                    App.graphics.GraphicsDevice.SetRenderTarget(WireCalc_target);
                     iswirerender_effect.Parameters["WorldViewProjection"].SetValue(linedrawingmatrix);
                     iswirerender_effect.Parameters["tex"].SetValue(logic_target);
                     iswirerender_effect.CurrentTechnique.Passes[0].Apply();
-                    Game1.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
+                    App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, lines2draw[i], 0, lines2draw_count[i] / 2);
 
-                    Game1.graphics.GraphicsDevice.SetRenderTarget(null);
+                    App.graphics.GraphicsDevice.SetRenderTarget(null);
                     lines2draw_count[i] = 0;
 
                 }
@@ -1427,9 +1293,9 @@ namespace Circuit_Simulator
          
             sim_effect.Parameters["logictex"].SetValue(logic_target);
             sim_effect.Parameters["wirecalctex"].SetValue(WireCalc_target);
-            sim_effect.Parameters["isedgetex"].SetValue(Sim_Component.IsEdgeTex);
-            sim_effect.Parameters["comptex"].SetValue(Sim_Component.CompTex);
-            sim_effect.Parameters["highlighttex"].SetValue(Sim_Component.HighlightTex);
+            sim_effect.Parameters["isedgetex"].SetValue(Sim_Component.IsEdge_target);
+            sim_effect.Parameters["comptex"].SetValue(Sim_Component.Comp_target);
+            sim_effect.Parameters["highlighttex"].SetValue(Sim_Component.Highlight_target);
             spritebatch.Begin(SpriteSortMode.Immediate, BlendState.NonPremultiplied, SamplerState.PointClamp, DepthStencilState.None, null, sim_effect, Matrix.Identity);
             spritebatch.Draw(main_target, Vector2.Zero, Color.White);
             spritebatch.End();

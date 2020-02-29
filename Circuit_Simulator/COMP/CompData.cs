@@ -12,10 +12,10 @@ namespace Circuit_Simulator.COMP
 {
     public class CompData
     {
-        public static int[] rottable_ROT = { 1, 2, 3, 0, 5, 6, 7, 4 };
-        public static int[] rottable_FLIPX = { 6, 5, 4, 7, 2, 1, 0, 3};
-        public static int[] rottable_FLIPY = { 4, 7, 6, 5, 0, 3, 2, 1};
-        public static SpriteFont overlayfont = Game1.content.Load<SpriteFont>("UI\\overlayfont");
+        public static byte[] rottable_ROT = { 1, 2, 3, 0, 5, 6, 7, 4 };
+        public static byte[] rottable_FLIPX = { 6, 5, 4, 7, 2, 1, 0, 3};
+        public static byte[] rottable_FLIPY = { 4, 7, 6, 5, 0, 3, 2, 1};
+        public static SpriteFont overlayfont = App.content.Load<SpriteFont>("UI\\overlayfont");
         public List<ComponentPixel>[] data;
         public List<string> parameters;
         public string name;
@@ -26,7 +26,7 @@ namespace Circuit_Simulator.COMP
         public string  Code_Sim = "";
         public string Code_Sim_FuncName = "";
         public Rectangle[] bounds;
-        public int currentrotation;
+        public byte currentrotation;
         public int pin_num, OverlayStateID, totalstate_length;
         private int _internalstate_length, _overlayseg_length, _valuebox_length;
         public int internalstate_length { get { return _internalstate_length; } set { _internalstate_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
@@ -49,7 +49,7 @@ namespace Circuit_Simulator.COMP
         {
             delegate (Component comp)
             {
-                if(Game1.mo_states.IsLeftButtonToggleOn())
+                if(App.mo_states.IsLeftButtonToggleOn())
                 {
                     int segid = Sim_Component.Components_Data[comp.dataID].internalstate_length;
                     comp.internalstates[segid] ^= 1;
@@ -71,7 +71,7 @@ namespace Circuit_Simulator.COMP
             delegate (Component comp)
             {
                 int segid = Sim_Component.Components_Data[comp.dataID].internalstate_length;
-                comp.internalstates[segid] = (Game1.mo_states.New.LeftButton == ButtonState.Pressed) ? 1 : 0;
+                comp.internalstates[segid] = (App.mo_states.New.LeftButton == ButtonState.Pressed) ? 1 : 0;
 
                 byte state = (byte)comp.internalstates[segid];
 
@@ -108,7 +108,7 @@ namespace Circuit_Simulator.COMP
             for (int i = 0; i < 8; ++i)
                 data[i] = new List<ComponentPixel>();
             overlay_bounds = new FRectangle[8];
-            overlaysize = Game1.basefont.MeasureString(name).ToPoint();
+            overlaysize = App.basefont.MeasureString(name).ToPoint();
             parameters = new List<string>();
         }
 

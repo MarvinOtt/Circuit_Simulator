@@ -27,7 +27,7 @@ namespace Circuit_Simulator
 	    public static Texture2D Button_tex;
         public static bool IsInScrollable = false;
         public static Rectangle IsInScrollable_Bounds;
-        public static bool UI_Element_Pressed, UI_IsWindowHide;
+        public static bool UI_AlreadyActivated, UI_IsWindowHide;
         public static int UI_Active_State;
         public static UI_Drag_Comp dragcomp = new UI_Drag_Comp();
         public static int buttonheight = 25;
@@ -73,7 +73,7 @@ namespace Circuit_Simulator
 
         public void Initialize(SpriteBatch spriteBatch)
         {
-            Game1.GraphicsChanged += Window_Graphics_Changed;
+            App.GraphicsChanged += Window_Graphics_Changed;
             Button_tex = Content.Load<Texture2D>("UI\\Project Spritemap");
             SpriteFont toolbarfont = Content.Load<SpriteFont>("UI\\TB_font");
             SpriteFont componentfont = Content.Load<SpriteFont>("UI\\component_font");
@@ -160,7 +160,7 @@ namespace Circuit_Simulator
             GridInfo.values.Add_UI_Elements(new UI_String(new Pos(0, 0), new Point(0, 0), componentconf));
 
             //GeneralInfo Box (Bottom Left)
-            GeneralInfoBox = new UI_Box<UI_Element>(new Pos(-1, Game1.Screenheight - 24 + 1), new Point(Game1.Screenwidth + 2, 24));
+            GeneralInfoBox = new UI_Box<UI_Element>(new Pos(-1, App.Screenheight - 24 + 1), new Point(App.Screenwidth + 2, 24));
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos( 10, 2), Point.Zero, componentconf));
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(150, 0), new Point(24, 24), "+", true, behave2conf));
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[1]), new Point(24, 24), "-", true, behave2conf));
@@ -202,32 +202,32 @@ namespace Circuit_Simulator
             WireMaskHotbar.Add_UI_Element(new UI_TexButton(new Pos(0, 0), new Point(sqarebuttonwidth), new Point(sqarebuttonwidth * (7 + 1 + 7) + 7 + 1 + 7, 0), Button_tex, behave1conf));
 
             //EditLib options
-            EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 3)));
-            UI_StringButton RenameLib = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
-            UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameLib), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
-            UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Remove Library", true, componentconf);
+            EditLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(App.Screenwidth * 0.08), (int)(buttonheight * 3)));
+            UI_StringButton RenameLib = new UI_StringButton(new Pos(0, 0), new Point((int)(App.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
+            UI_StringButton NewComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameLib), new Point((int)(App.Screenwidth * 0.08), buttonheight), "New Component", true, componentconf);
+            UI_StringButton Dellib = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, NewComp), new Point((int)(App.Screenwidth * 0.08), buttonheight), "Remove Library", true, componentconf);
             
             EditLib.Add_UI_Elements(RenameLib, NewComp, Dellib);
             EditLib.GetsUpdated = EditLib.GetsDrawn = false;
 
             //EditComp options
-            EditComp = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight * 2)));
-            UI_StringButton RenameComp = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
-            UI_StringButton DelComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameComp), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Delete Component", true, componentconf);
+            EditComp = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(App.Screenwidth * 0.08), (int)(buttonheight * 2)));
+            UI_StringButton RenameComp = new UI_StringButton(new Pos(0, 0), new Point((int)(App.Screenwidth * 0.08), buttonheight), "Rename", true, componentconf);
+            UI_StringButton DelComp = new UI_StringButton(new Pos(0, 0, ORIGIN.BL, ORIGIN.DEFAULT, RenameComp), new Point((int)(App.Screenwidth * 0.08), buttonheight), "Delete Component", true, componentconf);
             EditComp.Add_UI_Elements(RenameComp, DelComp);
             EditComp.GetsUpdated = EditComp.GetsDrawn = false;
 
             //Libary Edit Window
-            LibraryEditWindow = new UI_LibraryEdit_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
+            LibraryEditWindow = new UI_LibraryEdit_Window(new Pos(App.Screenwidth / 2, App.Screenheight / 2),  new Point(500, 500),"Libaries", new Point(400, 200), componentconf, true);
             LibraryEditWindow.GetsUpdated = LibraryEditWindow.GetsDrawn = false;
 
 
             //EditCompWindow
-            editcompwindow = new UI_EditComp_Window(new Pos(Game1.Screenwidth / 3, Game1.Screenheight / 3), new Point((int)(Game1.Screenwidth * 0.5), (int)(Game1.Screenheight * 0.6)), "EditComponent", new Point(300, 300), componentconf, true);
+            editcompwindow = new UI_EditComp_Window(new Pos(App.Screenwidth / 3, App.Screenheight / 3), new Point((int)(App.Screenwidth * 0.5), (int)(App.Screenheight * 0.6)), "EditComponent", new Point(300, 300), componentconf, true);
 
             //Project Lib options
-            EditProjectLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), (int)(buttonheight)));
-            UI_StringButton RemoveLib = new UI_StringButton(new Pos(0, 0), new Point((int)(Game1.Screenwidth * 0.08), buttonheight), "Remove Library", true, componentconf);
+            EditProjectLib = new UI_Box<UI_StringButton>(new Pos(0, 0), new Point((int)(App.Screenwidth * 0.08), (int)(buttonheight)));
+            UI_StringButton RemoveLib = new UI_StringButton(new Pos(0, 0), new Point((int)(App.Screenwidth * 0.08), buttonheight), "Remove Library", true, componentconf);
             EditProjectLib.Add_UI_Elements(RemoveLib);
             EditProjectLib.GetsUpdated = EditProjectLib.GetsDrawn = false;
 
@@ -240,7 +240,7 @@ namespace Circuit_Simulator
             parameterWindow.GetsUpdated = parameterWindow.GetsDrawn = false;
 
             //SignalAnalyze
-            SignalAnalyze = new UI_Window(new Pos(Game1.Screenwidth / 2, Game1.Screenheight / 2), new Point(800, 100), "Analyze", new Point(200, 80), componentconf, true);
+            SignalAnalyze = new UI_Window(new Pos(App.Screenwidth / 2, App.Screenheight / 2), new Point(800, 100), "Analyze", new Point(200, 80), componentconf, true);
             signal = new UI_SignalAnalyze(new Pos(-5, UI_Window.headheight + 5, ORIGIN.TR, ORIGIN.TR, SignalAnalyze), new Point(500, 80));
             SignalAnalyze.Add_UI_Elements(signal);
             SignalAnalyze.GetsUpdated = SignalAnalyze.GetsDrawn = false;
@@ -284,7 +284,7 @@ namespace Circuit_Simulator
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated != Simulator.IsSimulating)
                 {
-                    Game1.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
+                    App.simulator.SetSimulationState(((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated);
                 }
             });
 
@@ -381,16 +381,16 @@ namespace Circuit_Simulator
                     toolbar_menus[ii].GetsDrawn = toolbar_menus[ii].GetsUpdated = cur.IsActivated;
 
                     // Deactivate current active button when something else got pressed
-                    bool IsInOther =  new Rectangle(cur.absolutpos, cur.size).Contains(Game1.mo_states.New.Position);
-                    IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(Game1.mo_states.New.Position);
-                    if (cur.IsActivated && (Game1.mo_states.IsLeftButtonToggleOff() || Game1.mo_states.IsLeftButtonToggleOn()) && !IsInOther)
+                    bool IsInOther =  new Rectangle(cur.absolutpos, cur.size).Contains(App.mo_states.New.Position);
+                    IsInOther |= new Rectangle(toolbar_menus[ii].absolutpos, toolbar_menus[ii].size).Contains(App.mo_states.New.Position);
+                    if (cur.IsActivated && (App.mo_states.IsLeftButtonToggleOff() || App.mo_states.IsLeftButtonToggleOn()) && !IsInOther)
                         cur.IsActivated = false;
                 });
             }
 
             EditLib.UpdateFunctions.Add(delegate ()
             {
-                if(Game1.mo_states.IsLeftButtonToggleOff())
+                if(App.mo_states.IsLeftButtonToggleOff())
                 {
                     
                     EditLib.GetsUpdated = EditLib.GetsDrawn = false;
@@ -399,7 +399,7 @@ namespace Circuit_Simulator
             });
             EditProjectLib.UpdateFunctions.Add(delegate ()
             {
-                if (Game1.mo_states.IsLeftButtonToggleOff())
+                if (App.mo_states.IsLeftButtonToggleOff())
                 {
 
                     EditProjectLib.GetsUpdated = EditProjectLib.GetsDrawn = false;
@@ -408,7 +408,7 @@ namespace Circuit_Simulator
             });
             EditComp.UpdateFunctions.Add(delegate ()
             {
-                if (Game1.mo_states.IsLeftButtonToggleOff())
+                if (App.mo_states.IsLeftButtonToggleOff())
                 {
 
                     EditComp.GetsUpdated = EditComp.GetsDrawn = false;
@@ -436,14 +436,14 @@ namespace Circuit_Simulator
             ((UI_TexButton)QuickHotbar.ui_elements[5]).GotActivatedLeft += delegate (object sender)
             {
                 ((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = true;
-                Game1.simulator.ChangeToolmode(Simulator.TOOL_WIRE);
+                App.simulator.ChangeToolmode(Simulator.TOOL_WIRE);
                 ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = false;
             };
 
             ((UI_TexButton)QuickHotbar.ui_elements[4]).GotToggledLeft += delegate (object sender)
             {
                 ((UI_TexButton)QuickHotbar.ui_elements[4]).IsActivated = true;
-                Game1.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
+                App.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
                 ((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = false;
             };
 
@@ -493,11 +493,11 @@ namespace Circuit_Simulator
             UI_TexButton cur = sender as UI_TexButton;
             if (cur.IsActivated == false)
             {
-                if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
+                if (App.kb_states.New.IsKeyUp(Keys.LeftShift))
                     cur.IsActivated = true;
             }
 
-            if (Game1.kb_states.New.IsKeyUp(Keys.LeftShift))
+            if (App.kb_states.New.IsKeyUp(Keys.LeftShift))
             {
                 for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
                 {
@@ -512,21 +512,21 @@ namespace Circuit_Simulator
         public void WireMaskBar_Hovered(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
-            if ((Game1.mo_states.New.LeftButton == ButtonState.Pressed || Game1.mo_states.IsLeftButtonToggleOff()) && Game1.kb_states.New.IsKeyDown(Keys.LeftShift))
+            if ((App.mo_states.New.LeftButton == ButtonState.Pressed || App.mo_states.IsLeftButtonToggleOff()) && App.kb_states.New.IsKeyDown(Keys.LeftShift))
                 cur.IsActivated = true;
         }
 
         // Gets called when something of the Window or Graphics got changed
         public void Window_Graphics_Changed(object sender, EventArgs e)
         {
-            GeneralInfoBox.pos.pos = new Point(-1,  Game1.Screenheight - 25 + 1);
-            GeneralInfoBox.size = new Point(Game1.Screenwidth + 2, 25);
+            GeneralInfoBox.pos.pos = new Point(-1,  App.Screenheight - 25 + 1);
+            GeneralInfoBox.size = new Point(App.Screenwidth + 2, 25);
         }
 
 	    public void Update()
 	    {
             
-            UI_Element_Pressed = false;
+            UI_AlreadyActivated = false;
             UI_Active_State = 0;
             if (ZaWarudo != null)
             {

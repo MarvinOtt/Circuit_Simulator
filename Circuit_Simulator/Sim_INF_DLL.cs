@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -135,10 +137,12 @@ namespace Circuit_Simulator
             }
 
             string pathtoexe = Directory.GetCurrentDirectory();
+
             File.WriteAllText(pathtoexe + @"\SIM_CODE\maincode.c", code_withinitfuncs);
-          
-            Extensions.CMD_Execute("cmd", "/c " + @"C:\GCC\mingw64\bin\g++" + " -c -m64 -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
-            Extensions.CMD_Execute("cmd", "/c" + @"C:\GCC\mingw64\bin\g++" + @" -shared -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.dll" + "\" " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
+            string driveletter = Path.GetPathRoot(Environment.SystemDirectory);
+
+            Extensions.CMD_Execute("cmd", "/c " + driveletter + @"GCC\mingw64\bin\g++" + " -c -m64 -DBUILDING_EXAMPLE_DLL " + "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + " -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
+            Extensions.CMD_Execute("cmd", "/c" + driveletter + @"GCC\mingw64\bin\g++" + @" -shared -o " + "\"" + pathtoexe + @"\SIM_CODE\maincode.dll" + "\" " + "\"" + pathtoexe + @"\SIM_CODE\maincode.o" + "\"");
 
             LoadSimDLL();
         }

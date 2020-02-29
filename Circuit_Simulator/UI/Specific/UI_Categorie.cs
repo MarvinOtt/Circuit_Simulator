@@ -78,9 +78,9 @@ namespace Circuit_Simulator.UI.Specific
         {
             Rectangle hitbox = new Rectangle(absolutpos, new Point(size.X, height));
 
-            if (hitbox.Contains(Game1.mo_states.New.Position))
+            if (hitbox.Contains(App.mo_states.New.Position))
             {
-                if (Game1.mo_states.IsLeftButtonToggleOff())
+                if (App.mo_states.IsLeftButtonToggleOff())
                 {
                     Fold(!IsFold);
                 }

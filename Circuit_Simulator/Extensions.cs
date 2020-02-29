@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -109,7 +111,7 @@ namespace Circuit_Simulator
         // Spritebatch
         public static void DrawFilledRectangle(this SpriteBatch sb, Rectangle rec, Color col)
         {
-            sb.Draw(Game1.pixel, rec, col);
+            sb.Draw(App.pixel, rec, col);
         }
 
         public static void DrawLine(this SpriteBatch sb, int x1, int y1, int x2, int y2, Color color)
@@ -140,7 +142,7 @@ namespace Circuit_Simulator
         }
         public static void DrawLine(this SpriteBatch sb, Point point, float length, float angle, Color color, float thickness)
         {
-            sb.Draw(Game1.pixel, point.ToVector2(), null, color, angle, Vector2.Zero, new Vector2(length, thickness), SpriteEffects.None, 0);
+            sb.Draw(App.pixel, point.ToVector2(), null, color, angle, Vector2.Zero, new Vector2(length, thickness), SpriteEffects.None, 0);
         }
 
         public static void DrawHollowRectangle(this SpriteBatch sb, Rectangle rec, Color col, int strokewidth)
@@ -203,6 +205,24 @@ namespace Circuit_Simulator
 
             return bldr.ToString();
         }
+
+        public static bool HasWritePermissions(string directoryPath)
+        {
+
+            try
+            {
+                FileStream stream = new FileStream(Directory.GetCurrentDirectory() + @"\SIM_CODE\maincode.c", FileMode.Append);
+                stream.Close();
+                stream.Dispose();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+
+        }
+
 
         public static void CMD_Execute(string cmd, string args)
         {
