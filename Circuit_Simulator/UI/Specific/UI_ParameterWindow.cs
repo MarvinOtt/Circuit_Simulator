@@ -37,7 +37,7 @@ namespace Circuit_Simulator.UI.Specific
                 this.Add_UI_Elements(curval);
                 inputs.Add(curval);
                 curval.ValueChanged += input_ValueChanged;
-                curval.value = rootcomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length].ToString();
+                curval.value = rootcomp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length].ToString();
                 
                 for (int i = 2; i < parmetercount + 1; i++)
                 {
@@ -46,7 +46,7 @@ namespace Circuit_Simulator.UI.Specific
                     this.Add_UI_Elements(curval);
                     inputs.Add(curval);
                     curval.ValueChanged += input_ValueChanged;
-                    curval.value = rootcomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + i - 1].ToString();
+                    curval.value = rootcomp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + i - 1].ToString();
                 }
                 this.GetsUpdated = this.GetsDrawn = true;
             }
@@ -58,7 +58,7 @@ namespace Circuit_Simulator.UI.Specific
             UI_ValueInput cur = sender as UI_ValueInput;
             int index = inputs.IndexOf(cur);
             CompData compdata = Sim_Component.Components_Data[rootcomp.dataID];
-            rootcomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + index] = int.Parse("0" + cur.value);
+            rootcomp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + index] = int.Parse("0" + cur.value);
         }
 
         public override void UpdateSpecific()

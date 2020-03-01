@@ -49,7 +49,6 @@ namespace Circuit_Simulator.COMP
         }
         public void AddComponent(CompData comp)
         {
-            comp.library = this;
             Components.Add(comp);
             if(IsInUsedLibraries)
                 Sim_Component.Components_Data.Add(comp);

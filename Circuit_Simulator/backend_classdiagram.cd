@@ -7,14 +7,55 @@
     </Members>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAABggAAAAAAQAABAAMAAAQEAAAAAAAAAAA=</HashCode>
-      <FileName>Simulator.cs</FileName>
+      <FileName>Network.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Circuit_Simulator.Simulator" Collapsed="true">
     <Position X="6.25" Y="3" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>pBwCYTOASsQABopwAhCCBUAAQBCRhRBSGkBpMDLYBEI=</HashCode>
+      <HashCode>pBwCYTOASoQABopwAhCCBUAAQBCRpRBSGkBpMDLYBEI=</HashCode>
       <FileName>Simulator.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.COMP.CompData">
+    <Position X="13" Y="0.75" Width="4.75" />
+    <Members>
+      <Field Name="AllClickActions" Hidden="true" />
+      <Method Name="Finish" Hidden="true" />
+      <Property Name="internalstate_length" Hidden="true" />
+      <Field Name="overlayfont" Hidden="true" />
+      <Property Name="OverlaySeg_length" Hidden="true" />
+      <Field Name="pin_num" Hidden="true" />
+      <Field Name="rottable_FLIPX" Hidden="true" />
+      <Field Name="rottable_FLIPY" Hidden="true" />
+      <Field Name="rottable_ROT" Hidden="true" />
+      <Property Name="valuebox_length" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>ARARgIAAQAAlRIAACBIDAAQCQABEUAAgAACSowHAAAg=</HashCode>
+      <FileName>COMP\CompData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Button" Collapsed="true">
+    <Position X="3.25" Y="1" Width="3.75" />
+    <NestedTypes>
+      <Delegate Name="Circuit_Simulator.UI.UI_Button.Button_Activated_Handler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>UI\UI_Button.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAgAgCAgIAAAAACAAIBAAACBBAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>UI\UI_Button.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.Component">
+    <Position X="5.75" Y="6.5" Width="5" />
+    <TypeIdentifier>
+      <HashCode>gAAAACAAAAAAgAAAAACAAIAAAIECACAAAEAIAAAAAAA=</HashCode>
+      <FileName>Component.cs</FileName>
+      <NewMemberFileName>Sim_Component.cs</NewMemberFileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Circuit_Simulator.Line" Collapsed="true">

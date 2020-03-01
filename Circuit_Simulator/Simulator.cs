@@ -756,7 +756,7 @@ namespace Circuit_Simulator
                                     CopiedParameterStates_Indices[CopiedCompIDs.Count] = parametercount;
                                     for(int j = 0; j < compdata.valuebox_length; ++j)
                                     {
-                                        CopiedParameterStates[parametercount + j] = comps[i].internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j];
+                                        CopiedParameterStates[parametercount + j] = comps[i].totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j];
                                     }
                                     parametercount += compdata.valuebox_length;
                                     List<ComponentPixel> pixels = compdata.data[comps[i].rotation];
@@ -1023,7 +1023,7 @@ namespace Circuit_Simulator
                                 {
                                     for (int j = 0; j < compdata.valuebox_length; ++j)
                                     {
-                                        comp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = CopiedParameterStates[CopiedParameterStates_Indices[i] + j];
+                                        comp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = CopiedParameterStates[CopiedParameterStates_Indices[i] + j];
                                     }
                                 }
                             }

@@ -52,7 +52,7 @@ namespace Circuit_Simulator
 
         public static void SetIntState(int compID, int stateID)
         {
-            CompInfos[IntStatesMap[compID] + stateID] = Sim_Component.components[compID].internalstates[stateID];
+            CompInfos[IntStatesMap[compID] + stateID] = Sim_Component.components[compID].totalstates[stateID];
         }
         public static byte GetWireState(int index)
         {
@@ -224,7 +224,7 @@ namespace Circuit_Simulator
                         IntStatesMap[i] = infocount;
                         for(int j = 0; j < compdata.totalstate_length; ++j)
                         {
-                            CompInfos[infocount++] = curcomp.internalstates[j];
+                            CompInfos[infocount++] = curcomp.totalstates[j];
                         }
                     }
                 }

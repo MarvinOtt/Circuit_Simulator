@@ -47,6 +47,7 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Component.cs" />
     <Compile Include="COMP\CompLibrary.cs" />
     <Compile Include="COMP\CompData.cs" />
     <Compile Include="Extensions.cs" />

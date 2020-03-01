@@ -139,7 +139,7 @@ namespace Circuit_Simulator
                         stream.Write(BitConverter.GetBytes(compdata.valuebox_length), 0, 4);
                         for (int j = 0; j < compdata.valuebox_length; ++j)
                         {
-                            stream.Write(BitConverter.GetBytes(Sim_Component.components[i].internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j]), 0, 4);
+                            stream.Write(BitConverter.GetBytes(Sim_Component.components[i].totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j]), 0, 4);
                         }
                     }
                 }
@@ -440,7 +440,7 @@ namespace Circuit_Simulator
                         {
                             stream.Read(intbuffer, 0, 4);
                             int curval = BitConverter.ToInt32(intbuffer, 0);
-                            buffercomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = curval;
+                            buffercomp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = curval;
                         }
 						
                         Sim_Component.components[i] = buffercomp;
