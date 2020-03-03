@@ -63,6 +63,7 @@
     <Compile Include="UI\Specific\UI_GridPaint.cs" />
     <Compile Include="UI\Specific\UI_ProjectLibrary_Window.cs" />
     <Compile Include="UI\Specific\UI_SignalAnalyze.cs" />
+    <Compile Include="UI\UI_NotificationHandler.cs" />
     <Compile Include="UI\UI_TextBox.cs" />
     <Compile Include="UI\Specific\UI_EditComp_Window.cs" />
     <Compile Include="UI\UI_STRUCTS.cs" />

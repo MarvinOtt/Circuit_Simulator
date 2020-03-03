@@ -46,7 +46,8 @@ namespace Circuit_Simulator
             return New.RightButton == ButtonState.Released && Old.RightButton == ButtonState.Pressed;
         }
     }
-    public struct Keyboard_States
+
+	public struct Keyboard_States
     {
         public KeyboardState New, Old;
 
@@ -93,6 +94,9 @@ namespace Circuit_Simulator
 
         public static Keyboard_States kb_states;
         public static Mouse_States mo_states;
+
+		public static float mo_timenomovement;
+		public static float lastgametime;
 
         private bool GraphicsNeedApplyChanges;
 
@@ -212,7 +216,6 @@ namespace Circuit_Simulator
             
         }
 
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
            
@@ -221,6 +224,17 @@ namespace Circuit_Simulator
             //----------------//
             kb_states.New = Keyboard.GetState();
             mo_states.New = Mouse.GetState();
+			lastgametime = ((float)gameTime.ElapsedGameTime.Ticks) / (float)TimeSpan.TicksPerMillisecond;
+
+			if (mo_states.New.Position != mo_states.Old.Position)
+			{
+				mo_timenomovement = 0.0f;
+			}
+			else
+			{
+				mo_timenomovement += lastgametime;
+			}
+
             if (IsActive)
             {
                 //--------------------------------------------//

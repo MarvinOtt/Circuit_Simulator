@@ -59,7 +59,10 @@ namespace Circuit_Simulator
             List<ComponentPixel> datapixel = Sim_Component.Components_Data[dataID].data[rotation];
             bool IsPlacementValid = true;
             if (Simulator.cursimframe > 0)
-                IsPlacementValid = false;
+			{
+				IsPlacementValid = false;
+				UI_Handler.notificationHandler.AddNotification("Cant place components when simulation is not reseted.");
+			}
             for (int i = 0; i < datapixel.Count; ++i)
             {
                 Point currentcoo = pos + datapixel[i].pos;

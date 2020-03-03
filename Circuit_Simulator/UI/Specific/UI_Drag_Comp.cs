@@ -26,7 +26,6 @@ namespace Circuit_Simulator.UI.Specific
             UI_Handler.UI_Active_State = 2;
             if (App.mo_states.New.LeftButton == ButtonState.Pressed)
             {
-              
                 Sim_Component.DropComponent = true;
             }
           

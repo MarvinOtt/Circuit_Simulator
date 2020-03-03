@@ -73,7 +73,7 @@ namespace Circuit_Simulator
         Texture2D placementtex;
         public static RenderTarget2D Comp_target, IsEdge_target, Highlight_target;
         public bool IsCompDrag;
-        List<VertexPositionLine> vertices = new List<VertexPositionLine>();
+        public static VertexPositionLine[] highlight_vertices;
         public static int curhighlightID = 0;
 
         public static List<CompData> Components_Data;
@@ -89,7 +89,7 @@ namespace Circuit_Simulator
         public static int pins2check_length;
         public static VertexPositionLine[] overlaylines;
         public static bool DropComponent;
-        Effect overlay_effect, highlight_effect;
+        public static Effect overlay_effect, highlight_effect;
 
         public Sim_Component(Simulator sim, Effect sim_effect)
         {
@@ -112,7 +112,7 @@ namespace Circuit_Simulator
             Components_Data = new List<CompData>();
             string[] Libraries2Load = Directory.GetFiles(@"LIBRARIES\", "*.dcl");
             Sim_INF_DLL.LoadLibrarys(Libraries2Load);
-
+			Sim_INF_DLL.SimFrameStep_maxperframe += DrawAllHighlights;
           
         }
 
@@ -255,6 +255,75 @@ namespace Circuit_Simulator
             //sim_effect.Parameters["highlighttex"].SetValue(HighlightTex);
         }
 
+		public static void ClearAllHeighlighting()
+		{
+			if (highlight_vertices != null)
+			{
+				App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
+				highlight_effect.Parameters["highlightvalue"].SetValue(0.0f);
+				highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
+				highlight_effect.CurrentTechnique.Passes[0].Apply();
+				App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, highlight_vertices, 0, highlight_vertices.Length / 2);
+				App.graphics.GraphicsDevice.SetRenderTarget(null);
+				highlight_vertices = null;
+			}
+		}
+
+		public void DrawAllHighlights(object sender)
+		{
+			if (Simulator.IsAllHighlight)
+			{
+				if (highlight_vertices == null)
+				{
+					//Generate vertices
+					highlight_vertices = new VertexPositionLine[Sim_INF_DLL.line_num * 2];
+					int count = 0;
+					for (int i = 0; i < Sim_INF_DLL.WireStates_count; ++i)
+					{
+						int state = Sim_INF_DLL.WireStates_OUT[i];
+						int netID = Sim_INF_DLL.WireMapInv[i];
+						for (int j = 0; j < Simulator.networks[netID].lines.Count; ++j)
+						{
+							VertexPositionLine l1, l2;
+							Line line = new Line(Simulator.networks[netID].lines[j].start, Simulator.networks[netID].lines[j].end);
+							line.Convert2LineVertices(state, out l1, out l2);
+							highlight_vertices[count++] = l1;
+							highlight_vertices[count++] = l2;
+						}
+					}
+				}
+				else
+				{
+					App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
+					highlight_effect.Parameters["highlightvalue"].SetValue(0.0f);
+					highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
+					highlight_effect.CurrentTechnique.Passes[0].Apply();
+					App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, highlight_vertices, 0, highlight_vertices.Length / 2);
+					App.graphics.GraphicsDevice.SetRenderTarget(null);
+
+					int count = 0;
+					for (int i = 0; i < Sim_INF_DLL.WireStates_count; ++i)
+					{
+						int state = Sim_INF_DLL.WireStates_OUT[i];
+						int netID = Sim_INF_DLL.WireMapInv[i];
+						for (int j = 0; j < Simulator.networks[netID].lines.Count; ++j)
+						{
+							highlight_vertices[count++].layers = state;
+							highlight_vertices[count++].layers = state;
+						}
+					}
+				}
+				App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
+
+				highlight_effect.Parameters["highlightvalue"].SetValue(1.0f);
+				highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
+				highlight_effect.CurrentTechnique.Passes[1].Apply();
+				App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, highlight_vertices, 0, highlight_vertices.Length / 2);
+
+				App.graphics.GraphicsDevice.SetRenderTarget(null);
+			}
+		}
+
         public void DrawLineOverlays(SpriteBatch spritebatch)
         {
             int count = 0;
@@ -290,7 +359,7 @@ namespace Circuit_Simulator
                 App.graphics.GraphicsDevice.SetRenderTarget(null);
             }
             bool IsInGrid = Simulator.mo_worldposx > 0 && Simulator.mo_worldposy > 0 && Simulator.mo_worldposx < Simulator.SIZEX - 1 && Simulator.mo_worldposy < Simulator.SIZEY - 1;
-            if (IsInGrid)
+            if (IsInGrid && !Simulator.IsAllHighlight)
             {
                 int netID = Simulator.WireIDs[Simulator.mo_worldposx / 2, Simulator.mo_worldposy / 2, Simulator.currentlayer];
                 if (netID > 0 && (Simulator.IsWire[Simulator.mo_worldposx, Simulator.mo_worldposy] & (1 << Simulator.currentlayer)) > 0)
@@ -298,21 +367,29 @@ namespace Circuit_Simulator
                     if (curhighlightID != netID)
                     {
                         Network netw = Simulator.networks[netID];
-                        vertices.Clear();
+						App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
+						if (highlight_vertices != null)
+						{
+							highlight_effect.Parameters["highlightvalue"].SetValue(0.0f);
+							highlight_effect.CurrentTechnique.Passes[0].Apply();
+							App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, highlight_vertices, 0, highlight_vertices.Length / 2);
+						}
+						highlight_vertices = new VertexPositionLine[netw.lines.Count * 2];
+						int count2 = 0;
                         for (int i = 0; i < netw.lines.Count; ++i)
                         {
                             VertexPositionLine l1, l2;
                             Line line = new Line(netw.lines[i].start, netw.lines[i].end);
-                            line.Convert2LineVertices(2.0f, out l1, out l2);
-                            vertices.Add(l1);
-                            vertices.Add(l2);
+                            line.Convert2LineVertices(1.0f, out l1, out l2);
+                            highlight_vertices[count2++] = l1;
+							highlight_vertices[count2++] = l2;
                         }
 
-                        App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
-                        App.graphics.GraphicsDevice.Clear(Color.Transparent);
-                        highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
+						//App.graphics.GraphicsDevice.Clear(Color.Transparent);
+						highlight_effect.Parameters["highlightvalue"].SetValue(1.0f);
+						highlight_effect.Parameters["WorldViewProjection"].SetValue(Simulator.linedrawingmatrix);
                         highlight_effect.CurrentTechnique.Passes[0].Apply();
-                        App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, vertices.ToArray(), 0, vertices.Count / 2);
+                        App.graphics.GraphicsDevice.DrawUserPrimitives(PrimitiveType.LineList, highlight_vertices, 0, highlight_vertices.Length / 2);
                         App.graphics.GraphicsDevice.SetRenderTarget(null);
                         //System.Threading.Thread.Sleep(100);
                         spritebatch.Begin();
@@ -324,11 +401,7 @@ namespace Circuit_Simulator
                 else
                 {
                     if (curhighlightID != 0)
-                    {
-                        App.graphics.GraphicsDevice.SetRenderTarget(Highlight_target);
-                        App.graphics.GraphicsDevice.Clear(Color.Transparent);
-                        App.graphics.GraphicsDevice.SetRenderTarget(null);
-                    }
+						ClearAllHeighlighting();
                     curhighlightID = 0;
                 }
             }

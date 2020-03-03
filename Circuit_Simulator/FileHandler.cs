@@ -281,7 +281,6 @@ namespace Circuit_Simulator
                     Sim_Component.CompMayneedoverlay.Clear();
                     
                     Sim_Component.pins2check_length = 0;
-                    Sim_INF_DLL.Comp2UpdateAfterSim_count = 0;
                     Simulator.cursimframe = 0;
 
                     Simulator.seclogic_target.Dispose();

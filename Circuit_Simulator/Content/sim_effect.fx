@@ -208,6 +208,18 @@ float4 getcoloratpos(float x, float y)
 			uint type_intm1p1 = getWiresAtPos(uint2(ux - 1, uy + 1));
 			uint type_int0p1 = getWiresAtPos(uint2(ux, uy + 1));
 			uint type_intp1p1 = getWiresAtPos(uint2(ux + 1, uy + 1));
+
+			uint high_int = (uint)(highlighttex[uint2(ux, uy)].r + 0.5f);
+
+			uint high_intm1m1 = (uint)(highlighttex[uint2(ux - 1, uy - 1)].r + 0.5f);
+			uint high_int0m1 = (uint)(highlighttex[uint2(ux, uy - 1)].r + 0.5f);
+			uint high_intp1m1 = (uint)(highlighttex[uint2(ux + 1, uy - 1)].r + 0.5f);
+			uint high_intm10 = (uint)(highlighttex[uint2(ux - 1, uy)].r + 0.5f);
+			uint high_intp10 = (uint)(highlighttex[uint2(ux + 1, uy)].r + 0.5f);
+			uint high_intm1p1 = (uint)(highlighttex[uint2(ux - 1, uy + 1)].r + 0.5f);
+			uint high_int0p1 = (uint)(highlighttex[uint2(ux, uy + 1)].r + 0.5f);
+			uint high_intp1p1 = (uint)(highlighttex[uint2(ux + 1, uy + 1)].r + 0.5f);
+			float IsHighlight = 0.0f;
 			[unroll]
 			for (int ii = 6; ii >= -1; --ii)
 			{
@@ -224,19 +236,40 @@ float4 getcoloratpos(float x, float y)
 				uint state_0p1 = (type_int0p1 & (1 << i));
 				uint state_m1p1 = (type_intm1p1 & (1 << i));
 				uint state_m10 = (type_intm10 & (1 << i));
-
+				float mindisthigh = 0.3f;
 				[branch]
 				if (WireType)
 				{
 					IsWire = 1;
-					if (WireType == state_m10 && IsCloseToLine(xymid, float2(xymid.x - 1, xymid.y), xy, mindist))
-						OUT = layercols[i];
-					if (WireType == state_p10 && IsCloseToLine(xymid, float2(xymid.x + 1, xymid.y), xy, mindist))
-						OUT = layercols[i];
-					if (WireType == state_0m1 && IsCloseToLine(xymid, float2(xymid.x, xymid.y - 1), xy, mindist))
-						OUT = layercols[i];
-					if (WireType == state_0p1 && IsCloseToLine(xymid, float2(xymid.x, xymid.y + 1), xy, mindist))
-						OUT = layercols[i];
+
+					if (WireType == state_m10)
+					{
+						if(IsCloseToLine(xymid, float2(xymid.x - 1, xymid.y), xy, mindist))
+							OUT = layercols[i];
+						if (high_int > 0.1f && high_intm10 > 0.1f && IsCloseToLine(xymid, float2(xymid.x - 1, xymid.y), xy, mindisthigh))
+							IsHighlight = 1.0f;
+					}
+					if (WireType == state_p10)
+					{
+						if(IsCloseToLine(xymid, float2(xymid.x + 1, xymid.y), xy, mindist))
+							OUT = layercols[i];
+						if (high_int > 0.1f && high_intp10 > 0.1f && IsCloseToLine(xymid, float2(xymid.x + 1, xymid.y), xy, mindisthigh))
+							IsHighlight = 1.0f;
+					}
+					if (WireType == state_0m1)
+					{
+						if(IsCloseToLine(xymid, float2(xymid.x, xymid.y - 1), xy, mindist))
+							OUT = layercols[i];
+						if (high_int > 0.1f && high_int0m1 > 0.1f && IsCloseToLine(xymid, float2(xymid.x, xymid.y - 1), xy, mindisthigh))
+							IsHighlight = 1.0f;
+					}
+					if (WireType == state_0p1)
+					{
+						if(IsCloseToLine(xymid, float2(xymid.x, xymid.y + 1), xy, mindist))
+							OUT = layercols[i];
+						if (high_int > 0.1f && high_int0p1 > 0.1f && IsCloseToLine(xymid, float2(xymid.x, xymid.y + 1), xy, mindisthigh))
+							IsHighlight = 1.0f;
+					}
 
 					if (WireType == state_m1m1 && !state_0m1 && !state_m10 && IsCloseToLine(xymid, float2(xymid.x - 1, xymid.y - 1), xy, mindist))
 						OUT = layercols[i];
@@ -280,6 +313,8 @@ float4 getcoloratpos(float x, float y)
 					OUT = layercols[i];
 
 			}
+			//if (IsHighlight > 0.5f)
+			//	OUT = OUT * 0.5f + float4(1, 1, 1, 1) * 0.5f;
 		}
 	}
 

@@ -17,6 +17,7 @@ namespace Circuit_Simulator
 	    public Point absolutpos;
         public string ID_Name;
         public string Sort_Name;
+		public string Description;
         private bool _GetsDrawn = true, _GetsUpdated = true;
         public bool GetsDrawn { get { return _GetsDrawn; } set { _GetsDrawn = value; } }
         public bool GetsUpdated
@@ -140,19 +141,38 @@ namespace Circuit_Simulator
 
         public virtual void UpdateSpecific()
         {
+			if(Description != null & new Rectangle(absolutpos, size).Contains(App.mo_states.New.Position))
+			{
+				if(UI_Handler.Hover_InfoBox_Element != this && App.mo_timenomovement > 750.0f)
+				{
+					UI_Handler.Hover_InfoBox.pos.pos = absolutpos + new Point(0, size.Y + 5);
+					UI_Handler.Hover_InfoBox.ui_elements[0].setValue(Description);
+					UI_Handler.Hover_InfoBox.UpdateSize(new Point(2));
+					UI_Handler.Hover_InfoBox_Element = this;
+					UI_Handler.Hover_InfoBox.GetsUpdated = UI_Handler.Hover_InfoBox.GetsDrawn = true;
+				}
+			}
             // Should be overridden
         }
 
         protected virtual void UpdateAlways()
         {
+			if(UI_Handler.Hover_InfoBox_Element == this)
+			{
+				if(!new Rectangle(absolutpos, size).Contains(App.mo_states.New.Position) || UI_Handler.UI_AlreadyActivated)
+				{
+					UI_Handler.Hover_InfoBox.GetsUpdated = UI_Handler.Hover_InfoBox.GetsDrawn = false;
+					UI_Handler.Hover_InfoBox_Element = null;
+				}
+			}
             // Should be overridden
         }
 
         public void Draw(SpriteBatch spritebatch)
         {
-           
             if (_GetsDrawn)
             {
+				UpdatePos();
                 DrawSpecific(spritebatch);
                 for (int i = 0; i < DrawFunctions.Count; ++i)
                 {
@@ -165,6 +185,7 @@ namespace Circuit_Simulator
         protected virtual void DrawSpecific(SpriteBatch spritebatch)
         {
             // Should be overridden
+
         }
     }
 }

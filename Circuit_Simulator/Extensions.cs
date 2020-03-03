@@ -224,7 +224,7 @@ namespace Circuit_Simulator
         }
 
 
-        public static void CMD_Execute(string cmd, string args)
+        public static void ExecuteProgram(string cmd, string args)
         {
             Process p = new System.Diagnostics.Process();
             p.StartInfo.FileName = cmd;

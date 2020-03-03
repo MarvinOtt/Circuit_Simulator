@@ -36,8 +36,8 @@
       <FileName>COMP\CompData.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Circuit_Simulator.UI.UI_Button" Collapsed="true">
-    <Position X="3.25" Y="1" Width="3.75" />
+  <Class Name="Circuit_Simulator.UI.UI_Button">
+    <Position X="0.5" Y="0.5" Width="3.75" />
     <NestedTypes>
       <Delegate Name="Circuit_Simulator.UI.UI_Button.Button_Activated_Handler" Collapsed="true">
         <TypeIdentifier>
@@ -56,6 +56,40 @@
       <HashCode>gAAAACAAAAAAgAAAAACAAIAAAIECACAAAEAIAAAAAAA=</HashCode>
       <FileName>Component.cs</FileName>
       <NewMemberFileName>Sim_Component.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.DLL_Methods">
+    <Position X="19.25" Y="3.5" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAQAAQAAAAAA=</HashCode>
+      <FileName>Sim_INF_DLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.Sim_INF_DLL">
+    <Position X="19.25" Y="5.25" Width="3.25" />
+    <Members>
+      <Field Name="comp_num" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Delegate Name="Circuit_Simulator.Sim_INF_DLL.DLL_SimOneStep_prototype" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sim_INF_DLL.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Circuit_Simulator.Sim_INF_DLL.InitSimulation_prototype" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sim_INF_DLL.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Circuit_Simulator.Sim_INF_DLL.Sim_Steped_Handler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sim_INF_DLL.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAQAiAgAEQBAAIAAgAIAAMAIICAAAQAAAAGA=</HashCode>
+      <FileName>Sim_INF_DLL.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Circuit_Simulator.Line" Collapsed="true">

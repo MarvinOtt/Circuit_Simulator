@@ -62,6 +62,10 @@ namespace Circuit_Simulator
         public static UI_List<UI_TexButton> wire_ddbl;
         public static Generic_Conf componentconf,genbutconf, gen_conf;
         public static Generic_Conf cat_conf, toolbarbuttonconf, toolbarddconf1, toolbarddconf2, behave1conf, behave2conf, gridpaintbuttonconf;
+		public static UI_Box<UI_String> Hover_InfoBox;
+		public static UI_Element Hover_InfoBox_Element;
+
+		public static UI_NotificationHandler notificationHandler;
 
         public static UI_ValueInput netbox;
         public static int netboxval = 70;
@@ -140,14 +144,20 @@ namespace Circuit_Simulator
             //QuickHotbar
             QuickHotbar = new UI_QuickHBElement<UI_Element>(new Pos(0, Toolbar.size.Y));
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 0, 0), Button_tex, behave1conf));
+			QuickHotbar.ui_elements[0].Description = "Play";
             QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 1 + 1, 0), Button_tex, behave2conf));
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, behave2conf));
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, behave2conf));
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, behave1conf));         
-            QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, behave1conf));
+			QuickHotbar.ui_elements[1].Description = "Reset Simulation";
+			QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 2 + 2, 0), Button_tex, behave2conf));
+			QuickHotbar.ui_elements[2].Description = "Save Circuit";
+			QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 3 + 3, 0), Button_tex, behave2conf));
+			QuickHotbar.ui_elements[3].Description = "Load Circuit";
+			QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 4 + 4, 0), Button_tex, behave1conf));
+			QuickHotbar.ui_elements[4].Description = "Interaction Mode";
+			QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, behave1conf));
+			QuickHotbar.ui_elements[5].Description = "Wire Mode";
 
-            //Componentbox
-            ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
+			//Componentbox
+			ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
 
 
 
@@ -244,8 +254,14 @@ namespace Circuit_Simulator
             signal = new UI_SignalAnalyze(new Pos(-5, UI_Window.headheight + 5, ORIGIN.TR, ORIGIN.TR, SignalAnalyze), new Point(500, 80));
             SignalAnalyze.Add_UI_Elements(signal);
             SignalAnalyze.GetsUpdated = SignalAnalyze.GetsDrawn = false;
+
+			Hover_InfoBox = new UI_Box<UI_String>(new Pos(0), Point.Zero);
+			Hover_InfoBox.Add_UI_Elements(new UI_String(new Pos(2), Point.Zero, UI_Handler.componentconf));
+			Hover_InfoBox.GetsUpdated = Hover_InfoBox.GetsDrawn = false;
+
+			notificationHandler = new UI_NotificationHandler(Pos.Zero);
+
             InitializeUISettings(spriteBatch);
-            
         }
 
         public void netbox_ValueChange(object sender)
@@ -316,12 +332,36 @@ namespace Circuit_Simulator
                 Simulator.ProjectSizeY = 16384;
             };
 
-            //Reset Button Config
-            ((UI_TexButton)QuickHotbar.ui_elements[1]).GotActivatedLeft += delegate (object sender)
+			// Button File
+			((UI_Button_Menu)ButtonMenu_File.ui_elements[0]).GotActivatedLeft += delegate (object sender)
+			{
+				if (Simulator.cursimframe == 0)
+					FileHandler.Save();
+				else
+					UI_Handler.notificationHandler.AddNotification("Cant save circuit when the simulation is not reseted.");
+			};
+			((UI_Button_Menu)ButtonMenu_File.ui_elements[1]).GotActivatedLeft += delegate (object sender)
+			{
+				if (Simulator.cursimframe == 0)
+					FileHandler.SaveAs();
+				else
+					UI_Handler.notificationHandler.AddNotification("Cant save circuit when the simulation is not reseted.");
+			};
+			((UI_Button_Menu)ButtonMenu_File.ui_elements[2]).GotActivatedLeft += delegate (object sender)
+			{
+				if (Simulator.cursimframe == 0)
+					FileHandler.Open();
+				else
+					UI_Handler.notificationHandler.AddNotification("Cant load a circuit when the simulation is not reseted.");
+			};
+
+			//Reset Button Config
+			((UI_TexButton)QuickHotbar.ui_elements[1]).GotActivatedLeft += delegate (object sender)
             {
                 Simulator.cursimframe = 0;
                 ((UI_TexButton)QuickHotbar.ui_elements[0]).IsActivated = false;
                 Simulator.IsSimulating = false;
+				Sim_Component.ClearAllHeighlighting();
             };
 
             // ComponentBox UI Toggle
@@ -451,16 +491,22 @@ namespace Circuit_Simulator
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[2]).IsActivated)
                 {
-                    FileHandler.Save();
-                }
+					if(Simulator.cursimframe == 0)
+						FileHandler.Save();
+					else
+						UI_Handler.notificationHandler.AddNotification("Cant save circuit when the simulation is not reseted.");
+				}
             };
 
             ((UI_TexButton)QuickHotbar.ui_elements[3]).GotActivatedLeft += delegate (object sender)
             {
                 if (((UI_TexButton)QuickHotbar.ui_elements[3]).IsActivated)
                 {
-                    FileHandler.Open();
-                }
+					if (Simulator.cursimframe == 0)
+						FileHandler.Open();
+					else
+						UI_Handler.notificationHandler.AddNotification("Cant load a circuit when the simulation is not reseted.");
+				}
             };
         }
         public void inreaseSimSpeed(object sender)
@@ -533,6 +579,9 @@ namespace Circuit_Simulator
                 ZaWarudo.UpdateMain();
             }
 
+			Hover_InfoBox.UpdateMain();
+
+			notificationHandler.UpdateMain();
 
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].UpdateMain();
@@ -570,8 +619,11 @@ namespace Circuit_Simulator
             for (int i = 0; i < toolbar_menus.Length; ++i)
                 toolbar_menus[i].Draw(spritebatch);
 
+			notificationHandler.Draw(spritebatch);
 
-            dragcomp.Draw(spritebatch);
+			Hover_InfoBox.Draw(spritebatch);
+
+			dragcomp.Draw(spritebatch);
 
         }
     }
