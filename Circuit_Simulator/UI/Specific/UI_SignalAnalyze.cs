@@ -69,7 +69,8 @@ namespace Circuit_Simulator.UI.Specific
         protected override void DrawSpecific(SpriteBatch spritebatch)
         {
             float scale = (float)Math.Pow(2, scale_log);
-            for (int i = 0; i >= -1000; i--)
+			spritebatch.DrawLine(absolutpos + new Point(size.X - 5, size.Y + 1), absolutpos + new Point(size.X - 5 + (int)(scale * -1000), size.Y + 1), Color.Red);
+			for (int i = 0; i >= -1000; i--)
             {
                 int reali = i + memorycounter;
                 if (reali < 0)
@@ -77,6 +78,7 @@ namespace Circuit_Simulator.UI.Specific
                 int previndex = reali - 1;
                 if (previndex < 0)
                     previndex = 999;
+				spritebatch.DrawLine(absolutpos + new Point(size.X - 5 + (int)(scale * i), size.Y - 5), absolutpos + new Point(size.X - 5 + (int)(scale * i), size.Y + 5), Color.Red);
                 if(values[reali] != values[previndex])
                 {
                     spritebatch.DrawLine(absolutpos + new Point(size.X - 5 + (int)(scale * i), 0), absolutpos + new Point(size.X - 5 + (int)(scale * i), size.Y), Color.White);

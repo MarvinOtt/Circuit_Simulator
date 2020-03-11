@@ -84,6 +84,7 @@ namespace Circuit_Simulator
         public static int nextComponentID = 1;
         public static byte[,] CompType;
         public static int[,][] CompGrid;
+		public static List<int>[,] CompOverlayGrid;
         public static byte[,] CompNetwork;
         public static Point[] pins2check;
         public static int pins2check_length;
@@ -103,7 +104,8 @@ namespace Circuit_Simulator
             IsEdge_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
-            CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
+			CompOverlayGrid = new List<int>[Simulator.SIZEX / 32, Simulator.SIZEY / 32];
+			CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
             components = new Component[10000000];
             pins2check = new Point[20000000];
             overlaylines = new VertexPositionLine[1000000];
@@ -174,7 +176,7 @@ namespace Circuit_Simulator
         public void ComponentDrop(int dataID)
         {
             Point pos = Point.Zero;
-            App.simulator.Screen2worldcoo_int(App.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
+            Simulator.Screen2worldcoo_int(App.mo_states.New.Position.ToVector2(), out pos.X, out pos.Y);
             ComponentDropAtPos(dataID, pos);
         }
         public static void ComponentDropAtPos(int dataID, Point pos)
@@ -278,7 +280,7 @@ namespace Circuit_Simulator
 					//Generate vertices
 					highlight_vertices = new VertexPositionLine[Sim_INF_DLL.line_num * 2];
 					int count = 0;
-					for (int i = 0; i < Sim_INF_DLL.WireStates_count; ++i)
+					for (int i = 1; i < Sim_INF_DLL.WireStates_count; ++i)
 					{
 						int state = Sim_INF_DLL.WireStates_OUT[i];
 						int netID = Sim_INF_DLL.WireMapInv[i];
@@ -302,7 +304,7 @@ namespace Circuit_Simulator
 					App.graphics.GraphicsDevice.SetRenderTarget(null);
 
 					int count = 0;
-					for (int i = 0; i < Sim_INF_DLL.WireStates_count; ++i)
+					for (int i = 1; i < Sim_INF_DLL.WireStates_count; ++i)
 					{
 						int state = Sim_INF_DLL.WireStates_OUT[i];
 						int netID = Sim_INF_DLL.WireMapInv[i];
@@ -412,19 +414,56 @@ namespace Circuit_Simulator
         {
             if (Simulator.worldzoom > 3)
             {
-                for (int i = 0; i < 2000; ++i)
-                {
-                    if (components[i] != null)
-                    {
-                        CompData compdata = Components_Data[components[i].dataID];
-                        if (compdata.OverlayText.Length > 0)
-                        {
-                            Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText);
-                            Vector2 pos = new Vector2((components[i].pos.ToVector2().X + compdata.OverlayTextPos[components[i].rotation].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[i].pos.ToVector2().Y + compdata.OverlayTextPos[components[i].rotation].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
-                            spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[components[i].rotation] * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
-                        }
-                    }
-                }
+				int topleftchunk_X, topleftchunk_Y;
+				Simulator.Screen2worldcoo_int(Vector2.Zero, out topleftchunk_X, out topleftchunk_Y);
+				int bottomrightchunk_X, bottomrightchunk_Y;
+				Simulator.Screen2worldcoo_int(new Vector2(App.Screenwidth, App.Screenheight), out bottomrightchunk_X, out bottomrightchunk_Y);
+				int offset = 20;
+				topleftchunk_X -= offset;
+				topleftchunk_Y -= offset;
+				bottomrightchunk_X += offset;
+				bottomrightchunk_Y += offset;
+
+				topleftchunk_X = MathHelper.Clamp(topleftchunk_X / 32, 0, Simulator.SIZEX / 32 - 1);
+				topleftchunk_Y = MathHelper.Clamp(topleftchunk_Y / 32, 0, Simulator.SIZEY / 32 - 1);
+				bottomrightchunk_X = MathHelper.Clamp(bottomrightchunk_X / 32, 0, Simulator.SIZEX / 32 - 1);
+				bottomrightchunk_Y = MathHelper.Clamp(bottomrightchunk_Y / 32, 0, Simulator.SIZEY / 32 - 1);
+				for(int x = topleftchunk_X; x <= bottomrightchunk_X; ++x)
+				{
+					for (int y = topleftchunk_Y; y <= bottomrightchunk_Y; ++y)
+					{
+						if(CompOverlayGrid[x, y] != null)
+						{
+							for(int i = 0; i < CompOverlayGrid[x, y].Count; ++i)
+							{
+								int ID = CompOverlayGrid[x, y][i];
+								CompData compdata = Components_Data[components[ID].dataID];
+								if (compdata.OverlayText.Length > 0)
+								{
+									Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText);
+									Vector2 pos = new Vector2((components[ID].pos.ToVector2().X + compdata.OverlayTextPos[components[ID].rotation].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[ID].pos.ToVector2().Y + compdata.OverlayTextPos[components[ID].rotation].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
+									spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[components[ID].rotation] * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
+								}
+							}
+						}
+					}
+				}
+
+
+
+				//for (int i = 0; i < 2000; ++i)
+    //            {
+    //                if (components[i] != null)
+    //                {
+    //                    CompData compdata = Components_Data[components[i].dataID];
+    //                    if (compdata.OverlayText.Length > 0)
+    //                    {
+    //                        Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText);
+    //                        Vector2 pos = new Vector2((components[i].pos.ToVector2().X + compdata.OverlayTextPos[components[i].rotation].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[i].pos.ToVector2().Y + compdata.OverlayTextPos[components[i].rotation].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
+    //                        spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[components[i].rotation] * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
+    //                    }
+    //                }
+    //            }
             }
         }
     }

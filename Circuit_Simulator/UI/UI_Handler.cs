@@ -250,7 +250,7 @@ namespace Circuit_Simulator
             parameterWindow.GetsUpdated = parameterWindow.GetsDrawn = false;
 
             //SignalAnalyze
-            SignalAnalyze = new UI_Window(new Pos(App.Screenwidth / 2, App.Screenheight / 2), new Point(800, 100), "Analyze", new Point(200, 80), componentconf, true);
+            SignalAnalyze = new UI_Window(new Pos(App.Screenwidth / 2, App.Screenheight / 2), new Point(800, 120), "Analyze", new Point(200, 90), componentconf, true);
             signal = new UI_SignalAnalyze(new Pos(-5, UI_Window.headheight + 5, ORIGIN.TR, ORIGIN.TR, SignalAnalyze), new Point(500, 80));
             SignalAnalyze.Add_UI_Elements(signal);
             SignalAnalyze.GetsUpdated = SignalAnalyze.GetsDrawn = false;
@@ -350,7 +350,7 @@ namespace Circuit_Simulator
 			((UI_Button_Menu)ButtonMenu_File.ui_elements[2]).GotActivatedLeft += delegate (object sender)
 			{
 				if (Simulator.cursimframe == 0)
-					FileHandler.Open();
+					FileHandler.OpenFrom();
 				else
 					UI_Handler.notificationHandler.AddNotification("Cant load a circuit when the simulation is not reseted.");
 			};
@@ -503,7 +503,7 @@ namespace Circuit_Simulator
                 if (((UI_TexButton)QuickHotbar.ui_elements[3]).IsActivated)
                 {
 					if (Simulator.cursimframe == 0)
-						FileHandler.Open();
+						FileHandler.OpenFrom();
 					else
 						UI_Handler.notificationHandler.AddNotification("Cant load a circuit when the simulation is not reseted.");
 				}

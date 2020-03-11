@@ -208,7 +208,6 @@ namespace Circuit_Simulator
 
         public static bool HasWritePermissions(string directoryPath)
         {
-
             try
             {
                 FileStream stream = new FileStream(Directory.GetCurrentDirectory() + @"\SIM_CODE\maincode.c", FileMode.Append);
@@ -286,7 +285,7 @@ namespace Circuit_Simulator
             return result;
         }
 
-        public static byte[] GetBytes(this string str)
+        public static byte[] GetBytesFromString(this string str)
         {
             byte[] bytes = new byte[str.Length + 1];
             System.Buffer.BlockCopy(Encoding.ASCII.GetBytes(str), 0, bytes, 0, bytes.Length - 1);

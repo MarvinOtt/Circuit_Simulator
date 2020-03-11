@@ -241,7 +241,7 @@ namespace Circuit_Simulator
             sim_effect.Parameters["worldsizey"].SetValue(SIZEY);
         }
 
-        public void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
+        public static void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
         {
             x = (int)((screencoos.X - worldpos.X) / (float)Math.Pow(2, worldzoom));
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, worldzoom));
@@ -334,7 +334,7 @@ namespace Circuit_Simulator
 
             return 0;
         }
-        public static void Check4NewLine(int x, int y, Point dirvec)
+        public static void Check4NewLine(int x, int y)
         {
             for(int xx = -1; xx < 2; ++xx)
             {
@@ -344,7 +344,6 @@ namespace Circuit_Simulator
                     {
                         if (CalcGridStat[x + xx, y + yy] != CalcGridData[x + xx, y + yy] && CalcGridData[x + xx, y + yy] != 0)
                             CalculateLine(x + xx, y + yy);
-                        byte d = CalcGridData[x + xx, y + yy];
                     }
                 }
             }
@@ -406,18 +405,16 @@ namespace Circuit_Simulator
             {
                 int xx = x + dirvec.X * k;
                 int yy = y + dirvec.Y * k;
-                Check4NewLine(xx, yy, dirvec);
+                Check4NewLine(xx, yy);
             }
             Point start = new Point(x - dirvec.X * j, y - dirvec.Y * j);
             Point end = new Point(x + dirvec.X * i, y + dirvec.Y * i);
             CalcNetwork.lines.Add(new Line_Netw(start, end, dirvec, i + j + 1, linelayers));
 
         }
-        public static int CalculateNewNetwork(int x, int y, int layermask)
+
+        public static int CreateNetwork(int x, int y, int layermask)
         {
-            int curvalue = CalcGridData[x, y] & layermask;
-            if (curvalue == 0)
-                return -1;
             int ID = 0;
             if (emptyNetworkIDs_count > 0)
                 ID = emptyNetworkIDs[--emptyNetworkIDs_count];
@@ -450,15 +447,12 @@ namespace Circuit_Simulator
             FoundNetworks.Clear();
 
             // Main Line Algorithm
-            int netID = CalculateNewNetwork(x, y, layermask);
+            int netID = CreateNetwork(x, y, layermask);
             if (netID == -1)
                 return;
 
-          
-
             // Clear Calc Grid
             networks[netID].ClearCalcGrid();
-          
         }
 
         
@@ -578,7 +572,7 @@ namespace Circuit_Simulator
 
         public bool IsValidPlacementCoo(Point pos)
         {
-            return IsInGrid && (Sim_Component.CompType[pos.X, pos.Y] == 0 || Sim_Component.CompType[pos.X, pos.Y] > Sim_Component.PINOFFSET) && !IsSimulating;
+            return IsInGrid && (Sim_Component.CompType[pos.X, pos.Y] == 0 || Sim_Component.CompType[pos.X, pos.Y] > Sim_Component.PINOFFSET);
         }
 
         public void SetSimulationState(bool IsSimulating)
@@ -1064,23 +1058,23 @@ namespace Circuit_Simulator
 				//}
 
 				// Placing Wires
-				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
-				{
-					if (cursimframe > 0)
-						UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
-					else if (selectstate != 0)
-						UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
-					else
-					{
-						FileHandler.IsUpToDate = false;
-						byte layers = GetUILayers();
+				//if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
+				//{
+				//	if (cursimframe > 0)
+				//		UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
+				//	else if (selectstate != 0)
+				//		UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
+				//	else
+				//	{
+				//		//FileHandler.IsUpToDate = false;
+				//		byte layers = GetUILayers();
 
-						byte[,] data = new byte[1, 1];
-						data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-						data[0, 0] |= (byte)GetUILayers();
-						PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
-					}
-				}
+				//		byte[,] data = new byte[1, 1];
+				//		data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+				//		data[0, 0] |= (byte)GetUILayers();
+				//		//PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+				//	}
+				//}
 
 				// Placing Via
 				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())

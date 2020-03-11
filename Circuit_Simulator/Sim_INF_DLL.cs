@@ -72,24 +72,41 @@ namespace Circuit_Simulator
 
         public static bool LoadLibrarys(params string[] paths)
         {
-            Sim_Component.Components_Data.Clear();
+			List<string> missinglibraries = new List<string>();
+			for (int i = 0; i < paths.Length; ++i)
+			{
+				if (!File.Exists(paths[i]))
+					missinglibraries.Add(paths[i]);
+			}
+			if(missinglibraries.Count > 0)
+			{
+				string message = "Following Libraries not found:\n";
+				for(int i = 0; i < missinglibraries.Count; ++i)
+				{
+					message += missinglibraries[i] + "\n";
+				}
+				System.Windows.Forms.MessageBox.Show(message, null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+				return false;
+			}
+
+			Sim_Component.Components_Data.Clear();
             CompLibrary.AllUsedLibraries.Clear();
 
             for(int i = 0; i < paths.Length; ++i)
             {
-                if(File.Exists(paths[i]))
-                {
-                    CompLibrary newlibrary = new CompLibrary(null, paths[i]);
-                    newlibrary.Load();
-                }
-                else
-                {
-                    System.Windows.Forms.MessageBox.Show("Library not found: \n" + paths[i], null, MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Sim_Component.Components_Data.Clear();
-                    CompLibrary.AllUsedLibraries.Clear();
-                    UI_Handler.InitComponents();
-                    return false;
-                }
+                //if(File.Exists(paths[i]))
+                //{
+                CompLibrary newlibrary = new CompLibrary(null, paths[i]);
+                newlibrary.LoadFromPath();
+                //}
+                //else
+                //{
+                //    System.Windows.Forms.MessageBox.Show("Library not found: \n" + paths[i], null, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //    Sim_Component.Components_Data.Clear();
+                //    CompLibrary.AllUsedLibraries.Clear();
+                //    UI_Handler.InitComponents();
+                //    return -2;
+                //}
             }
             UI_Handler.InitComponents();
             GenerateDllCodeAndCompile();
@@ -141,9 +158,12 @@ namespace Circuit_Simulator
 			//command += "\"" + pathtoexe + @"\SIM_CODE\maincode.c" + "\" -o \"";
 			//command += pathtoexe + @"\SIM_CODE\maincode.o" + "\"";
 			//Extensions.ExecuteProgram("cmd", command);
-			string command = "/c" + driveletter + @"GCC\mingw64\bin\g++" + " -m64 -shared \"";
+			string GCC_Path = Path.GetFullPath(Config.GCC_Compiler_PATH);
+			if (GCC_Path.Last() == '\\')
+				GCC_Path = GCC_Path.Remove(GCC_Path.Length - 1, 1);
+			string command = "/c " + "\"" + "\"" + GCC_Path + @"\g++" + "\"" + " -m64 -shared \"";
 			command += pathtoexe + @"\SIM_CODE\maincode.dll" + "\" \"";
-			command += pathtoexe + @"\SIM_CODE\maincode.c" + "\"";
+			command += pathtoexe + @"\SIM_CODE\maincode.c" + "\"" + "\"";
 			Extensions.ExecuteProgram("cmd", command);
 
             LoadSimDLL();
@@ -173,7 +193,7 @@ namespace Circuit_Simulator
         public static void GenerateSimulationData()
         {
             InitSimulation(Sim_Component.Components_Data.Count);
-            int count = 0;
+            int count = 1;
 			line_num = 0;
             for(int i = 0; i <= Simulator.highestNetworkID; ++i)
             {

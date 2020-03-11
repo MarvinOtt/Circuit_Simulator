@@ -94,12 +94,6 @@
 /processorParam:TextureFormat=Compressed
 /build:UI/component_font.spritefont
 
-#begin UI/File.fx
-/importer:EffectImporter
-/processor:EffectProcessor
-/processorParam:DebugMode=Auto
-/build:UI/File.fx;UI/highlight_effect_noalpha.fx
-
 #begin UI/GridPaint_effect.fx
 /importer:EffectImporter
 /processor:EffectProcessor
@@ -111,6 +105,12 @@
 /processor:EffectProcessor
 /processorParam:DebugMode=Auto
 /build:UI/highlight_effect.fx
+
+#begin UI/highlight_effect_noalpha.fx
+/importer:EffectImporter
+/processor:EffectProcessor
+/processorParam:DebugMode=Auto
+/build:UI/highlight_effect_noalpha.fx
 
 #begin UI/overlayfont.spritefont
 /importer:FontDescriptionImporter

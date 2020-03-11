@@ -98,7 +98,15 @@ namespace Circuit_Simulator
                 data2place = new byte[area.Size.X, area.Size.Y];
                 Simulator.IsWire.GetArea(data2place, area);
             }
-            for (int i = 0; i < datapixel.Count; ++i)
+			if (Sim_Component.Components_Data[dataID].OverlayText.Length > 0)
+			{
+				Point comppos_grid = new Point(pos.X / 32, pos.Y / 32);
+				if (Sim_Component.CompOverlayGrid[comppos_grid.X, comppos_grid.Y] == null)
+					Sim_Component.CompOverlayGrid[comppos_grid.X, comppos_grid.Y] = new List<int>();
+				Sim_Component.CompOverlayGrid[comppos_grid.X, comppos_grid.Y].Add(ID);
+
+			}
+			for (int i = 0; i < datapixel.Count; ++i)
             {
                 Point currentcoo = pos + datapixel[i].pos;
                 Sim_Component.CompType[currentcoo.X, currentcoo.Y] = datapixel[i].type;
@@ -165,6 +173,13 @@ namespace Circuit_Simulator
 
             if (Sim_Component.Components_Data[dataID].IsOverlay)
                 Sim_Component.CompMayneedoverlay.Remove(ID);
+			if(Sim_Component.Components_Data[dataID].OverlayText.Length > 0)
+			{
+				Point comppos_grid = new Point(pos.X / 32, pos.Y / 32);
+				Sim_Component.CompOverlayGrid[comppos_grid.X, comppos_grid.Y].Remove(ID);
+				if (Sim_Component.CompOverlayGrid[comppos_grid.X, comppos_grid.Y].Count == 0)
+					Sim_Component.CompOverlayGrid[comppos_grid.X, comppos_grid.Y] = null;
+			}
             for (int i = 0; i < datapixel.Count; ++i)
             {
                 Point currentcoo = pos + datapixel[i].pos;

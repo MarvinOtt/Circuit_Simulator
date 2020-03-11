@@ -228,9 +228,9 @@ namespace Circuit_Simulator.COMP
 
         public void Save(FileStream stream)
         {
-            byte[] bytearray = name.GetBytes();
+            byte[] bytearray = name.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
-            bytearray = catagory.GetBytes();
+            bytearray = catagory.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
             stream.Write(BitConverter.GetBytes(IsOverlay), 0, 1);
             stream.Write(BitConverter.GetBytes(IsClickable), 0, 1);
@@ -255,7 +255,7 @@ namespace Circuit_Simulator.COMP
                 }
             }
 
-            bytearray = OverlayText.GetBytes();
+            bytearray = OverlayText.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
             for(int i = 0; i < 8; ++i)
             {
@@ -268,15 +268,15 @@ namespace Circuit_Simulator.COMP
             stream.Write(BitConverter.GetBytes(valuebox_length), 0, 4);
             for(int i = 0; i < valuebox_length; ++i)
             {
-                bytearray = parameters[i].GetBytes();
+                bytearray = parameters[i].GetBytesFromString();
                 stream.Write(bytearray, 0, bytearray.Length);
             }
 
             stream.Write(BitConverter.GetBytes(OverlaySeg_length), 0, 4);
             stream.Write(BitConverter.GetBytes(ClickAction_Type), 0, 4);
-            bytearray = Code_Sim.GetBytes();
+            bytearray = Code_Sim.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
-            bytearray = Code_Sim_FuncName.GetBytes();
+            bytearray = Code_Sim_FuncName.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
         }
     }

@@ -10,10 +10,10 @@
       <FileName>Network.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Circuit_Simulator.Simulator" Collapsed="true">
-    <Position X="6.25" Y="3" Width="1.5" />
+  <Class Name="Circuit_Simulator.Simulator">
+    <Position X="0.5" Y="5" Width="3.25" />
     <TypeIdentifier>
-      <HashCode>pBwCYTOASoQABopwAhCCBUAAQBCRpRBSGkBpMDLYBEI=</HashCode>
+      <HashCode>pBwCYTOASoQABopwAhCCBUAAABCRpRBSHmBpMDLYBEI=</HashCode>
       <FileName>Simulator.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -88,26 +88,33 @@
       </Delegate>
     </NestedTypes>
     <TypeIdentifier>
-      <HashCode>AAAAAABAAQAiAgAEQBAAIAAgAIAAMAIICAAAQAAAAGA=</HashCode>
+      <HashCode>AAAAACBAAQAiAgAEQBAAIAAgAICAMAIICAAAQAAAAGA=</HashCode>
       <FileName>Sim_INF_DLL.cs</FileName>
     </TypeIdentifier>
   </Class>
+  <Class Name="Circuit_Simulator.UI_Handler">
+    <Position X="25" Y="6" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>E4RCDhCKQkkQBwCRAFQAREACaAIgENqGQkKxgCAtAUo=</HashCode>
+      <FileName>UI\UI_Handler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
   <Struct Name="Circuit_Simulator.Line" Collapsed="true">
-    <Position X="4.5" Y="4.25" Width="1.5" />
+    <Position X="11.75" Y="8" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAgQAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Simulator.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Circuit_Simulator.Line_Netw" Collapsed="true">
-    <Position X="6.25" Y="4.25" Width="1.5" />
+    <Position X="13.5" Y="8" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACACAAAAAgAEAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Simulator.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Circuit_Simulator.VertexPositionLine" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="4.5" Y="5.25" Width="1.5" />
+    <Position X="11.75" Y="9" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAABAAAABAAAABAAAAAA=</HashCode>
       <FileName>Simulator.cs</FileName>

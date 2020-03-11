@@ -62,7 +62,7 @@ namespace Circuit_Simulator.UI.Specific
         public void Add_Library(CompLibrary libs)
         {
             UI_Categorie<UI_Component> newlib = new UI_Categorie<UI_Component>(libs.name, UI_Handler.cat_conf);
-            newlib.cat.ID = CompLibrary.LibraryWindow_LoadedLibrarys.IndexOf(libs);
+            newlib.cat.ID = CompLibrary.LibraryWindow_LoadedLibraries.IndexOf(libs);
             newlib.cat.ID_Name = libs.name;
             newlib.cat.GotActivatedRight += EditLib; 
             newlib.GotFolded += LibFolded;
@@ -87,11 +87,11 @@ namespace Circuit_Simulator.UI.Specific
         {
             for(int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
             {
-                int index = CompLibrary.LibraryWindow_LoadedLibrarys.FindIndex(x => x.name == CompLibrary.AllUsedLibraries[i].name);
+                int index = CompLibrary.LibraryWindow_LoadedLibraries.FindIndex(x => x.name == CompLibrary.AllUsedLibraries[i].name);
                 if(index == -1)
                 {
                     CompLibrary newlib = new CompLibrary(null, CompLibrary.AllUsedLibraries[i].SaveFile, false);
-                    newlib.Load();
+                    newlib.LoadFromPath();
                 }
             }
 
@@ -103,22 +103,22 @@ namespace Circuit_Simulator.UI.Specific
         public void Reload_UI()
         {
             Libraries.ui_elements[0].ui_elements.Clear();
-            for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibrarys.Count; ++i)
+            for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibraries.Count; ++i)
             {
-                Add_Library(CompLibrary.LibraryWindow_LoadedLibrarys[i]);
+                Add_Library(CompLibrary.LibraryWindow_LoadedLibraries[i]);
             }
         }
 
        
         public void SaveAllChanges( object sender)
         {
-            for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibrarys.Count; i++)
-                CompLibrary.LibraryWindow_LoadedLibrarys[i].Save();
+            for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibraries.Count; i++)
+                CompLibrary.LibraryWindow_LoadedLibraries[i].Save();
         }
         public void OpenLib(object sender)
         {
-            CompLibrary.LoadFromFile(false);
-            CompLibrary.LibraryWindow_LoadedLibrarys.RemoveAll(x => x.STATE == CompLibrary.LOAD_FAILED);
+            CompLibrary.LoadFrom(false);
+            CompLibrary.LibraryWindow_LoadedLibraries.RemoveAll(x => x.STATE == CompLibrary.LOAD_FAILED);
             Reload_UI();
         }
         public void AddLib(object sender)
@@ -128,7 +128,7 @@ namespace Circuit_Simulator.UI.Specific
             string finalname = "";
             for(int i = 1; ; ++i)
             {
-                bool state = CompLibrary.LibraryWindow_LoadedLibrarys.Exists(x => x.name == startname + i.ToString());
+                bool state = CompLibrary.LibraryWindow_LoadedLibraries.Exists(x => x.name == startname + i.ToString());
                 if(!state)
                 {
                     finalname = startname + i.ToString();
@@ -155,7 +155,7 @@ namespace Circuit_Simulator.UI.Specific
         public void EditLib(object sender)
         {
             UI_Component curUIlib = sender as UI_Component;
-            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys[curUIlib.ID];
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibraries[curUIlib.ID];
             UI_Handler.EditLib.ID_Name = curlib.name;
             UI_Handler.EditLib.GetsUpdated = UI_Handler.EditLib.GetsDrawn = true;
             UI_Handler.EditLib.pos.pos = App.mo_states.New.Position + new Point(5, 5);
@@ -170,9 +170,9 @@ namespace Circuit_Simulator.UI.Specific
             for (int y = 1; ; y++)
             {
                 bool DoesExist = false;
-                for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibrarys.Count; ++i)
+                for (int i = 0; i < CompLibrary.LibraryWindow_LoadedLibraries.Count; ++i)
                 {
-                    bool state = CompLibrary.LibraryWindow_LoadedLibrarys[i].Components.Exists(x => x.name == startname + y.ToString());
+                    bool state = CompLibrary.LibraryWindow_LoadedLibraries[i].Components.Exists(x => x.name == startname + y.ToString());
                     if (state)
                         DoesExist = true;
                 }
@@ -182,7 +182,7 @@ namespace Circuit_Simulator.UI.Specific
                     break;
                 }
             }
-            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == pressedElement.parent.ID_Name);
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibraries.Find(x => x.name == pressedElement.parent.ID_Name);
             CompData newComp = new CompData(finalname, "Other", false, false);
             curlib.AddComponent(newComp);
 
@@ -211,7 +211,7 @@ namespace Circuit_Simulator.UI.Specific
             UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
             UI_Window.All_Highlight(UI_Handler.editcompwindow);
             string[] names = comp.ID_Name.Split('|');
-            CompData compdata = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
+            CompData compdata = CompLibrary.LibraryWindow_LoadedLibraries.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
             UI_Handler.editcompwindow.SetRootComp(compdata);
 
         }
@@ -231,7 +231,7 @@ namespace Circuit_Simulator.UI.Specific
 
         public void RenameLib_Finish(object sender)
         {
-            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == RenameBox1.ID_Name);
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibraries.Find(x => x.name == RenameBox1.ID_Name);
             if (Libraries.ui_elements[0].ui_elements.Exists(x => x.cat.ID_Name == RenameBox1.value) && curlib.name != RenameBox1.value)
             {
                 RenameBox1.IsTyping = true;
@@ -248,13 +248,13 @@ namespace Circuit_Simulator.UI.Specific
         {
             IsChange = true;
             UI_Element lib = sender as UI_Element;
-            CompLibrary.LibraryWindow_LoadedLibrarys.RemoveAll(x => x.name == lib.parent.ID_Name);
+            CompLibrary.LibraryWindow_LoadedLibraries.RemoveAll(x => x.name == lib.parent.ID_Name);
             Reload_UI();
         }
         public void LibFolded(object sender)
         {
             UI_Categorie<UI_Component> curUIlib = sender as UI_Categorie<UI_Component>;
-            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == curUIlib.cat.ID_Name);
+            CompLibrary curlib = CompLibrary.LibraryWindow_LoadedLibraries.Find(x => x.name == curUIlib.cat.ID_Name);
             curlib.IsFold = curUIlib.IsFold;
         }
        
@@ -284,7 +284,7 @@ namespace Circuit_Simulator.UI.Specific
         public void RenameComp_Finish(object sender)
         {
             string[] names = UI_Handler.EditComp.ID_Name.Split('|');
-            CompData comp = CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
+            CompData comp = CompLibrary.LibraryWindow_LoadedLibraries.Find(x => x.name == names[0]).Components.Find(x => x.name == names[1]);
             if (RenameBox2.value.Length > 0)
                 comp.name = RenameBox2.value;
             RenameBox2.GetsUpdated = RenameBox2.GetsDrawn = false;
@@ -297,7 +297,7 @@ namespace Circuit_Simulator.UI.Specific
             IsChange = true;
             UI_StringButton comp = sender as UI_StringButton;
             string[] names = comp.parent.ID_Name.Split('|');
-            CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.RemoveAll(x => x.name == names[1]);
+            CompLibrary.LibraryWindow_LoadedLibraries.Find(x => x.name == names[0]).Components.RemoveAll(x => x.name == names[1]);
             Reload_UI();
    
         }
