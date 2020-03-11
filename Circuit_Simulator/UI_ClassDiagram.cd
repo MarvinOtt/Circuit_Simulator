@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1" MembersFormat="NameAndType">
+  <Class Name="Circuit_Simulator.UI_Handler">
+    <Position X="5.5" Y="0.5" Width="3.75" />
+    <Members>
+      <Field Name="ActivColor" Hidden="true" />
+      <Field Name="ActivHoverColor" Hidden="true" />
+      <Field Name="BackgroundColor" Hidden="true" />
+      <Field Name="behave1conf" Hidden="true" />
+      <Field Name="behave2conf" Hidden="true" />
+      <Field Name="BorderColor" Hidden="true" />
+      <Field Name="buttonheight" Hidden="true" />
+      <Field Name="buttonwidth" Hidden="true" />
+      <Field Name="cat_conf" Hidden="true" />
+      <Field Name="componentconf" Hidden="true" />
+      <Field Name="Content" Hidden="true" />
+      <Field Name="gen_conf" Hidden="true" />
+      <Field Name="genbutconf" Hidden="true" />
+      <Field Name="gridpaintbuttonconf" Hidden="true" />
+      <Field Name="HoverColor" Hidden="true" />
+      <Field Name="main_BG_Col" Hidden="true" />
+      <Field Name="main_Hover_Col" Hidden="true" />
+      <Field Name="netboxval" Hidden="true" />
+      <Field Name="sqarebuttonwidth" Hidden="true" />
+      <Field Name="toolbarbuttonconf" Hidden="true" />
+      <Field Name="toolbarddconf1" Hidden="true" />
+      <Field Name="toolbarddconf2" Hidden="true" />
+      <Field Name="UI_Active_CompDrag" Hidden="true" />
+      <Field Name="UI_Active_Main" Hidden="true" />
+      <Field Name="UI_Active_State" Hidden="true" />
+      <Method Name="UI_Handler" Hidden="true" />
+      <Field Name="UI_IsWindowHide" Hidden="true" />
+      <Method Name="WireMaskBar_Hovered" Hidden="true" />
+      <Method Name="WireMaskBar_Pressed" Hidden="true" />
+    </Members>
+    <TypeIdentifier>
+      <HashCode>EYRCDhCKQkkQBwCRAFQARAACaAIgENoGQkKxgCAtAUo=</HashCode>
+      <FileName>UI\UI_Handler.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

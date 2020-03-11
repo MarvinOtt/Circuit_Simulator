@@ -112,6 +112,7 @@
     <None Include="backend_classdiagram.cd" />
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
+    <None Include="UI_ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />

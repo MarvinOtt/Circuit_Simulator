@@ -18,7 +18,6 @@ namespace Circuit_Simulator.UI.Specific
         public UI_Component cat;
         public UI_List<T> Components;
         public bool IsFold, IsHover2;
-        Vector2 title_pos;
 
         public delegate void Object_Handler(object sender);
         public event Object_Handler GotFolded = delegate { };
@@ -30,8 +29,6 @@ namespace Circuit_Simulator.UI.Specific
             Components = new UI_List<T>(new Pos(0, height), false);
             cat = new UI_Component(new Pos(0), new Point(20, height), title, 0, 0, conf);
             Add_UI_Elements(cat, Components);
-            Vector2 titlesize = conf.font.MeasureString(title);
-            title_pos = new Vector2(4, (int)(size.Y / 2 - titlesize.Y / 2));
         }
 
         public void AddComponents(params T[] components)

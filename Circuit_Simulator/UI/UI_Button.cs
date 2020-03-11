@@ -42,7 +42,6 @@ namespace Circuit_Simulator.UI
                         GotActivatedLeft(this);
                     GotToggledLeft(this);
                 }
-
                 if (App.mo_states.IsRightButtonToggleOff())
                 {
                     GotActivatedRight(this);

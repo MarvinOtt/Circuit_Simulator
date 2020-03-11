@@ -186,7 +186,7 @@ namespace Circuit_Simulator
             }
             (LayerSelectHotbar.ui_elements[0] as UI_TexButton).IsActivated = true;
 
-
+            //WireMaskHotbar
             WireMaskHotbar = new UI_QuickHBElement<UI_TexButton>(new Pos(100, 0, ORIGIN.TR, ORIGIN.DEFAULT, LayerSelectHotbar));
            
 

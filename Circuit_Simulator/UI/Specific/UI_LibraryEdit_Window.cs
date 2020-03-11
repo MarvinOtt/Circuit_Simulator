@@ -17,7 +17,6 @@ namespace Circuit_Simulator.UI.Specific
         public static Rectangle libhitbox;
         UI_StringButton AddButton, Open, SaveAll;
         UI_ValueInput RenameBox1, RenameBox2;
-        public static bool IsChange;
 
         public UI_LibraryEdit_Window(Pos pos, Point size, string Title, Point minsize, Generic_Conf conf, bool IsResizeable = true) : base(pos, size, Title, minsize, conf, IsResizeable)
         {
@@ -44,7 +43,7 @@ namespace Circuit_Simulator.UI.Specific
             RenameBox1.ValueChanged += RenameLib_Finish;
             RenameBox2.ValueChanged += RenameComp_Finish;
             Open.GotActivatedLeft += OpenLib;
-            AddButton.GotActivatedLeft += AddLib;
+            AddButton.GotActivatedLeft += NewLib;
             SaveAll.GotActivatedLeft += SaveAllChanges;
 
 
@@ -121,7 +120,7 @@ namespace Circuit_Simulator.UI.Specific
             CompLibrary.LibraryWindow_LoadedLibrarys.RemoveAll(x => x.STATE == CompLibrary.LOAD_FAILED);
             Reload_UI();
         }
-        public void AddLib(object sender)
+        public void NewLib(object sender)
         {
 
             string startname = "New Library";
@@ -206,7 +205,6 @@ namespace Circuit_Simulator.UI.Specific
         }
         public void EditCompWindow(object sender)
         {
-            IsChange = true;
             UI_Component comp = sender as UI_Component;
             UI_Handler.editcompwindow.GetsUpdated = UI_Handler.editcompwindow.GetsDrawn = true;
             UI_Window.All_Highlight(UI_Handler.editcompwindow);
@@ -246,7 +244,6 @@ namespace Circuit_Simulator.UI.Specific
 
         public void DeleteLib(object sender)
         {
-            IsChange = true;
             UI_Element lib = sender as UI_Element;
             CompLibrary.LibraryWindow_LoadedLibrarys.RemoveAll(x => x.name == lib.parent.ID_Name);
             Reload_UI();
@@ -294,7 +291,6 @@ namespace Circuit_Simulator.UI.Specific
 
         public void DeleteComp(object sender)
         {
-            IsChange = true;
             UI_StringButton comp = sender as UI_StringButton;
             string[] names = comp.parent.ID_Name.Split('|');
             CompLibrary.LibraryWindow_LoadedLibrarys.Find(x => x.name == names[0]).Components.RemoveAll(x => x.name == names[1]);

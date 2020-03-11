@@ -15,7 +15,6 @@ namespace Circuit_Simulator.UI.Specific
     {
         public UI_Scrollable<UI_List<UI_Categorie<UI_Component>>> Libraries;
         UI_StringButton AddButton, Reload;
-        public static bool IsChange;
 
 
         public UI_ProjectLibrary_Window(Pos pos, Point size, string title, Point minsize, Generic_Conf conf, bool IsResizeable) : base(pos, size, title, minsize, conf, IsResizeable)
@@ -30,7 +29,7 @@ namespace Circuit_Simulator.UI.Specific
 
             AddButton.GotActivatedLeft += OpenLib;
             Reload.GotActivatedLeft += ReloadComponentBox;
-            UI_Handler.EditProjectLib.ui_elements[0].GotActivatedLeft += DeleteLib;
+            UI_Handler.EditProjectLib.ui_elements[0].GotActivatedLeft += RemoveLib;
         }
 
         public void EditProjectLib(object sender)
@@ -49,10 +48,6 @@ namespace Circuit_Simulator.UI.Specific
             Reload_UI();
         }
 
-        public void RefreshLibraries(object sender)
-        {
-
-        }
 
         public void ReloadComponentBox(object sender)
         {
@@ -71,9 +66,8 @@ namespace Circuit_Simulator.UI.Specific
             curlib.IsFold = curUIlib.IsFold;
         }
 
-        public void DeleteLib(object sender)
+        public void RemoveLib(object sender)
         {
-            IsChange = true;
             UI_Element lib = sender as UI_Element;
             CompLibrary.AllUsedLibraries.RemoveAll(x => x.name == lib.parent.ID_Name);
             Reload_UI();
