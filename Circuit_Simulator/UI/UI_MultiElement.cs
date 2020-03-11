@@ -39,6 +39,19 @@ namespace Circuit_Simulator
             ui_elements.AddRange(elements);
 	    }
 
+		public void UpdateSize(Point padding)
+		{
+			size = Point.Zero;
+			foreach (T element in ui_elements)
+			{
+				if (element.pos.X + element.size.X > size.X)
+					size.X = element.pos.X + element.size.X;
+				if (element.pos.Y + element.size.Y > size.Y)
+					size.Y = element.pos.Y + element.size.Y;
+			}
+			size += padding;
+		}
+
         public override void ChangedUpdate2False()
         {
             base.ChangedUpdate2False();

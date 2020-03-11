@@ -27,24 +27,19 @@ namespace Circuit_Simulator.COMP
         public string Code_Sim_FuncName = "";
         public Rectangle[] bounds;
         public byte currentrotation;
-        public int pin_num, OverlayStateID, totalstate_length;
+        public int pin_num, totalstate_length;
         private int _internalstate_length, _overlayseg_length, _valuebox_length;
         public int internalstate_length { get { return _internalstate_length; } set { _internalstate_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
         public int OverlaySeg_length { get { return _overlayseg_length; } set { _overlayseg_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
         public int valuebox_length { get { return _valuebox_length; } set { _valuebox_length = value; totalstate_length = _internalstate_length + _overlayseg_length + _valuebox_length; } }
-        public bool IsOverlay, ShowOverlay;
+        public bool IsOverlay;
         public bool IsClickable;
-        public Point overlaysize;
         public int ClickAction_Type;
         public Action<Component> ClickAction;
         //public delegate void AfterSimAction_Prototype(int[] internalstates, IntPtr CompInfos, int compindex);
         //public AfterSimAction_Prototype AfterSimAction;
         public List<Line>[][] overlaylines;
         public List<VertexPositionLine>[][] overlaylines_vertices;
-        public Texture2D overlaytex;
-        public FRectangle[] overlay_bounds;
-        public Rectangle overlaytex_bounds;
-        public CompLibrary library;
         private static Action<Component>[] AllClickActions = new Action<Component>[]
         {
             delegate (Component comp)
@@ -52,9 +47,9 @@ namespace Circuit_Simulator.COMP
                 if(App.mo_states.IsLeftButtonToggleOn())
                 {
                     int segid = Sim_Component.Components_Data[comp.dataID].internalstate_length;
-                    comp.internalstates[segid] ^= 1;
+                    comp.totalstates[segid] ^= 1;
 
-                    byte state = (byte)comp.internalstates[segid];
+                    byte state = (byte)comp.totalstates[segid];
 
                     if (Simulator.cursimframe == 0)
                     {
@@ -71,9 +66,9 @@ namespace Circuit_Simulator.COMP
             delegate (Component comp)
             {
                 int segid = Sim_Component.Components_Data[comp.dataID].internalstate_length;
-                comp.internalstates[segid] = (App.mo_states.New.LeftButton == ButtonState.Pressed) ? 1 : 0;
+                comp.totalstates[segid] = (App.mo_states.New.LeftButton == ButtonState.Pressed) ? 1 : 0;
 
-                byte state = (byte)comp.internalstates[segid];
+                byte state = (byte)comp.totalstates[segid];
 
                 if (Simulator.cursimframe == 0)
                 {
@@ -107,8 +102,6 @@ namespace Circuit_Simulator.COMP
             data = new List<ComponentPixel>[8];
             for (int i = 0; i < 8; ++i)
                 data[i] = new List<ComponentPixel>();
-            overlay_bounds = new FRectangle[8];
-            overlaysize = App.basefont.MeasureString(name).ToPoint();
             parameters = new List<string>();
         }
 
@@ -235,9 +228,9 @@ namespace Circuit_Simulator.COMP
 
         public void Save(FileStream stream)
         {
-            byte[] bytearray = name.GetBytes();
+            byte[] bytearray = name.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
-            bytearray = catagory.GetBytes();
+            bytearray = catagory.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
             stream.Write(BitConverter.GetBytes(IsOverlay), 0, 1);
             stream.Write(BitConverter.GetBytes(IsClickable), 0, 1);
@@ -262,7 +255,7 @@ namespace Circuit_Simulator.COMP
                 }
             }
 
-            bytearray = OverlayText.GetBytes();
+            bytearray = OverlayText.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
             for(int i = 0; i < 8; ++i)
             {
@@ -275,15 +268,15 @@ namespace Circuit_Simulator.COMP
             stream.Write(BitConverter.GetBytes(valuebox_length), 0, 4);
             for(int i = 0; i < valuebox_length; ++i)
             {
-                bytearray = parameters[i].GetBytes();
+                bytearray = parameters[i].GetBytesFromString();
                 stream.Write(bytearray, 0, bytearray.Length);
             }
 
             stream.Write(BitConverter.GetBytes(OverlaySeg_length), 0, 4);
             stream.Write(BitConverter.GetBytes(ClickAction_Type), 0, 4);
-            bytearray = Code_Sim.GetBytes();
+            bytearray = Code_Sim.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
-            bytearray = Code_Sim_FuncName.GetBytes();
+            bytearray = Code_Sim_FuncName.GetBytesFromString();
             stream.Write(bytearray, 0, bytearray.Length);
         }
     }

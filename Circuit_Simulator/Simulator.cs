@@ -161,12 +161,12 @@ namespace Circuit_Simulator
         public static int[,,] WireIDs;
         public static int[,] WireIDPs;
 
-        public static Point worldpos, copymouseoffset, copypos, copysize;
-        public static int worldzoom = 0;
+        public static Point worldpos = new Point(-4000), copymouseoffset, copypos, copysize;
+        public static int worldzoom = 3;
         public static int cursimframe = 0;
 
         public static int toolmode = TOOL_WIRE, oldtoolmode = TOOL_WIRE, simspeed, simspeed_count, selectstate = 0, copystate;
-        public static bool IsSimulating;
+        public static bool IsSimulating, IsAllHighlight;
 
         #region Selection
 
@@ -241,7 +241,7 @@ namespace Circuit_Simulator
             sim_effect.Parameters["worldsizey"].SetValue(SIZEY);
         }
 
-        public void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
+        public static void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
         {
             x = (int)((screencoos.X - worldpos.X) / (float)Math.Pow(2, worldzoom));
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, worldzoom));
@@ -334,7 +334,7 @@ namespace Circuit_Simulator
 
             return 0;
         }
-        public static void Check4NewLine(int x, int y, Point dirvec)
+        public static void Check4NewLine(int x, int y)
         {
             for(int xx = -1; xx < 2; ++xx)
             {
@@ -344,7 +344,6 @@ namespace Circuit_Simulator
                     {
                         if (CalcGridStat[x + xx, y + yy] != CalcGridData[x + xx, y + yy] && CalcGridData[x + xx, y + yy] != 0)
                             CalculateLine(x + xx, y + yy);
-                        byte d = CalcGridData[x + xx, y + yy];
                     }
                 }
             }
@@ -406,18 +405,16 @@ namespace Circuit_Simulator
             {
                 int xx = x + dirvec.X * k;
                 int yy = y + dirvec.Y * k;
-                Check4NewLine(xx, yy, dirvec);
+                Check4NewLine(xx, yy);
             }
             Point start = new Point(x - dirvec.X * j, y - dirvec.Y * j);
             Point end = new Point(x + dirvec.X * i, y + dirvec.Y * i);
             CalcNetwork.lines.Add(new Line_Netw(start, end, dirvec, i + j + 1, linelayers));
 
         }
-        public static int CalculateNewNetwork(int x, int y, int layermask)
+
+        public static int CreateNetwork(int x, int y, int layermask)
         {
-            int curvalue = CalcGridData[x, y] & layermask;
-            if (curvalue == 0)
-                return -1;
             int ID = 0;
             if (emptyNetworkIDs_count > 0)
                 ID = emptyNetworkIDs[--emptyNetworkIDs_count];
@@ -450,15 +447,12 @@ namespace Circuit_Simulator
             FoundNetworks.Clear();
 
             // Main Line Algorithm
-            int netID = CalculateNewNetwork(x, y, layermask);
+            int netID = CreateNetwork(x, y, layermask);
             if (netID == -1)
                 return;
 
-          
-
             // Clear Calc Grid
             networks[netID].ClearCalcGrid();
-          
         }
 
         
@@ -578,7 +572,7 @@ namespace Circuit_Simulator
 
         public bool IsValidPlacementCoo(Point pos)
         {
-            return IsInGrid && (Sim_Component.CompType[pos.X, pos.Y] == 0 || Sim_Component.CompType[pos.X, pos.Y] > Sim_Component.PINOFFSET) && !IsSimulating;
+            return IsInGrid && (Sim_Component.CompType[pos.X, pos.Y] == 0 || Sim_Component.CompType[pos.X, pos.Y] > Sim_Component.PINOFFSET);
         }
 
         public void SetSimulationState(bool IsSimulating)
@@ -613,574 +607,611 @@ namespace Circuit_Simulator
             toolmode = newtoolmode;
         }
 
-        public void Update()
-        {
+		public void Update()
+		{
 
 
-            Screen2worldcoo_int(App.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
-            Point mo_worldpos = new Point(mo_worldposx, mo_worldposy);
-            IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
+			Screen2worldcoo_int(App.mo_states.New.Position.ToVector2(), out mo_worldposx, out mo_worldposy);
+			Point mo_worldpos = new Point(mo_worldposx, mo_worldposy);
+			IsInGrid = mo_worldposx > 0 && mo_worldposy > 0 && mo_worldposx < SIZEX - 1 && mo_worldposy < SIZEY - 1;
 
 
-            ((UI_String)UI_Handler.GeneralInfoBox.ui_elements[0]).setValue("Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString());
-            ((UI_String)UI_Handler.GeneralInfoBox.ui_elements[3]).setValue("Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")");
+			((UI_String)UI_Handler.GeneralInfoBox.ui_elements[0]).setValue("Pos: X: " + mo_worldposx.ToString() + " Y: " + mo_worldposy.ToString());
+			((UI_String)UI_Handler.GeneralInfoBox.ui_elements[3]).setValue("Speed: 2^" + simspeed.ToString() + " (" + Math.Pow(2, simspeed).ToString() + ")");
 
-            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
-            {
-                #region INPUT
-                if (App.kb_states.New.IsKeyDown(Keys.W))
-                    worldpos.Y += 10;
-                if (App.kb_states.New.IsKeyDown(Keys.S))
-                    worldpos.Y -= 10;
-                if (App.kb_states.New.IsKeyDown(Keys.A))
-                    worldpos.X += 10;
-                if (App.kb_states.New.IsKeyDown(Keys.D))
-                    worldpos.X -= 10;
-                if (App.kb_states.IsKeyToggleDown(Keys.Up))
-                    simspeed++;
-                if (App.kb_states.IsKeyToggleDown(Keys.Down))
-                    simspeed--;
-                if (App.kb_states.IsKeyToggleDown(Keys.Add))
-                {
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
-                  
-                    currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
-                    if (currentlayer == LAYER_NUM - 1)
-                    {
-                        currentlayer = 0;
-                    }
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
-                }
-                if (App.kb_states.IsKeyToggleDown(Keys.Subtract))
-                {
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
-                   
-                    currentlayer = MathHelper.Clamp(--currentlayer, -1, LAYER_NUM - 1);
-                    if (currentlayer == -1)
-                    {
-                        currentlayer = LAYER_NUM - 1;
-                    }
-                    (UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
-                }
+			if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+			{
+				#region INPUT
+				if (App.kb_states.New.IsKeyDown(Keys.W))
+					worldpos.Y += 10;
+				if (App.kb_states.New.IsKeyDown(Keys.S))
+					worldpos.Y -= 10;
+				if (App.kb_states.New.IsKeyDown(Keys.A))
+					worldpos.X += 10;
+				if (App.kb_states.New.IsKeyDown(Keys.D))
+					worldpos.X -= 10;
+				if (App.kb_states.IsKeyToggleDown(Keys.Up))
+					simspeed++;
+				if (App.kb_states.IsKeyToggleDown(Keys.Down))
+					simspeed--;
+				if (App.kb_states.IsKeyToggleDown(Keys.LeftAlt))
+				{
+					IsAllHighlight ^= true;
+					Sim_Component.curhighlightID = 0;
+					Sim_Component.ClearAllHeighlighting();
+				}
+				if (App.kb_states.IsKeyToggleDown(Keys.Add))
+				{
+					(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
 
-                if (App.mo_states.New.ScrollWheelValue != App.mo_states.Old.ScrollWheelValue)
-                {
-                    if (App.mo_states.New.ScrollWheelValue < App.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
-                    {
-                        worldzoom -= 1;
-                        Point diff = App.mo_states.New.Position - worldpos;
-                        worldpos += new Point(diff.X / 2, diff.Y / 2);
-                    }
-                    else if (App.mo_states.New.ScrollWheelValue > App.mo_states.Old.ScrollWheelValue && worldzoom < 10) // Zooming In
-                    {
-                        worldzoom += 1;
-                        Point diff = App.mo_states.New.Position - worldpos;
-                        worldpos -= diff;
-                    }
-                }
-                #endregion
-            }
+					currentlayer = MathHelper.Clamp(++currentlayer, 0, LAYER_NUM - 1);
+					if (currentlayer == LAYER_NUM - 1)
+					{
+						currentlayer = 0;
+					}
+					(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+				}
+				if (App.kb_states.IsKeyToggleDown(Keys.Subtract))
+				{
+					(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
 
-            if (selectstate > 0 && App.kb_states.IsKeyToggleDown(Keys.Escape))
-            {
-                selectstate = 0;
-            }
-            // Finishing Selection
-            if (App.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
-            {
-                Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
-                Selection_EndPos.Y = MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO);
-                Point start = new Point(Math.Min(Selection_StartPos.X, Selection_EndPos.X), Math.Min(Selection_StartPos.Y, Selection_EndPos.Y));
-                Point end = new Point(Math.Max(Selection_StartPos.X, Selection_EndPos.X), Math.Max(Selection_StartPos.Y, Selection_EndPos.Y));
-                Selection_StartPos = start;
-                Selection_EndPos = end;
-                Selection_Size = (end - start) + new Point(1);
-                selectstate = 2;
-            }
-            if (cursimframe == 0)
-            {
-                // Copying
-                if (selectstate == 2)
-                {
-                    if (App.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C) && !App.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.C))
-                    {
-                        copysize = Selection_Size;
-                        CopiedIsWire = new byte[Selection_Size.X * Selection_Size.Y];
-                        CopiedCompType = new byte[Selection_Size.X * Selection_Size.Y];
-                        IsWire.GetAreaWithMask(CopiedIsWire, new Rectangle(Selection_StartPos, Selection_Size), GetUILayers());
-                        CopiedCompIDs.Clear();
-                        CopiedCompPos.Clear();
-                        CopiedCompRot.Clear();
-                        if (UI_Handler.WireMaskHotbar.ui_elements[8].IsActivated) // Only copy components if the corresponding mask is set
-                        {
-                            HashSet<Component> FoundComponents = new HashSet<Component>();
-                            for (int x = 0; x < Selection_Size.X; ++x)
-                            {
-                                for (int y = 0; y < Selection_Size.Y; ++y)
-                                {
-                                    int xx = x + Selection_StartPos.X;
-                                    int yy = y + Selection_StartPos.Y;
-                                    if (Sim_Component.CompType[xx, yy] > 0)
-                                        FoundComponents.Add(Sim_Component.components[Sim_Component.GetComponentID(new Point(xx, yy))]);
-                                }
-                            }
-                            Component[] comps = FoundComponents.ToArray();
-                            Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
-                            int parametercount = 0, compcount = 0;
-                            for (int i = 0; i < comps.Length; ++i)
-                            {
-                                CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
-                                Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
-                                comprec.Location += comps[i].pos;
-                                Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
-                                if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
-                                {
-                                    compcount++;
-                                    parametercount += compdata.valuebox_length;
-                                }
-                            }
-                            CopiedParameterStates_Indices = new int[compcount + 1];
-                            CopiedParameterStates = new int[parametercount + 1];
-                            parametercount = 0;
-                            for (int i = 0; i < comps.Length; ++i)
-                            {
-                                CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
-                                Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
-                                comprec.Location += comps[i].pos;
-                                Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
-                                if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
-                                {
-                                    CopiedCompIDs.Add(comps[i].dataID);
-                                    CopiedCompRot.Add(comps[i].rotation);
-                                    CopiedCompPos.Add(comps[i].pos - Selection_StartPos);
-                                    CopiedParameterStates_Indices[CopiedCompIDs.Count] = parametercount;
-                                    for(int j = 0; j < compdata.valuebox_length; ++j)
-                                    {
-                                        CopiedParameterStates[parametercount + j] = comps[i].internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j];
-                                    }
-                                    parametercount += compdata.valuebox_length;
-                                    List<ComponentPixel> pixels = compdata.data[comps[i].rotation];
-                                    for (int j = 0; j < pixels.Count; ++j)
-                                    {
-                                        int x = (pixels[j].pos.X + comps[i].pos.X) - Selection_StartPos.X;
-                                        int y = (pixels[j].pos.Y + comps[i].pos.Y) - Selection_StartPos.Y;
-                                        CopiedCompType[x + y * Selection_Size.X] = pixels[j].type;
-                                    }
-                                }
-                            }
-                            //CopiedParameterStates = new int[parametercount + 1];
-                        }
-                    }
-                    if (App.kb_states.IsKeyToggleDown(Keys.Delete))
-                    {
-                        selectstate = copystate = 0;
+					currentlayer = MathHelper.Clamp(--currentlayer, -1, LAYER_NUM - 1);
+					if (currentlayer == -1)
+					{
+						currentlayer = LAYER_NUM - 1;
+					}
+					(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = true;
+				}
 
-                        byte[,] data = new byte[Selection_Size.X, Selection_Size.Y];
-                        Extensions.GetArea(IsWire, data, new Rectangle(Selection_StartPos, Selection_Size));
-                        byte layers = GetUILayers();
-                        for (int x = 0; x < Selection_Size.X; ++x)
-                        {
-                            for (int y = 0; y < Selection_Size.Y; ++y)
-                            {
-                                data[x, y] &= (byte)(~layers);
-                            }
-                        }
-                        PlaceArea(new Rectangle(Selection_StartPos, Selection_Size), data);
+				if (App.mo_states.New.ScrollWheelValue != App.mo_states.Old.ScrollWheelValue)
+				{
+					if (App.mo_states.New.ScrollWheelValue < App.mo_states.Old.ScrollWheelValue && worldzoom > -8) // Zooming Out
+					{
+						worldzoom -= 1;
+						Point diff = App.mo_states.New.Position - worldpos;
+						worldpos += new Point(diff.X / 2, diff.Y / 2);
+					}
+					else if (App.mo_states.New.ScrollWheelValue > App.mo_states.Old.ScrollWheelValue && worldzoom < 10) // Zooming In
+					{
+						worldzoom += 1;
+						Point diff = App.mo_states.New.Position - worldpos;
+						worldpos -= diff;
+					}
+				}
+				#endregion
+			}
 
-                        if (UI_Handler.WireMaskHotbar.ui_elements[8].IsActivated) // Only delete components if the corresponding mask is set
-                        {
-                            HashSet<Component> FoundComponents = new HashSet<Component>();
-                            for (int x = 0; x < Selection_Size.X; ++x)
-                            {
-                                for (int y = 0; y < Selection_Size.Y; ++y)
-                                {
-                                    int xx = x + Selection_StartPos.X;
-                                    int yy = y + Selection_StartPos.Y;
-                                    if (Sim_Component.CompType[xx, yy] > 0)
-                                        FoundComponents.Add(Sim_Component.components[Sim_Component.GetComponentID(new Point(xx, yy))]);
-                                }
-                            }
-                            Component[] comps = FoundComponents.ToArray();
-                            Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
-                            for (int i = 0; i < comps.Length; ++i)
-                            {
-                                CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
-                                Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
-                                comprec.Location += comps[i].pos;
-                                Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
-                                if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
-                                {
-                                    comps[i].Delete();
-                                }
-                            }
-                        }
-                    }
-                }
+			if (selectstate > 0 && App.kb_states.IsKeyToggleDown(Keys.Escape))
+			{
+				selectstate = 0;
+			}
+			// Finishing Selection
+			if (App.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
+			{
+				Selection_EndPos.X = MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO);
+				Selection_EndPos.Y = MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO);
+				Point start = new Point(Math.Min(Selection_StartPos.X, Selection_EndPos.X), Math.Min(Selection_StartPos.Y, Selection_EndPos.Y));
+				Point end = new Point(Math.Max(Selection_StartPos.X, Selection_EndPos.X), Math.Max(Selection_StartPos.Y, Selection_EndPos.Y));
+				Selection_StartPos = start;
+				Selection_EndPos = end;
+				Selection_Size = (end - start) + new Point(1);
+				selectstate = 2;
+			}
+			if (cursimframe == 0)
+			{
+				// Copying
+				if (selectstate == 2)
+				{
+					if (App.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.C) && !App.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.C))
+					{
+						copysize = Selection_Size;
+						CopiedIsWire = new byte[Selection_Size.X * Selection_Size.Y];
+						CopiedCompType = new byte[Selection_Size.X * Selection_Size.Y];
+						IsWire.GetAreaWithMask(CopiedIsWire, new Rectangle(Selection_StartPos, Selection_Size), GetUILayers());
+						CopiedCompIDs.Clear();
+						CopiedCompPos.Clear();
+						CopiedCompRot.Clear();
+						if (UI_Handler.WireMaskHotbar.ui_elements[8].IsActivated) // Only copy components if the corresponding mask is set
+						{
+							HashSet<Component> FoundComponents = new HashSet<Component>();
+							for (int x = 0; x < Selection_Size.X; ++x)
+							{
+								for (int y = 0; y < Selection_Size.Y; ++y)
+								{
+									int xx = x + Selection_StartPos.X;
+									int yy = y + Selection_StartPos.Y;
+									if (Sim_Component.CompType[xx, yy] > 0)
+										FoundComponents.Add(Sim_Component.components[Sim_Component.GetComponentID(new Point(xx, yy))]);
+								}
+							}
+							Component[] comps = FoundComponents.ToArray();
+							Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
+							int parametercount = 0, compcount = 0;
+							for (int i = 0; i < comps.Length; ++i)
+							{
+								CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
+								Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
+								comprec.Location += comps[i].pos;
+								Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
+								if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
+								{
+									compcount++;
+									parametercount += compdata.valuebox_length;
+								}
+							}
+							CopiedParameterStates_Indices = new int[compcount + 1];
+							CopiedParameterStates = new int[parametercount + 1];
+							parametercount = 0;
+							for (int i = 0; i < comps.Length; ++i)
+							{
+								CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
+								Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
+								comprec.Location += comps[i].pos;
+								Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
+								if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
+								{
+									CopiedCompIDs.Add(comps[i].dataID);
+									CopiedCompRot.Add(comps[i].rotation);
+									CopiedCompPos.Add(comps[i].pos - Selection_StartPos);
+									CopiedParameterStates_Indices[CopiedCompIDs.Count] = parametercount;
+									for (int j = 0; j < compdata.valuebox_length; ++j)
+									{
+										CopiedParameterStates[parametercount + j] = comps[i].totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j];
+									}
+									parametercount += compdata.valuebox_length;
+									List<ComponentPixel> pixels = compdata.data[comps[i].rotation];
+									for (int j = 0; j < pixels.Count; ++j)
+									{
+										int x = (pixels[j].pos.X + comps[i].pos.X) - Selection_StartPos.X;
+										int y = (pixels[j].pos.Y + comps[i].pos.Y) - Selection_StartPos.Y;
+										CopiedCompType[x + y * Selection_Size.X] = pixels[j].type;
+									}
+								}
+							}
+							//CopiedParameterStates = new int[parametercount + 1];
+						}
+					}
+					if (App.kb_states.IsKeyToggleDown(Keys.Delete))
+					{
+						selectstate = copystate = 0;
 
-                if (App.kb_states.New.IsKeyDown(Keys.LeftControl))
-                {
-                    // Starting Selection
-                    if (IsInGrid && App.mo_states.IsLeftButtonToggleOn() && (selectstate == 0 || selectstate == 2))
-                    {
-                        selectstate = 1;
-                        Selection_StartPos = mo_worldpos;
-                    }
+						byte[,] data = new byte[Selection_Size.X, Selection_Size.Y];
+						Extensions.GetArea(IsWire, data, new Rectangle(Selection_StartPos, Selection_Size));
+						byte layers = GetUILayers();
+						for (int x = 0; x < Selection_Size.X; ++x)
+						{
+							for (int y = 0; y < Selection_Size.Y; ++y)
+							{
+								data[x, y] &= (byte)(~layers);
+							}
+						}
+						PlaceArea(new Rectangle(Selection_StartPos, Selection_Size), data);
 
+						if (UI_Handler.WireMaskHotbar.ui_elements[8].IsActivated) // Only delete components if the corresponding mask is set
+						{
+							HashSet<Component> FoundComponents = new HashSet<Component>();
+							for (int x = 0; x < Selection_Size.X; ++x)
+							{
+								for (int y = 0; y < Selection_Size.Y; ++y)
+								{
+									int xx = x + Selection_StartPos.X;
+									int yy = y + Selection_StartPos.Y;
+									if (Sim_Component.CompType[xx, yy] > 0)
+										FoundComponents.Add(Sim_Component.components[Sim_Component.GetComponentID(new Point(xx, yy))]);
+								}
+							}
+							Component[] comps = FoundComponents.ToArray();
+							Rectangle SelectionRec = new Rectangle(Selection_StartPos, Selection_Size);
+							for (int i = 0; i < comps.Length; ++i)
+							{
+								CompData compdata = Sim_Component.Components_Data[comps[i].dataID];
+								Rectangle comprec = Sim_Component.Components_Data[comps[i].dataID].bounds[comps[i].rotation];
+								comprec.Location += comps[i].pos;
+								Rectangle intersection = Rectangle.Intersect(SelectionRec, comprec);
+								if (intersection.Width == comprec.Width && intersection.Height == comprec.Height)
+								{
+									comps[i].Delete();
+								}
+							}
+						}
+					}
+				}
 
-
-                    // Placing Copy Shadow
-                    if (CopiedIsWire != null)
-                    {
-                        if (App.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.V) && !App.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.V))
-                        {
-                            selectstate = 4;
-                            copystate = 0;
-                            if (copyWiretex != null && !copyWiretex.IsDisposed)
-                                copyWiretex.Dispose();
-                            if (copyComptex != null && !copyComptex.IsDisposed)
-                                copyComptex.Dispose();
-                            copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                            copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                            HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
-                            for (int i = 0; i < CopiedIsWire.Length; ++i)
-                                tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
-                            copyWiretex.SetData(tempArray);
-                            for (int i = 0; i < CopiedCompType.Length; ++i)
-                                tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
-                            copyComptex.SetData(tempArray);
-                            copypos = new Point(mo_worldposx, mo_worldposy);
-                            copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
-                            copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
-                        }
-                    }
-                }
-                // Moving Copy
-                if (selectstate == 4)
-                {
-                    if(App.kb_states.IsKeyToggleDown(Keys.R)) // Rotating Copy
-                    {
-                        byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
-                        byte[] newCopiedCompType = new byte[CopiedCompType.Length];
-                        Point newcopysize = new Point(copysize.Y, copysize.X);
-                        for(int x = 0; x < newcopysize.X; ++x)
-                        {
-                            for (int y = 0; y < newcopysize.Y; ++y)
-                            {
-                                newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[(y) + (newcopysize.X - x - 1) * copysize.X];
-                                newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[(y) + (newcopysize.X - x - 1) * copysize.X];
-                            }
-                        }
-                        copysize = newcopysize;
-                        CopiedIsWire = newCopiedIsWire;
-                        CopiedCompType = newCopiedCompType;
-                        if (copyWiretex != null && !copyWiretex.IsDisposed)
-                            copyWiretex.Dispose();
-                        if (copyComptex != null && !copyComptex.IsDisposed)
-                            copyComptex.Dispose();
-                        copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
-                        for (int i = 0; i < CopiedIsWire.Length; ++i)
-                            tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
-                        copyWiretex.SetData(tempArray);
-                        for (int i = 0; i < CopiedCompType.Length; ++i)
-                            tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
-                        copyComptex.SetData(tempArray);
-                        for (int i = 0; i < CopiedCompIDs.Count; ++i)
-                        {
-                            CopiedCompRot[i] = CompData.rottable_ROT[CopiedCompRot[i]];
-                            CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].Y - 1, CopiedCompPos[i].X);
-                        }
-                    }
-
-                    if (App.kb_states.IsKeyToggleDown(Keys.X)) // Flipping Copy X
-                    {
-                        byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
-                        byte[] newCopiedCompType = new byte[CopiedCompType.Length];
-                        Point newcopysize = new Point(copysize.X, copysize.Y);
-                        for (int x = 0; x < newcopysize.X; ++x)
-                        {
-                            for (int y = 0; y < newcopysize.Y; ++y)
-                            {
-                                newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[(copysize.X - x - 1) + y * copysize.X];
-                                newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[(copysize.X - x - 1) + y * copysize.X];
-                            }
-                        }
-                        
-                        copysize = newcopysize;
-                        CopiedIsWire = newCopiedIsWire;
-                        CopiedCompType = newCopiedCompType;
-                        if (copyWiretex != null && !copyWiretex.IsDisposed)
-                            copyWiretex.Dispose();
-                        if (copyComptex != null && !copyComptex.IsDisposed)
-                            copyComptex.Dispose();
-                        copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
-                        for (int i = 0; i < CopiedIsWire.Length; ++i)
-                            tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
-                        copyWiretex.SetData(tempArray);
-                        for (int i = 0; i < CopiedCompType.Length; ++i)
-                            tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
-                        copyComptex.SetData(tempArray);
-                        for (int i = 0; i < CopiedCompIDs.Count; ++i)
-                        {
-                            CopiedCompRot[i] = CompData.rottable_FLIPX[CopiedCompRot[i]];
-                            CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].X - 1, CopiedCompPos[i].Y);
-                        }
-                    }
-                    if (App.kb_states.IsKeyToggleDown(Keys.Y)) // Flipping Copy Y
-                    {
-                        byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
-                        byte[] newCopiedCompType = new byte[CopiedCompType.Length];
-                        Point newcopysize = new Point(copysize.X, copysize.Y);
-                        for (int x = 0; x < newcopysize.X; ++x)
-                        {
-                            for (int y = 0; y < newcopysize.Y; ++y)
-                            {
-                                newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[x + (copysize.Y - y - 1) * copysize.X];
-                                newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[x + (copysize.Y - y - 1) * copysize.X];
-                            }
-                        }
-
-                        copysize = newcopysize;
-                        CopiedIsWire = newCopiedIsWire;
-                        CopiedCompType = newCopiedCompType;
-                        if (copyWiretex != null && !copyWiretex.IsDisposed)
-                            copyWiretex.Dispose();
-                        if (copyComptex != null && !copyComptex.IsDisposed)
-                            copyComptex.Dispose();
-                        copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
-                        HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
-                        for (int i = 0; i < CopiedIsWire.Length; ++i)
-                            tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
-                        copyWiretex.SetData(tempArray);
-                        for (int i = 0; i < CopiedCompType.Length; ++i)
-                            tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
-                        copyComptex.SetData(tempArray);
-                        for (int i = 0; i < CopiedCompIDs.Count; ++i)
-                        {
-                            CopiedCompRot[i] = CompData.rottable_FLIPY[CopiedCompRot[i]];
-                            CopiedCompPos[i] = new Point(CopiedCompPos[i].X, copysize.Y - CopiedCompPos[i].Y - 1);
-                        }
-                    }
+				if (App.kb_states.New.IsKeyDown(Keys.LeftControl))
+				{
+					// Starting Selection
+					if (IsInGrid && App.mo_states.IsLeftButtonToggleOn() && (selectstate == 0 || selectstate == 2))
+					{
+						selectstate = 1;
+						Selection_StartPos = mo_worldpos;
+					}
 
 
-                    if (App.mo_states.IsLeftButtonToggleOn() && (new Rectangle(copypos, copysize)).Contains(mo_worldpos))
-                    {
-                        copystate = 1;
-                        copymouseoffset = copypos - mo_worldpos;
-                    }
-                    if (copystate == 1)
-                    {
-                        if (App.mo_states.New.LeftButton == ButtonState.Released)
-                            copystate = 0;
 
-                        copypos = mo_worldpos + copymouseoffset;
-                        copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
-                        copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
-                    }
+					// Placing Copy Shadow
+					if (CopiedIsWire != null)
+					{
+						if (App.kb_states.New.AreKeysDown(Keys.LeftControl, Keys.V) && !App.kb_states.Old.AreKeysDown(Keys.LeftControl, Keys.V))
+						{
+							selectstate = 4;
+							copystate = 0;
+							if (copyWiretex != null && !copyWiretex.IsDisposed)
+								copyWiretex.Dispose();
+							if (copyComptex != null && !copyComptex.IsDisposed)
+								copyComptex.Dispose();
+							copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+							copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+							HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+							for (int i = 0; i < CopiedIsWire.Length; ++i)
+								tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+							copyWiretex.SetData(tempArray);
+							for (int i = 0; i < CopiedCompType.Length; ++i)
+								tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+							copyComptex.SetData(tempArray);
+							copypos = new Point(mo_worldposx, mo_worldposy);
+							copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
+							copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
+						}
+					}
+				}
+				// Moving Copy
+				if (selectstate == 4)
+				{
+					if (App.kb_states.IsKeyToggleDown(Keys.R)) // Rotating Copy
+					{
+						byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
+						byte[] newCopiedCompType = new byte[CopiedCompType.Length];
+						Point newcopysize = new Point(copysize.Y, copysize.X);
+						for (int x = 0; x < newcopysize.X; ++x)
+						{
+							for (int y = 0; y < newcopysize.Y; ++y)
+							{
+								newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[(y) + (newcopysize.X - x - 1) * copysize.X];
+								newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[(y) + (newcopysize.X - x - 1) * copysize.X];
+							}
+						}
+						copysize = newcopysize;
+						CopiedIsWire = newCopiedIsWire;
+						CopiedCompType = newCopiedCompType;
+						if (copyWiretex != null && !copyWiretex.IsDisposed)
+							copyWiretex.Dispose();
+						if (copyComptex != null && !copyComptex.IsDisposed)
+							copyComptex.Dispose();
+						copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+						copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+						HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+						for (int i = 0; i < CopiedIsWire.Length; ++i)
+							tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+						copyWiretex.SetData(tempArray);
+						for (int i = 0; i < CopiedCompType.Length; ++i)
+							tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+						copyComptex.SetData(tempArray);
+						for (int i = 0; i < CopiedCompIDs.Count; ++i)
+						{
+							CopiedCompRot[i] = CompData.rottable_ROT[CopiedCompRot[i]];
+							CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].Y - 1, CopiedCompPos[i].X);
+						}
+					}
 
-                    // Placing Copy
-                    if (App.kb_states.IsKeyToggleDown(Keys.Enter))
-                    {
-                        // Check if placement is valid
-                        bool IsValid = true;
-                        for (int x = 0; x < copysize.X; ++x)
-                        {
-                            for (int y = 0; y < copysize.Y; ++y)
-                            {
-                                int xx = x + copypos.X;
-                                int yy = y + copypos.Y;
-                                if (CopiedIsWire[x + y * copysize.X] > 0 && Sim_Component.CompType[xx, yy] > 0 && Sim_Component.CompType[xx, yy] <= Sim_Component.PINOFFSET)
-                                    IsValid = false;
-                                if (CopiedCompType[x + y * copysize.X] > 0 && CopiedCompType[x + y * copysize.X] <= Sim_Component.PINOFFSET && IsWire[xx, yy] > 0)
-                                    IsValid = false;
-                                if (CopiedCompType[x + y * copysize.X] > Sim_Component.PINOFFSET && (Sim_Component.CompType[xx, yy] > 0))
-                                    IsValid = false;
-                            }
-                        }
+					if (App.kb_states.IsKeyToggleDown(Keys.X)) // Flipping Copy X
+					{
+						byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
+						byte[] newCopiedCompType = new byte[CopiedCompType.Length];
+						Point newcopysize = new Point(copysize.X, copysize.Y);
+						for (int x = 0; x < newcopysize.X; ++x)
+						{
+							for (int y = 0; y < newcopysize.Y; ++y)
+							{
+								newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[(copysize.X - x - 1) + y * copysize.X];
+								newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[(copysize.X - x - 1) + y * copysize.X];
+							}
+						}
 
-                        if (IsValid)
-                        {
-                            selectstate = copystate = 0;
-                            byte[,] data = new byte[copysize.X, copysize.Y];
-                            Extensions.GetArea(IsWire, data, new Rectangle(copypos, copysize));
-                            for (int x = 0; x < copysize.X; ++x)
-                            {
-                                for (int y = 0; y < copysize.Y; ++y)
-                                {
-                                    data[x, y] |= CopiedIsWire[x + y * copysize.X];
-                                }
-                            }
-                            PlaceArea(new Rectangle(copypos, copysize), data);
-                            for (int i = 0; i < CopiedCompIDs.Count; ++i)
-                            {
-                                Component comp = Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, (byte)CopiedCompRot[i]);
-                                CompData compdata = Sim_Component.Components_Data[CopiedCompIDs[i]];
-                                if (comp != null)
-                                {
-                                    for (int j = 0; j < compdata.valuebox_length; ++j)
-                                    {
-                                        comp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = CopiedParameterStates[CopiedParameterStates_Indices[i] + j];
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+						copysize = newcopysize;
+						CopiedIsWire = newCopiedIsWire;
+						CopiedCompType = newCopiedCompType;
+						if (copyWiretex != null && !copyWiretex.IsDisposed)
+							copyWiretex.Dispose();
+						if (copyComptex != null && !copyComptex.IsDisposed)
+							copyComptex.Dispose();
+						copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+						copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+						HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+						for (int i = 0; i < CopiedIsWire.Length; ++i)
+							tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+						copyWiretex.SetData(tempArray);
+						for (int i = 0; i < CopiedCompType.Length; ++i)
+							tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+						copyComptex.SetData(tempArray);
+						for (int i = 0; i < CopiedCompIDs.Count; ++i)
+						{
+							CopiedCompRot[i] = CompData.rottable_FLIPX[CopiedCompRot[i]];
+							CopiedCompPos[i] = new Point(copysize.X - CopiedCompPos[i].X - 1, CopiedCompPos[i].Y);
+						}
+					}
+					if (App.kb_states.IsKeyToggleDown(Keys.Y)) // Flipping Copy Y
+					{
+						byte[] newCopiedIsWire = new byte[CopiedIsWire.Length];
+						byte[] newCopiedCompType = new byte[CopiedCompType.Length];
+						Point newcopysize = new Point(copysize.X, copysize.Y);
+						for (int x = 0; x < newcopysize.X; ++x)
+						{
+							for (int y = 0; y < newcopysize.Y; ++y)
+							{
+								newCopiedIsWire[x + y * newcopysize.X] = CopiedIsWire[x + (copysize.Y - y - 1) * copysize.X];
+								newCopiedCompType[x + y * newcopysize.X] = CopiedCompType[x + (copysize.Y - y - 1) * copysize.X];
+							}
+						}
 
-            // Handling Tool Modes
-            if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE && cursimframe == 0 && selectstate == 0)
-            {
-
-                if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.RightButton == ButtonState.Pressed)
-                {
-                    FileHandler.IsUpToDate = false;
-                    byte[,] data = new byte[1, 1];
-                    byte wiredata = IsWire[mo_worldposx, mo_worldposy];
-                    data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-                    data[0, 0] &= (byte)~GetUILayers();
-                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
-                }
-
-                //if (!IsSimulating && IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0 && Game1.kb_states.IsKeyToggleDown(Keys.L))
-                //{
-                //    networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state ^= 1;
-                //}
-
-                // Placing Wires
-                if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
-                {
-                    FileHandler.IsUpToDate = false;
-                    byte layers = GetUILayers();
-                   
-                    byte[,] data = new byte[1, 1];
-                    data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-                    data[0, 0] |= (byte)GetUILayers();
-                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
-
-                }
-
-                // Placing Via
-                if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())
-                {
-                    FileHandler.IsUpToDate = false;
-                    byte[,] data = new byte[1, 1];
-                    data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-                    data[0, 0] |= 128;
-                    PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
-
-                    Line line = new Line(new Point(mo_worldposx, mo_worldposy), new Point(mo_worldposx, mo_worldposy));
-                    VertexPositionLine line1, line2;
-                    line.Convert2LineVertices(data[0, 0], out line1, out line2);
-
-                    if (lines2draw_count[LAYER_NUM] >= 500000)
-                        DrawLines();
-                    lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line1;
-                    lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line2;
-
-                  
-                }
+						copysize = newcopysize;
+						CopiedIsWire = newCopiedIsWire;
+						CopiedCompType = newCopiedCompType;
+						if (copyWiretex != null && !copyWiretex.IsDisposed)
+							copyWiretex.Dispose();
+						if (copyComptex != null && !copyComptex.IsDisposed)
+							copyComptex.Dispose();
+						copyWiretex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+						copyComptex = new Texture2D(App.graphics.GraphicsDevice, copysize.X, copysize.Y, false, SurfaceFormat.HalfSingle);
+						HalfSingle[] tempArray = new HalfSingle[CopiedIsWire.Length];
+						for (int i = 0; i < CopiedIsWire.Length; ++i)
+							tempArray[i] = new HalfSingle((float)CopiedIsWire[i]);
+						copyWiretex.SetData(tempArray);
+						for (int i = 0; i < CopiedCompType.Length; ++i)
+							tempArray[i] = new HalfSingle((float)CopiedCompType[i]);
+						copyComptex.SetData(tempArray);
+						for (int i = 0; i < CopiedCompIDs.Count; ++i)
+						{
+							CopiedCompRot[i] = CompData.rottable_FLIPY[CopiedCompRot[i]];
+							CopiedCompPos[i] = new Point(CopiedCompPos[i].X, copysize.Y - CopiedCompPos[i].Y - 1);
+						}
+					}
 
 
-            }
-            else if(UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT && selectstate == 0)
-            {
-                if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
-                {
-                    int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                    int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                    Sim_Component.components[compID].Clicked();
-                }
-                if (!IsSimulating)
-                {
-                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsRightButtonToggleOff())
-                    {
-                        int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                        int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
-                        int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                        Sim_Component.components[compID].Delete();
-                    }
+					if (App.mo_states.IsLeftButtonToggleOn() && (new Rectangle(copypos, copysize)).Contains(mo_worldpos))
+					{
+						copystate = 1;
+						copymouseoffset = copypos - mo_worldpos;
+					}
+					if (copystate == 1)
+					{
+						if (App.mo_states.New.LeftButton == ButtonState.Released)
+							copystate = 0;
 
-                    if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsLeftButtonToggleOff())
-                    {
-                        int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                        int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
-                        int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                        if (Sim_Component.Components_Data[Sim_Component.components[compID].dataID].valuebox_length > 0)
-                            UI_Handler.parameterWindow.SetRootcomp(Sim_Component.components[compID]);
-                    }
+						copypos = mo_worldpos + copymouseoffset;
+						copypos.X = MathHelper.Clamp(copypos.X, MINCOO, MAXCOO - copysize.X);
+						copypos.Y = MathHelper.Clamp(copypos.Y, MINCOO, MAXCOO - copysize.Y);
+					}
 
-                    
-                }
-                else //SignalAnalyze
-                {
-                    if(IsInGrid && App.mo_states.IsLeftButtonToggleOff() && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
-                    {
-                        UI_Handler.signal.WireID = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
-                        UI_Handler.SignalAnalyze.GetsUpdated = UI_Handler.SignalAnalyze.GetsDrawn = true;
-                   
-                    }
-                }
+					// Placing Copy
+					if (App.kb_states.IsKeyToggleDown(Keys.Enter))
+					{
+						// Check if placement is valid
+						bool IsValid = true;
+						for (int x = 0; x < copysize.X; ++x)
+						{
+							for (int y = 0; y < copysize.Y; ++y)
+							{
+								int xx = x + copypos.X;
+								int yy = y + copypos.Y;
+								if (CopiedIsWire[x + y * copysize.X] > 0 && Sim_Component.CompType[xx, yy] > 0 && Sim_Component.CompType[xx, yy] <= Sim_Component.PINOFFSET)
+									IsValid = false;
+								if (CopiedCompType[x + y * copysize.X] > 0 && CopiedCompType[x + y * copysize.X] <= Sim_Component.PINOFFSET && IsWire[xx, yy] > 0)
+									IsValid = false;
+								if (CopiedCompType[x + y * copysize.X] > Sim_Component.PINOFFSET && (Sim_Component.CompType[xx, yy] > 0))
+									IsValid = false;
+							}
+						}
 
-            }
-            if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && toolmode == TOOL_SELECT && selectstate == 0 && UI_Handler.UI_Active_State == 0)
-            {
+						if (IsValid)
+						{
+							selectstate = copystate = 0;
+							byte[,] data = new byte[copysize.X, copysize.Y];
+							Extensions.GetArea(IsWire, data, new Rectangle(copypos, copysize));
+							for (int x = 0; x < copysize.X; ++x)
+							{
+								for (int y = 0; y < copysize.Y; ++y)
+								{
+									data[x, y] |= CopiedIsWire[x + y * copysize.X];
+								}
+							}
+							PlaceArea(new Rectangle(copypos, copysize), data);
+							for (int i = 0; i < CopiedCompIDs.Count; ++i)
+							{
+								Component comp = Sim_Component.ComponentDropAtPos(CopiedCompIDs[i], CopiedCompPos[i] + copypos, (byte)CopiedCompRot[i]);
+								CompData compdata = Sim_Component.Components_Data[CopiedCompIDs[i]];
+								if (comp != null)
+								{
+									for (int j = 0; j < compdata.valuebox_length; ++j)
+									{
+										comp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = CopiedParameterStates[CopiedParameterStates_Indices[i] + j];
+									}
+								}
+							}
+						}
+					}
+				}
+			}
 
-                int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
-                int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
-                UI_Handler.GridInfo.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
-                UI_Handler.GridInfo.ShowInfo();
-            }
-            else
-                UI_Handler.GridInfo.HideInfo();
+			// Handling Tool Modes
+			if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_WIRE)
+			{
+				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.RightButton == ButtonState.Pressed)
+				{
+					if (cursimframe > 0)
+						UI_Handler.notificationHandler.AddNotification("Cant delete wires when the simulation is not reseted.");
+					else if (selectstate != 0)
+						UI_Handler.notificationHandler.AddNotification("Cant delete wires when something is being selected");
+					else
+					{
+						FileHandler.IsUpToDate = false;
+						byte[,] data = new byte[1, 1];
+						byte wiredata = IsWire[mo_worldposx, mo_worldposy];
+						data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+						data[0, 0] &= (byte)~GetUILayers();
+						PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+					}
+				}
 
-            if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
-            {
-                sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
-                sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
-                sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
-                sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
-                sim_effect.Parameters["selectstate"].SetValue(selectstate);
-                if(selectstate >= 1 && selectstate <= 2)
-                {
-                    Point endpos = new Point(MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO), MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO));
-                    Point start = new Point(Math.Min(Selection_StartPos.X, endpos.X), Math.Min(Selection_StartPos.Y, endpos.Y));
-                    Point end = new Point(Math.Max(Selection_StartPos.X, endpos.X), Math.Max(Selection_StartPos.Y, endpos.Y));
-                    if(selectstate == 2)
-                    {
-                        start = Selection_StartPos;
-                        end = Selection_EndPos;
-                    }
-                    sim_effect.Parameters["selection_startX"].SetValue(start.X);
-                    sim_effect.Parameters["selection_startY"].SetValue(start.Y);
-                    sim_effect.Parameters["selection_endX"].SetValue(end.X);
-                    sim_effect.Parameters["selection_endY"].SetValue(end.Y);
-                }
-                if(selectstate == 4)
-                {
-                    sim_effect.Parameters["copywiretex"].SetValue(copyWiretex);
-                    sim_effect.Parameters["copycomptex"].SetValue(copyComptex);
-                    sim_effect.Parameters["copyposX"].SetValue(copypos.X);
-                    sim_effect.Parameters["copyposY"].SetValue(copypos.Y);
-                    sim_effect.Parameters["selection_endX"].SetValue(copypos.X + copysize.X - 1);
-                    sim_effect.Parameters["selection_endY"].SetValue(copypos.Y + copysize.Y - 1);
-                }
-                sim_effect.Parameters["mindist"].SetValue(0.13f);
-                sim_effect.Parameters["currentlayer"].SetValue(currentlayer);
-            }
+				//if (!IsSimulating && IsInGrid && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0 && Game1.kb_states.IsKeyToggleDown(Keys.L))
+				//{
+				//    networks[WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer]].state ^= 1;
+				//}
 
-            sim_comp.Update();
+				// Placing Wires
+				//if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
+				//{
+				//	if (cursimframe > 0)
+				//		UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
+				//	else if (selectstate != 0)
+				//		UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
+				//	else
+				//	{
+				//		//FileHandler.IsUpToDate = false;
+				//		byte layers = GetUILayers();
 
-            // Simulate Circuit
-            if(IsSimulating)
-            {
-                sim_inf_dll.SimulateOneStep();
-            }
-        }
+				//		byte[,] data = new byte[1, 1];
+				//		data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+				//		data[0, 0] |= (byte)GetUILayers();
+				//		//PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+				//	}
+				//}
+
+				// Placing Via
+				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())
+				{
+					if (cursimframe > 0)
+						UI_Handler.notificationHandler.AddNotification("Cant place vias when the simulation is not reseted.");
+					else if (selectstate != 0)
+						UI_Handler.notificationHandler.AddNotification("Cant place vias when something is being selected");
+					else
+					{
+						FileHandler.IsUpToDate = false;
+						byte[,] data = new byte[1, 1];
+						data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+						data[0, 0] |= 128;
+						PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+
+						Line line = new Line(new Point(mo_worldposx, mo_worldposy), new Point(mo_worldposx, mo_worldposy));
+						VertexPositionLine line1, line2;
+						line.Convert2LineVertices(data[0, 0], out line1, out line2);
+
+						if (lines2draw_count[LAYER_NUM] >= 500000)
+							DrawLines();
+						lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line1;
+						lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line2;
+					}
+				}
+
+
+			}
+			else if (UI_Handler.UI_Active_State == 0 && toolmode == TOOL_SELECT)
+			{
+				if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0)
+				{
+					int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+					int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+					Sim_Component.components[compID].Clicked();
+				}
+
+				if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsRightButtonToggleOff())
+				{
+					if (cursimframe > 0)
+						UI_Handler.notificationHandler.AddNotification("Cant delete components when the simulation is not reseted.");
+					else if (selectstate != 0)
+						UI_Handler.notificationHandler.AddNotification("Cant delete components when something is being selected");
+					else
+					{
+						int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+						int[] arr = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32];
+						int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+						Sim_Component.components[compID].Delete();
+					}
+				}
+
+				if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsLeftButtonToggleOff())
+				{
+					int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+					int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+					CompData curdata = Sim_Component.Components_Data[Sim_Component.components[compID].dataID];
+					if(curdata.valuebox_length > 0)
+					{
+						if (cursimframe > 0)
+							UI_Handler.notificationHandler.AddNotification("Cant edit component parameter when the simulation is not reseted.");
+						else if (selectstate != 0)
+							UI_Handler.notificationHandler.AddNotification("Cant edit component parameter when something is being selected");
+						else
+						{
+							if (Sim_Component.Components_Data[Sim_Component.components[compID].dataID].valuebox_length > 0)
+								UI_Handler.parameterWindow.SetRootcomp(Sim_Component.components[compID]);
+						}
+					}
+				}
+
+				if (IsSimulating) //SignalAnalyze
+				{
+					if (IsInGrid && App.mo_states.IsLeftButtonToggleOff() && (IsWire[mo_worldposx, mo_worldposy] & (1 << currentlayer)) > 0)
+					{
+						UI_Handler.signal.WireID = WireIDs[mo_worldposx / 2, mo_worldposy / 2, currentlayer];
+						UI_Handler.SignalAnalyze.GetsUpdated = UI_Handler.SignalAnalyze.GetsDrawn = true;
+
+					}
+				}
+
+			}
+			if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && toolmode == TOOL_SELECT && selectstate == 0 && UI_Handler.UI_Active_State == 0)
+			{
+
+				int typeID = Sim_Component.CompNetwork[mo_worldposx, mo_worldposy];
+				int compID = Sim_Component.CompGrid[mo_worldposx / 32, mo_worldposy / 32][typeID];
+				UI_Handler.GridInfo.values.ui_elements[0].setValue(Sim_Component.Components_Data[Sim_Component.components[compID].dataID].name);
+				UI_Handler.GridInfo.ShowInfo();
+			}
+			else
+				UI_Handler.GridInfo.HideInfo();
+
+			if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+			{
+				sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
+				sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
+				sim_effect.Parameters["mousepos_X"].SetValue(mo_worldposx);
+				sim_effect.Parameters["mousepos_Y"].SetValue(mo_worldposy);
+				sim_effect.Parameters["selectstate"].SetValue(selectstate);
+				if (selectstate >= 1 && selectstate <= 2)
+				{
+					Point endpos = new Point(MathHelper.Clamp(mo_worldposx, MINCOO, MAXCOO), MathHelper.Clamp(mo_worldposy, MINCOO, MAXCOO));
+					Point start = new Point(Math.Min(Selection_StartPos.X, endpos.X), Math.Min(Selection_StartPos.Y, endpos.Y));
+					Point end = new Point(Math.Max(Selection_StartPos.X, endpos.X), Math.Max(Selection_StartPos.Y, endpos.Y));
+					if (selectstate == 2)
+					{
+						start = Selection_StartPos;
+						end = Selection_EndPos;
+					}
+					sim_effect.Parameters["selection_startX"].SetValue(start.X);
+					sim_effect.Parameters["selection_startY"].SetValue(start.Y);
+					sim_effect.Parameters["selection_endX"].SetValue(end.X);
+					sim_effect.Parameters["selection_endY"].SetValue(end.Y);
+				}
+				if (selectstate == 4)
+				{
+					sim_effect.Parameters["copywiretex"].SetValue(copyWiretex);
+					sim_effect.Parameters["copycomptex"].SetValue(copyComptex);
+					sim_effect.Parameters["copyposX"].SetValue(copypos.X);
+					sim_effect.Parameters["copyposY"].SetValue(copypos.Y);
+					sim_effect.Parameters["selection_endX"].SetValue(copypos.X + copysize.X - 1);
+					sim_effect.Parameters["selection_endY"].SetValue(copypos.Y + copysize.Y - 1);
+				}
+				sim_effect.Parameters["mindist"].SetValue(0.13f);
+				sim_effect.Parameters["currentlayer"].SetValue(currentlayer);
+			}
+
+			sim_comp.Update();
+
+			// Simulate Circuit
+			if (IsSimulating)
+			{
+				sim_inf_dll.SimulateOneStep();
+			}
+		}
 
         public static void DrawLines()
         {

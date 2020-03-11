@@ -7,32 +7,114 @@
     </Members>
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAABggAAAAAAQAABAAMAAAQEAAAAAAAAAAA=</HashCode>
+      <FileName>Network.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.Simulator">
+    <Position X="0.5" Y="5" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>pBwCYTOASoQABopwAhCCBUAAABCRpRBSHmBpMDLYBEI=</HashCode>
       <FileName>Simulator.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Circuit_Simulator.Simulator" Collapsed="true">
-    <Position X="6.25" Y="3" Width="1.5" />
+  <Class Name="Circuit_Simulator.COMP.CompData">
+    <Position X="13" Y="0.75" Width="4.75" />
+    <Members>
+      <Field Name="AllClickActions" Hidden="true" />
+      <Method Name="Finish" Hidden="true" />
+      <Property Name="internalstate_length" Hidden="true" />
+      <Field Name="overlayfont" Hidden="true" />
+      <Property Name="OverlaySeg_length" Hidden="true" />
+      <Field Name="pin_num" Hidden="true" />
+      <Field Name="rottable_FLIPX" Hidden="true" />
+      <Field Name="rottable_FLIPY" Hidden="true" />
+      <Field Name="rottable_ROT" Hidden="true" />
+      <Property Name="valuebox_length" Hidden="true" />
+    </Members>
     <TypeIdentifier>
-      <HashCode>pBwCYTOASsQABopwAhCCBUAAQBCRhRBSGkBpMDLYBEI=</HashCode>
-      <FileName>Simulator.cs</FileName>
+      <HashCode>ARARgIAAQAAlRIAACBIDAAQCQABEUAAgAACSowHAAAg=</HashCode>
+      <FileName>COMP\CompData.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.UI_Button">
+    <Position X="0.5" Y="0.5" Width="3.75" />
+    <NestedTypes>
+      <Delegate Name="Circuit_Simulator.UI.UI_Button.Button_Activated_Handler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>UI\UI_Button.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAgAgCAgIAAAAACAAIBAAACBBAAAAAAAAAAAAgAAAAA=</HashCode>
+      <FileName>UI\UI_Button.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.Component">
+    <Position X="5.75" Y="6.5" Width="5" />
+    <TypeIdentifier>
+      <HashCode>gAAAACAAAAAAgAAAAACAAIAAAIECACAAAEAIAAAAAAA=</HashCode>
+      <FileName>Component.cs</FileName>
+      <NewMemberFileName>Sim_Component.cs</NewMemberFileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.DLL_Methods">
+    <Position X="19.25" Y="3.5" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAQAAQAAAAAA=</HashCode>
+      <FileName>Sim_INF_DLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.Sim_INF_DLL">
+    <Position X="19.25" Y="5.25" Width="3.25" />
+    <Members>
+      <Field Name="comp_num" Hidden="true" />
+    </Members>
+    <NestedTypes>
+      <Delegate Name="Circuit_Simulator.Sim_INF_DLL.DLL_SimOneStep_prototype" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sim_INF_DLL.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Circuit_Simulator.Sim_INF_DLL.InitSimulation_prototype" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sim_INF_DLL.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+      <Delegate Name="Circuit_Simulator.Sim_INF_DLL.Sim_Steped_Handler" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Sim_INF_DLL.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Delegate>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAACBAAQAiAgAEQBAAIAAgAICAMAIICAAAQAAAAGA=</HashCode>
+      <FileName>Sim_INF_DLL.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI_Handler">
+    <Position X="25" Y="6" Width="4.25" />
+    <TypeIdentifier>
+      <HashCode>E4RCDhCKQkkQBwCRAFQAREACaAIgENqGQkKxgCAtAUo=</HashCode>
+      <FileName>UI\UI_Handler.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Struct Name="Circuit_Simulator.Line" Collapsed="true">
-    <Position X="4.5" Y="4.25" Width="1.5" />
+    <Position X="11.75" Y="8" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACAAAAAAAgQAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Simulator.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Circuit_Simulator.Line_Netw" Collapsed="true">
-    <Position X="6.25" Y="4.25" Width="1.5" />
+    <Position X="13.5" Y="8" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAACACAAAAAgAEAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
       <FileName>Simulator.cs</FileName>
     </TypeIdentifier>
   </Struct>
   <Struct Name="Circuit_Simulator.VertexPositionLine" Collapsed="true" BaseTypeListCollapsed="true">
-    <Position X="4.5" Y="5.25" Width="1.5" />
+    <Position X="11.75" Y="9" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAgAAAAAAAAAABAAAABAAAABAAAAAA=</HashCode>
       <FileName>Simulator.cs</FileName>

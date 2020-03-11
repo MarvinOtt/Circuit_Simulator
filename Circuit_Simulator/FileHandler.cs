@@ -21,8 +21,6 @@ namespace Circuit_Simulator
 
         }
 
-
-
         public static void Save()
         {
             if (SaveFile == null)
@@ -67,7 +65,14 @@ namespace Circuit_Simulator
                 {
                     CompLibrary curlib = CompLibrary.AllUsedLibraries[i];
                     string relPath = Extensions.MakeRelativePath(workingPath, curlib.SaveFile);
-                    bytearray = relPath.GetBytes();
+					string librarypath = Directory.GetCurrentDirectory() + "\\LIBRARIES\\";
+					bool DoesStartWith = curlib.SaveFile.StartsWith(librarypath);
+					if(DoesStartWith)
+					{
+						relPath = curlib.SaveFile.Remove(0, librarypath.Length);
+						relPath = relPath.Insert(0, "-");
+					}
+                    bytearray = relPath.GetBytesFromString();
                     stream.Write(bytearray, 0, bytearray.Length);
                 }
 
@@ -78,7 +83,7 @@ namespace Circuit_Simulator
                 stream.Write(BitConverter.GetBytes(compdatatypes_array.Length), 0, 4);
                 for (int i = 0; i < Sim_Component.Components_Data.Count; ++i)
                 {
-                    bytearray = Sim_Component.Components_Data[i].name.GetBytes();
+                    bytearray = Sim_Component.Components_Data[i].name.GetBytesFromString();
                     stream.Write(bytearray, 0, bytearray.Length);
                 }
                 for (int i = 0; i < compdatatypes_array.Length; ++i)
@@ -139,7 +144,7 @@ namespace Circuit_Simulator
                         stream.Write(BitConverter.GetBytes(compdata.valuebox_length), 0, 4);
                         for (int j = 0; j < compdata.valuebox_length; ++j)
                         {
-                            stream.Write(BitConverter.GetBytes(Sim_Component.components[i].internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j]), 0, 4);
+                            stream.Write(BitConverter.GetBytes(Sim_Component.components[i].totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j]), 0, 4);
                         }
                     }
                 }
@@ -169,9 +174,9 @@ namespace Circuit_Simulator
                 {
                     try
                     {
-                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
-                        System.IO.Directory.CreateDirectory(savepath);
-                        dialog.InitialDirectory = savepath;
+						string path = Config.SAVE_PATH;
+						System.IO.Directory.CreateDirectory(path);
+						dialog.InitialDirectory = Path.GetFullPath(path);
                     }
                     catch (Exception exp)
                     {
@@ -195,14 +200,7 @@ namespace Circuit_Simulator
             }
         }
 
-        public static void OpenCurrent()
-        {
-            if (SaveFile != null)
-            {
-                OpenAs(SaveFile);
-            }
-        }
-        public static void Open()
+        public static void OpenFrom()
         {
             if (!Simulator.IsSimulating)
             {
@@ -210,9 +208,9 @@ namespace Circuit_Simulator
                 {
                     try
                     {
-                        string savepath = System.IO.Directory.GetCurrentDirectory() + "\\SAVES";
-                        System.IO.Directory.CreateDirectory(savepath);
-                        dialog.InitialDirectory = savepath;
+						string path =  Config.SAVE_PATH;
+						System.IO.Directory.CreateDirectory(path);
+                        dialog.InitialDirectory = Path.GetFullPath(path);
                     }
                     catch (Exception exp)
                     {
@@ -227,7 +225,7 @@ namespace Circuit_Simulator
                     if (dialog.ShowDialog() == DialogResult.OK)
                     {
                         string filename = dialog.FileName;
-                        OpenAs(filename);
+                        OpenFromPath(filename);
                     }
                     dialog.Dispose();
                 }
@@ -236,7 +234,7 @@ namespace Circuit_Simulator
             }
         }
 
-        public static void OpenAs(string filename)
+        public static void OpenFromPath(string filename)
         {
             if (!Simulator.IsSimulating)
             {
@@ -245,13 +243,104 @@ namespace Circuit_Simulator
                     FileStream stream = new FileStream(filename, FileMode.Open);
 
                     byte[] intbuffer = new byte[4];
-                    stream.Read(intbuffer, 0, 4);
-                    int XGridSize = BitConverter.ToInt32(intbuffer, 0);
+
+					stream.Read(intbuffer, 0, 4);
+					int XGridSize = BitConverter.ToInt32(intbuffer, 0);
+					stream.Read(intbuffer, 0, 4);
+					int YGridSize = BitConverter.ToInt32(intbuffer, 0);
+
+					#region Load Tables and Check for Components
+
+					stream.Read(intbuffer, 0, 4);
+					int library_count = BitConverter.ToInt32(intbuffer, 0);
+					string workingPath = filename;
+					int pathindex = 0;
+					for (int i = workingPath.Length - 1; i >= 0; --i)
+					{
+						if (workingPath[i] == '\\')
+						{
+							pathindex = i;
+							break;
+						}
+					}
+					workingPath = workingPath.Remove(pathindex + 1, workingPath.Length - (pathindex + 1));
+					//CompLibrary.AllUsedLibraries.Clear();
+					//Sim_Component.Components_Data.Clear();
+					List<string> Libraries2Load = new List<string>();
+					for (int i = 0; i < library_count; ++i)
+					{
+						string relPath = stream.ReadNullTerminated();
+						if (relPath[0] == '-')
+						{
+							string pathtoexe = Directory.GetCurrentDirectory();
+							string pathtolibraries = pathtoexe + "\\LIBRARIES\\";
+							string finalrelPath = relPath.Remove(0, 1);
+							Libraries2Load.Add(pathtolibraries + finalrelPath);
+						}
+						else
+						{
+							string absolutepath = workingPath + relPath;
+							Libraries2Load.Add(absolutepath);
+						}
+						//CompLibrary newlib = new CompLibrary(null, absolutepath);
+						//newlib.Load();
+						//CompLibrary.AllUsedLibraries.Add(newlib);
+					}
+					bool AllLibrarysLoaded = Sim_INF_DLL.LoadLibrarys(Libraries2Load.ToArray());
+					if (!AllLibrarysLoaded)
+					{
+						stream.Close();
+						stream.Dispose();
+						return;
+					}
+
+					stream.Read(intbuffer, 0, 4);
+					int compdata_count = BitConverter.ToInt32(intbuffer, 0);
+					stream.Read(intbuffer, 0, 4);
+					int compdatatypes_count = BitConverter.ToInt32(intbuffer, 0);
+					string[] compdata_names = new string[compdata_count];
+					List<int> compdatatypes = new List<int>();
+					for (int i = 0; i < compdata_count; ++i)
+					{
+						compdata_names[i] = stream.ReadNullTerminated();
+					}
+					for (int i = 0; i < compdatatypes_count; ++i)
+					{
+						stream.Read(intbuffer, 0, 4);
+						compdatatypes.Add(BitConverter.ToInt32(intbuffer, 0));
+					}
+					// Check if all Components are loaded
+					bool AllLoaded = true;
+					List<string> NotFoundComponents = new List<string>();
+					int[] compdata_index = new int[compdata_count];
+					for (int i = 0; i < compdata_count; ++i)
+					{
+						CompData curcomp = Sim_Component.Components_Data.Find(x => x.name == compdata_names[i]);
+						if (curcomp == null && compdatatypes.Exists(x => x == i))
+						{
+							AllLoaded = false;
+							NotFoundComponents.Add(compdata_names[i]);
+						}
+						else
+						{
+							int index = Sim_Component.Components_Data.IndexOf(curcomp);
+							compdata_index[i] = index;
+						}
+					}
+
+					if (!AllLoaded)
+					{
+						string message = "Following Components not loaded: ";
+						for (int i = 0; i < NotFoundComponents.Count; ++i)
+							message += NotFoundComponents[i] + " ";
+						throw new Exception(message);
+					}
+
+					#endregion
+
                     Simulator.SIZEX = Simulator.ProjectSizeX = XGridSize;
                     Simulator.MAXCOO = Simulator.SIZEX - Simulator.BORDERSIZE;
 
-                    stream.Read(intbuffer, 0, 4);
-                    int YGridSize = BitConverter.ToInt32(intbuffer, 0);
                     Simulator.SIZEY = Simulator.ProjectSizeY = YGridSize;
                     Simulator.linedrawingmatrix = Matrix.CreateOrthographicOffCenter(0, Simulator.SIZEX + 0.01f, Simulator.SIZEY + 0.01f, 0, 0, 1);
                     Simulator.sim_effect.Parameters["worldsizex"].SetValue(Simulator.SIZEX);
@@ -281,7 +370,6 @@ namespace Circuit_Simulator
                     Sim_Component.CompMayneedoverlay.Clear();
                     
                     Sim_Component.pins2check_length = 0;
-                    Sim_INF_DLL.Comp2UpdateAfterSim_count = 0;
                     Simulator.cursimframe = 0;
 
                     Simulator.seclogic_target.Dispose();
@@ -299,81 +387,6 @@ namespace Circuit_Simulator
                     Sim_Component.IsEdge_target = new RenderTarget2D(App.graphics.GraphicsDevice, Simulator.SIZEX, Simulator.SIZEY, false, SurfaceFormat.HalfSingle, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
 
                     Simulator.highestNetworkID = 4;
-
-                    #region Load Tables and Check for Components
-
-                    stream.Read(intbuffer, 0, 4);
-                    int library_count = BitConverter.ToInt32(intbuffer, 0);
-                    string workingPath = filename;
-                    int pathindex = 0;
-                    for (int i = workingPath.Length - 1; i >= 0; --i)
-                    {
-                        if (workingPath[i] == '\\')
-                        {
-                            pathindex = i;
-                            break;
-                        }
-                    }
-                    workingPath = workingPath.Remove(pathindex + 1, workingPath.Length - (pathindex + 1));
-                    //CompLibrary.AllUsedLibraries.Clear();
-                    //Sim_Component.Components_Data.Clear();
-                    List<string> Libraries2Load = new List<string>();
-                    for (int i = 0; i < library_count; ++i)
-                    {
-                        string relPath = stream.ReadNullTerminated();
-                        string absolutepath = workingPath + relPath;
-                        Libraries2Load.Add(absolutepath);
-                        //CompLibrary newlib = new CompLibrary(null, absolutepath);
-                        //newlib.Load();
-                        //CompLibrary.AllUsedLibraries.Add(newlib);
-                    }
-                    bool AllLibrarysLoaded = Sim_INF_DLL.LoadLibrarys(Libraries2Load.ToArray());
-                    if (!AllLibrarysLoaded)
-                        throw new Exception("Project could not be loaded: Libraries missing");
-
-                    stream.Read(intbuffer, 0, 4);
-                    int compdata_count = BitConverter.ToInt32(intbuffer, 0);
-                    stream.Read(intbuffer, 0, 4);
-                    int compdatatypes_count = BitConverter.ToInt32(intbuffer, 0);
-                    string[] compdata_names = new string[compdata_count];
-                    List<int> compdatatypes = new List<int>();
-                    for (int i = 0; i < compdata_count; ++i)
-                    {
-                        compdata_names[i] = stream.ReadNullTerminated();
-                    }
-                    for (int i = 0; i < compdatatypes_count; ++i)
-                    {
-                        stream.Read(intbuffer, 0, 4);
-                        compdatatypes.Add(BitConverter.ToInt32(intbuffer, 0));
-                    }
-                    // Check if all Components are loaded
-                    bool AllLoaded = true;
-                    List<string> NotFoundComponents = new List<string>();
-                    int[] compdata_index = new int[compdata_count];
-                    for (int i = 0; i < compdata_count; ++i)
-                    {
-                        CompData curcomp = Sim_Component.Components_Data.Find(x => x.name == compdata_names[i]);
-                        if (curcomp == null && compdatatypes.Exists(x => x == i))
-                        {
-                            AllLoaded = false;
-                            NotFoundComponents.Add(compdata_names[i]);
-                        }
-                        else
-                        {
-                            int index = Sim_Component.Components_Data.IndexOf(curcomp);
-                            compdata_index[i] = index;
-                        }
-                    }
-
-                    if (!AllLoaded)
-                    {
-                        string message = "Following Components not loaded: ";
-                        for (int i = 0; i < NotFoundComponents.Count; ++i)
-                            message += NotFoundComponents[i] + " ";
-                        throw new Exception(message);
-                    }
-
-                    #endregion
 
                     #region LoadWires 
 
@@ -440,7 +453,7 @@ namespace Circuit_Simulator
                         {
                             stream.Read(intbuffer, 0, 4);
                             int curval = BitConverter.ToInt32(intbuffer, 0);
-                            buffercomp.internalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = curval;
+                            buffercomp.totalstates[compdata.internalstate_length + compdata.OverlaySeg_length + j] = curval;
                         }
 						
                         Sim_Component.components[i] = buffercomp;

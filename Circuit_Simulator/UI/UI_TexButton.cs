@@ -25,7 +25,6 @@ namespace Circuit_Simulator.UI
 
         public override void UpdateSpecific()
 	    {
-            
             base.UpdateSpecific();
 	    }
 

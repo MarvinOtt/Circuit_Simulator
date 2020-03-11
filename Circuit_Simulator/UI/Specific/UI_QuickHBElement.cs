@@ -23,7 +23,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             int currentSizeX = ui_elements.Sum(x => x.size.X);
             element.pos = new Pos(currentSizeX, 0);
-
+			size = Point.Zero;
             base.Add_UI_Elements(element);
         }
 

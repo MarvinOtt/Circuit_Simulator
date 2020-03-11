@@ -48,6 +48,7 @@ namespace Circuit_Simulator.UI
                 }
                 GetsHovered(this);
             }
+			base.UpdateSpecific();
         }
 
         protected override void UpdateAlways()
@@ -57,6 +58,7 @@ namespace Circuit_Simulator.UI
                 IsHovered = false;
             if (conf.behav == 2)
                 IsActivated = false;
+			base.UpdateAlways();
         }
 
         protected override void DrawSpecific(SpriteBatch spritebatch)

@@ -43,7 +43,7 @@ namespace Circuit_Simulator.UI.Specific
         }
         public void OpenLib(object sender)
         {
-            CompLibrary.LoadFromFile(true);
+            CompLibrary.LoadFrom(true);
             CompLibrary.AllUsedLibraries.RemoveAll(x => x.STATE == CompLibrary.LOAD_FAILED);
             Reload_UI();
         }
@@ -107,7 +107,7 @@ namespace Circuit_Simulator.UI.Specific
         {
             for (int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
             {
-                CompLibrary.AllUsedLibraries[i].Load();
+                CompLibrary.AllUsedLibraries[i].LoadFromPath();
             }
 
             Reload_UI();

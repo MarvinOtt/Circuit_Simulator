@@ -46,7 +46,8 @@ namespace Circuit_Simulator
             return New.RightButton == ButtonState.Released && Old.RightButton == ButtonState.Pressed;
         }
     }
-    public struct Keyboard_States
+
+	public struct Keyboard_States
     {
         public KeyboardState New, Old;
 
@@ -78,6 +79,7 @@ namespace Circuit_Simulator
         public static int Render_PreviousMatrix_Index = 0;
         SpriteBatch spriteBatch;
         public static SpriteFont basefont;
+		
 
         #region UI
 
@@ -93,6 +95,9 @@ namespace Circuit_Simulator
 
         public static Keyboard_States kb_states;
         public static Mouse_States mo_states;
+
+		public static float mo_timenomovement;
+		public static float lastgametime;
 
         private bool GraphicsNeedApplyChanges;
 
@@ -121,7 +126,10 @@ namespace Circuit_Simulator
             Screenheight = graphics.PreferredBackBufferHeight;
         }
 
-        void SetToPreserve(object sender, PreparingDeviceSettingsEventArgs eventargs) { eventargs.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents; }
+        void SetToPreserve(object sender, PreparingDeviceSettingsEventArgs eventargs)
+		{
+			eventargs.GraphicsDeviceInformation.PresentationParameters.RenderTargetUsage = RenderTargetUsage.PreserveContents;
+		}
 
         private void MainForm_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
         {
@@ -157,9 +165,10 @@ namespace Circuit_Simulator
                 SynchronizeWithVerticalRetrace = true
                 
             };
-            graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(SetToPreserve);
-            IsFixedTimeStep = false;
-            Window.IsBorderless = false;
+			IsFixedTimeStep = false;
+			Window.IsBorderless = false;
+
+			graphics.PreparingDeviceSettings += new EventHandler<PreparingDeviceSettingsEventArgs>(SetToPreserve);
 
             Content.RootDirectory = "Content";
         }
@@ -194,8 +203,20 @@ namespace Circuit_Simulator
             colors[0] = Color.White;
             pixel.SetData(colors);
 
-            // Check for write permissions for the simulation files
-            bool WriteAccessToMainFolder = Extensions.HasWritePermissions(Directory.GetCurrentDirectory());
+			// Load Config
+			string[] configlines = File.ReadAllLines("config.txt");
+			for(int i = 0; i < configlines.Length; ++i)
+			{
+				string curline = configlines[i];
+				//configlines[i] = curline.Replace(" ", string.Empty);
+			}
+			string GCC_PATH = Array.Find(configlines, x => x.StartsWith("GCC_Compiler_PATH"));
+			Config.GCC_Compiler_PATH = GCC_PATH.Split('=')[1];
+			string SAVE_PATH = Array.Find(configlines, x => x.StartsWith("Save_Folder_PATH"));
+			Config.SAVE_PATH = SAVE_PATH.Split('=')[1];
+
+			// Check for write permissions for the simulation files
+			bool WriteAccessToMainFolder = Extensions.HasWritePermissions(Directory.GetCurrentDirectory());
             if(!WriteAccessToMainFolder)
             {
                 Console.WriteLine("Could not write important simulation files. Run the application in adminstrator mode or check the permissions of the application folder to fix this.");
@@ -212,7 +233,6 @@ namespace Circuit_Simulator
             
         }
 
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
            
@@ -221,6 +241,13 @@ namespace Circuit_Simulator
             //----------------//
             kb_states.New = Keyboard.GetState();
             mo_states.New = Mouse.GetState();
+			lastgametime = ((float)gameTime.ElapsedGameTime.Ticks) / (float)TimeSpan.TicksPerMillisecond;
+
+			if (mo_states.New.Position != mo_states.Old.Position)
+				mo_timenomovement = 0.0f;
+			else
+				mo_timenomovement += lastgametime;
+
             if (IsActive)
             {
                 //--------------------------------------------//
