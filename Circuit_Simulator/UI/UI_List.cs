@@ -13,7 +13,6 @@ namespace Circuit_Simulator.UI
     {
         bool DrawBackground;
         Color BackgroundCol;
-        public Point ScrollPosOrigin, ScrollSize;
 
         public UI_List(Pos pos, bool CanBeSizeRelated) : base(pos)
         {

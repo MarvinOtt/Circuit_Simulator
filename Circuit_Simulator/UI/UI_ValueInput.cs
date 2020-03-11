@@ -176,9 +176,6 @@ namespace Circuit_Simulator.UI
             }
             spritebatch.DrawString(conf.font, value, (absolutpos + new Point(4, size.Y / 2 - (int)(conf.font.MeasureString(value).Y / 2))).ToVector2(), Color.White);
             base.DrawSpecific(spritebatch);
-
-
-
         }
     }
 }

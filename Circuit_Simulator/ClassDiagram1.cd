@@ -3,7 +3,7 @@
   <Class Name="Circuit_Simulator.UI_Element" Collapsed="true">
     <Position X="12.5" Y="9.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAwAAiAAgACBAgRIAICgAICQCADCIAAAAFAAABQAAAA=</HashCode>
+      <HashCode>AAwAAiAAwACBAgRIAICgAICQCADCIAAAAFAAABQAAAA=</HashCode>
       <FileName>UI\UI_Element.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -93,7 +93,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>BAggBCAAwAAAAIQAAAAAAACQBAChACAAAAAAAgAAAAA=</HashCode>
+      <HashCode>BAggBCAAwAAAAIQAAAAAAACQBAChAAAAAAAAAgAAAAA=</HashCode>
       <FileName>UI\Specific\UI_Categorie.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -177,7 +177,7 @@
   <Class Name="Circuit_Simulator.UI_Handler" Collapsed="true">
     <Position X="12.5" Y="7.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>EYRCDhCKQkkQBwCRAFQARAACagIgENIEQkKxgCAtAUo=</HashCode>
+      <HashCode>EYRCDhCKQkkQBwCRAFQARAACaAIgENoGQkKxgCAtAUo=</HashCode>
       <FileName>UI\UI_Handler.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -199,7 +199,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAgAACAAAAAAAAAAAAAAAAAQAACAAgAAAAAEAAAAgEA=</HashCode>
+      <HashCode>AAgAACAAAAAAAAAAAAAAAAAQAACAAgAAAAAEAAAAAAA=</HashCode>
       <FileName>UI\UI_List.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -326,7 +326,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAIAICgAAAAACIACAEAAAACAAAAAAAAACAEQAJAAAAQ=</HashCode>
+      <HashCode>AAIAACgAAAAACIAAAEAAAACAAAAAAAAACAASAJAAAAQ=</HashCode>
       <FileName>UI\Specific\UI_ProjectLibrary_Window.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -354,7 +354,7 @@
       </Path>
     </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAIDICwIQQAEKIADQEAAAAiAAAAAAIAAAAAAAJEgAgQ=</HashCode>
+      <HashCode>AAIDACwIQAAEOIADQEAAAAiAAAAAAIAAAAAAAJEgAgQ=</HashCode>
       <FileName>UI\Specific\UI_LibraryEdit_Window.cs</FileName>
     </TypeIdentifier>
   </Class>
@@ -386,6 +386,22 @@
     <TypeIdentifier>
       <HashCode>AAAAYCAAAAAABAAAAAAAAACAAAAAAQAAAAAAAAEAAAA=</HashCode>
       <FileName>UI\Specific\UI_ComponentBox.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Circuit_Simulator.UI.Specific.UI_SignalAnalyze" Collapsed="true">
+    <Position X="14.75" Y="4" Width="2" />
+    <InheritanceLine Type="Circuit_Simulator.UI_Element" ManuallyRouted="true" FixedToPoint="true">
+      <Path>
+        <Point X="13.25" Y="9.5" />
+        <Point X="13.25" Y="9.332" />
+        <Point X="14.375" Y="9.332" />
+        <Point X="14.375" Y="4.375" />
+        <Point X="14.75" Y="4.375" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>IAgAACAAAAAAQAAAAAAAAACgAAAAACEAAAAAAABAAAA=</HashCode>
+      <FileName>UI\Specific\UI_SignalAnalyze.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />
