@@ -1058,23 +1058,23 @@ namespace Circuit_Simulator
 				//}
 
 				// Placing Wires
-				//if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
-				//{
-				//	if (cursimframe > 0)
-				//		UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
-				//	else if (selectstate != 0)
-				//		UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
-				//	else
-				//	{
-				//		//FileHandler.IsUpToDate = false;
-				//		byte layers = GetUILayers();
+				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
+				{
+					if (cursimframe > 0)
+						UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
+					else if (selectstate != 0)
+						UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
+					else
+					{
+						//FileHandler.IsUpToDate = false;
+						byte layers = GetUILayers();
 
-				//		byte[,] data = new byte[1, 1];
-				//		data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-				//		data[0, 0] |= (byte)GetUILayers();
-				//		//PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
-				//	}
-				//}
+						byte[,] data = new byte[1, 1];
+						data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+						data[0, 0] |= (byte)GetUILayers();
+						PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+					}
+				}
 
 				// Placing Via
 				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())
