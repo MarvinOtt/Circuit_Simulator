@@ -358,7 +358,9 @@ namespace Circuit_Simulator
                     Simulator.emptyNetworkIDs = new int[10000000];
 
                     Sim_Component.CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
-                    Sim_Component.CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
+					Sim_Component.CompOverlayGrid = new List<int>[Simulator.SIZEX / 32, Simulator.SIZEY / 32];
+
+					Sim_Component.CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
                     Sim_Component.components = new Component[10000000];
                     Sim_Component.pins2check = new Point[20000000];
                     Sim_Component.overlaylines = new VertexPositionLine[1000000];

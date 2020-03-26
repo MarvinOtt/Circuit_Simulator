@@ -42,7 +42,7 @@ namespace Circuit_Simulator
         public static Color BorderColor = new Color(new Vector3(0.45f));
         public static Color[] layer_colors;
         private UI_MultiElement<UI_Element> Toolbar;
-        private UI_MultiElement<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
+        private UI_Box<UI_Element> ButtonMenu_File, ButtonMenu_View, ButtonMenu_Config, ButtonMenu_Tools, ButtonMenu_Help;
         public static UI_InfoBox info, GridInfo;
         public UI_Window input;
         public static UI_ParameterWindow parameterWindow;
@@ -115,28 +115,28 @@ namespace Circuit_Simulator
                 Toolbar.Add_UI_Elements(new UI_StringButton(new Pos(buttonwidth * i, 0), new Point(buttonwidth, buttonheight), TB_Names[i], false, toolbarbuttonconf));
 
             // Initializing Menus for Toolbar
-            ButtonMenu_File = new UI_TB_Dropdown(new Pos(0, 25));
+            ButtonMenu_File = new UI_Box<UI_Element>(new Pos(0, 25));
             string[] FileButton_Names = new string[] { "Save", "Save As", "Open"};
             for(int i = 0; i < FileButton_Names.Length; ++i)
                 ButtonMenu_File.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), FileButton_Names[i], toolbarddconf2));
 
-            ButtonMenu_Config = new UI_TB_Dropdown(Toolbar.ui_elements[1].pos + new Pos(0, 25));
+            ButtonMenu_Config = new UI_Box<UI_Element>(Toolbar.ui_elements[1].pos + new Pos(0, 25));
             string[] ConfigButton_Names = new string[] { "Tiny Grid", "Small Grid", "Medium Grid", "Big Grid", "Large Grid" };
             for (int i = 0; i < ConfigButton_Names.Length; ++i)
                 ButtonMenu_Config.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ConfigButton_Names[i], toolbarddconf2));
 
-            ButtonMenu_View = new UI_TB_Dropdown(Toolbar.ui_elements[2].pos + new Pos(0, 25));
-            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Layer Hotbar" };
+            ButtonMenu_View = new UI_Box<UI_Element>(Toolbar.ui_elements[2].pos + new Pos(0, 25));
+            string[] ViewButton_Names = new string[] { "Component Box", "Icon Hotbar", "Layer Hotbar", "Console Window" };
             for (int i = 0; i < ViewButton_Names.Length; ++i)
             {
                 ButtonMenu_View.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ViewButton_Names[i], toolbarddconf1));
             }
-            ButtonMenu_Tools = new UI_TB_Dropdown(Toolbar.ui_elements[3].pos + new Pos(0, 25));
+            ButtonMenu_Tools = new UI_Box<UI_Element>(Toolbar.ui_elements[3].pos + new Pos(0, 25));
             string[] ToolsButton_Names = new string[] { "Libary Editor", "Project Libararies"};
             for (int i = 0; i < ToolsButton_Names.Length; ++i)
                 ButtonMenu_Tools.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), ToolsButton_Names[i], toolbarddconf1));
 
-            ButtonMenu_Help = new UI_TB_Dropdown(Toolbar.ui_elements[4].pos + new Pos(0, 25));
+            ButtonMenu_Help = new UI_Box<UI_Element>(Toolbar.ui_elements[4].pos + new Pos(0, 25));
             string[] HelpButton_Names = new string[] { "Developer Email: a.schoenhofer.business@gmail.com", "Developer Email: marvinott20@gmail.com", "User Guide in Application Folder" };
             for (int i = 0; i < HelpButton_Names.Length; ++i)
                 ButtonMenu_Help.Add_UI_Elements(new UI_Button_Menu(new Pos(0, i * 25), new Point(buttonwidth, buttonheight), HelpButton_Names[i], toolbarddconf2));
@@ -155,9 +155,10 @@ namespace Circuit_Simulator
 			QuickHotbar.ui_elements[4].Description = "Interaction Mode";
 			QuickHotbar.Add_UI_Element(new UI_TexButton(Pos.Zero, new Point(sqarebuttonwidth, sqarebuttonwidth), new Point(sqarebuttonwidth * 5 + 5, 0), Button_tex, behave1conf));
 			QuickHotbar.ui_elements[5].Description = "Wire Mode";
+			((UI_TexButton)QuickHotbar.ui_elements[5]).IsActivated = true;
 
 			//Componentbox
-			ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 500), "Component Box", new Point(180, 180), componentconf, true);
+			ComponentBox = new UI_ComponentBox(new Pos(0, 100), new Point(buttonwidth * 3, 750), "Component Box", new Point(180, 180), componentconf, true);
 
 
 
@@ -176,14 +177,7 @@ namespace Circuit_Simulator
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[1]), new Point(24, 24), "-", true, behave2conf));
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(0, 2, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[2]), Point.Zero, componentconf));
 
-            //Assigning Colors to the layers
-            Color[] all_layer_colors = new Color[7] { Color.Red, Color.Lime, Color.Blue, Color.Yellow, Color.Magenta, Color.Cyan, new Color(1, 0.5f, 0) };
-            layer_colors = new Color[7];
-            for (int i = 0; i < 7; i++)
-            {
-                layer_colors[i] = all_layer_colors[i];
-            }
-
+            layer_colors = Config.WIRE_COLORS;
 
             //Layer Select Hotbar
             LayerSelectHotbar = new UI_QuickHBElement<UI_Element>(new Pos(0, 0, ORIGIN.DEFAULT, ORIGIN.BL, GeneralInfoBox));
@@ -408,9 +402,25 @@ namespace Circuit_Simulator
                 else
                     current.IsActivated = LayerSelectHotbar.GetsUpdated;
             });
+			// Console Window
+			ButtonMenu_View.ui_elements[2].UpdateFunctions.Add(delegate ()
+			{
+				UI_Button_Menu current = (UI_Button_Menu)ButtonMenu_View.ui_elements[3];
+				if (current.IsToggle)
+				{
+					IntPtr consolewindowhandle = App.GetConsoleWindow();
+					App.IsConsoleWindow = current.IsActivated;
+					if (App.IsConsoleWindow)
+						App.ShowWindow(consolewindowhandle, App.SW_SHOW);
+					else
+						App.ShowWindow(consolewindowhandle, App.SW_HIDE);
+				}
+				else
+					current.IsActivated = App.IsConsoleWindow;
+			});
 
-            //Configs for Main Toolbar Buttons
-            toolbar_menus = new UI_Element[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help};
+			//Configs for Main Toolbar Buttons
+			toolbar_menus = new UI_Element[] { ButtonMenu_File, ButtonMenu_Config, ButtonMenu_View, ButtonMenu_Tools, ButtonMenu_Help};
            
             for (int i = 0; i < 5; ++i)
             {
@@ -508,7 +518,8 @@ namespace Circuit_Simulator
 						UI_Handler.notificationHandler.AddNotification("Cant load a circuit when the simulation is not reseted.");
 				}
             };
-        }
+			WireMaskBar_Pressed(WireMaskHotbar.ui_elements[0]);
+		}
         public void inreaseSimSpeed(object sender)
         {
             Simulator.simspeed ++;
@@ -517,7 +528,7 @@ namespace Circuit_Simulator
         {
             Simulator.simspeed --;
         }
-        public void LayerHotBarButton_Pressed(object sender)
+        public static void LayerHotBarButton_Pressed(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
             Simulator.currentlayer = LayerSelectHotbar.ui_elements.IndexOf(cur);
@@ -534,7 +545,7 @@ namespace Circuit_Simulator
                 }
             }
         }
-        public void WireMaskBar_Pressed(object sender)
+        public static void WireMaskBar_Pressed(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
             if (cur.IsActivated == false)

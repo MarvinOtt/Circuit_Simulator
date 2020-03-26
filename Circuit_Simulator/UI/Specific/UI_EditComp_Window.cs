@@ -27,6 +27,8 @@ namespace Circuit_Simulator.UI.Specific
         UI_String InputCount_Label;
         List<string> parameterlabels;
 
+		byte[,] overlayCalc;
+
         Color[] paintbuttoncols = new Color[] { new Color(0.5f, 0.5f, 0.5f, 1.0f), new Color(0.25f, 0.25f, 0.25f, 1.0f), new Color(0.8f, 0.8f, 0.8f, 1.0f), new Color(0.15f, 0.15f, 0.15f, 1.0f), new Color(1.0f, 1.0f, 0.0f, 1.0f) };
 
         //Code Boxes
@@ -132,7 +134,7 @@ namespace Circuit_Simulator.UI.Specific
             UpdatePos();
             Resize();
             GetsUpdated = GetsDrawn = false;
-
+			overlayCalc = new byte[300, 300];
 
         }
 
@@ -250,11 +252,63 @@ namespace Circuit_Simulator.UI.Specific
                 {
                     rootcomp.addData(gridpaint.pixel[i]);
                 }
-                for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
-                {
-                    Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
-                    rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
-                }
+				Array.Clear(overlayCalc, 0, 300 * 300);
+				HashSet<byte> overlayindices = new HashSet<byte>();
+				for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
+				{
+					overlayindices.Add(gridpaint.ledsegmentpixel[i]);
+					//overlayCalc[gridpaint.ledsegmentpixel_pos[i].X, gridpaint.ledsegmentpixel_pos[i].Y] = gridpaint.ledsegmentpixel[i];
+				}
+				foreach(byte curindex in overlayindices)
+				{
+					Array.Clear(overlayCalc, 0, 300 * 300);
+					for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
+					{
+						if(gridpaint.ledsegmentpixel[i] == curindex)
+							overlayCalc[gridpaint.ledsegmentpixel_pos[i].X, gridpaint.ledsegmentpixel_pos[i].Y] = 1;
+					}
+					for(int x = 0; x < 300; ++x)
+					{
+						for(int y = 0; y < 300; ++y)
+						{
+							if(overlayCalc[x, y] == 1)
+							{
+								int lengthX = 0;
+								for(lengthX = 1; lengthX + x < 300; ++lengthX)
+								{
+									if (overlayCalc[x + lengthX, y] != 1)
+										break;
+								}
+								int lengthY = 0;
+								for (lengthY = 1; lengthY + y < 300; ++lengthY)
+								{
+									if (overlayCalc[x, y + lengthY] != 1)
+										break;
+								}
+								if(lengthX > lengthY)
+								{
+									Line line = new Line(new Point(x, y) - gridpaint.Origin, new Point(x + lengthX - 1, y) - gridpaint.Origin);
+									rootcomp.addOverlayLine(line, 255, curindex);
+									for (int i = 0; i < lengthX; ++i)
+										overlayCalc[x + i, y] = 2;
+								}
+								else
+								{
+									Line line = new Line(new Point(x, y) - gridpaint.Origin, new Point(x, y + lengthY - 1) - gridpaint.Origin);
+									rootcomp.addOverlayLine(line, 255, curindex);
+									for (int i = 0; i < lengthY; ++i)
+										overlayCalc[x, y + i] = 2;
+								}
+							}
+						}
+					}
+				}
+
+				//for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
+    //            {
+    //                Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
+    //                rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
+    //            }
             }
         }
 

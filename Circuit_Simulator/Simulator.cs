@@ -124,7 +124,7 @@ namespace Circuit_Simulator
     public class Simulator
     {
         public const int TOOL_SELECT = 0;
-        public const int TOOL_COMPONENT = 1;
+        //public const int TOOL_COMPONENT = 1;
         public const int TOOL_WIRE = 2;
 
         public static int SIZEX = 6144;
@@ -239,7 +239,14 @@ namespace Circuit_Simulator
             sim_effect.Parameters["Screenheight"].SetValue(App.Screenheight);
             sim_effect.Parameters["worldsizex"].SetValue(SIZEX);
             sim_effect.Parameters["worldsizey"].SetValue(SIZEY);
-        }
+			Vector4[] coldata = new Vector4[7];
+			for(int i = 0; i < 7; ++i)
+			{
+				coldata[i] = Config.WIRE_COLORS[i].ToVector4();
+			}
+			sim_effect.Parameters["layercols"].SetValue(coldata);
+
+		}
 
         public static void Screen2worldcoo_int(Vector2 screencoos, out int x, out int y)
         {
@@ -598,10 +605,16 @@ namespace Circuit_Simulator
 
         public void ChangeToolmode(int newtoolmode)
         {
-            if (toolmode == TOOL_COMPONENT)
-            { }
-            else if (toolmode == TOOL_WIRE)
-            { }
+			if (newtoolmode == TOOL_SELECT)
+			{
+				((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[4]).IsActivated = true;
+				((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[5]).IsActivated = false;
+			}
+			else if (newtoolmode == TOOL_WIRE)
+			{
+				((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[4]).IsActivated = false;
+				((UI_TexButton)UI_Handler.QuickHotbar.ui_elements[5]).IsActivated = true;
+			}
 
             oldtoolmode = toolmode;
             toolmode = newtoolmode;
@@ -630,6 +643,8 @@ namespace Circuit_Simulator
 					worldpos.X += 10;
 				if (App.kb_states.New.IsKeyDown(Keys.D))
 					worldpos.X -= 10;
+				if(App.mo_states.New.MiddleButton == ButtonState.Pressed)
+					worldpos += App.mo_states.New.Position - App.mo_states.Old.Position;
 				if (App.kb_states.IsKeyToggleDown(Keys.Up))
 					simspeed++;
 				if (App.kb_states.IsKeyToggleDown(Keys.Down))
@@ -640,6 +655,32 @@ namespace Circuit_Simulator
 					Sim_Component.curhighlightID = 0;
 					Sim_Component.ClearAllHeighlighting();
 				}
+				if(App.kb_states.IsKeyToggleDown(Keys.Tab))
+				{
+					if (toolmode == TOOL_WIRE)
+						ChangeToolmode(TOOL_SELECT);
+					else
+						ChangeToolmode(TOOL_WIRE);
+				}
+				if (App.kb_states.New.IsKeyDown(Keys.D1))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[0]);
+				if (App.kb_states.New.IsKeyDown(Keys.D2))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[1]);
+				if (App.kb_states.New.IsKeyDown(Keys.D3))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[2]);
+				if (App.kb_states.New.IsKeyDown(Keys.D4))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[3]);
+				if (App.kb_states.New.IsKeyDown(Keys.D5))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[4]);
+				if (App.kb_states.New.IsKeyDown(Keys.D6))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[5]);
+				if (App.kb_states.New.IsKeyDown(Keys.D7))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[6]);
+				if (App.kb_states.New.IsKeyDown(Keys.D8))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[7]);
+				if (App.kb_states.New.IsKeyDown(Keys.D9))
+					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[8]);
+
 				if (App.kb_states.IsKeyToggleDown(Keys.Add))
 				{
 					(UI_Handler.LayerSelectHotbar.ui_elements[currentlayer] as UI_TexButton).IsActivated = false;
@@ -1028,6 +1069,8 @@ namespace Circuit_Simulator
 								}
 							}
 						}
+						else
+							UI_Handler.notificationHandler.AddNotification("Placement is not valid!");
 					}
 				}
 			}
@@ -1063,7 +1106,15 @@ namespace Circuit_Simulator
 					if (cursimframe > 0)
 						UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
 					else if (selectstate != 0)
-						UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
+					{
+						if(App.kb_states.New.IsKeyUp(Keys.LeftControl))
+						{
+							if(selectstate == 4 && !(new Rectangle(copypos, copysize)).Contains(mo_worldpos))
+								UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
+							else if(selectstate != 4)
+								UI_Handler.notificationHandler.AddNotification("Cant place wires when something is being selected");
+						}
+					}
 					else
 					{
 						//FileHandler.IsUpToDate = false;
@@ -1077,30 +1128,30 @@ namespace Circuit_Simulator
 				}
 
 				// Placing Via
-				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())
-				{
-					if (cursimframe > 0)
-						UI_Handler.notificationHandler.AddNotification("Cant place vias when the simulation is not reseted.");
-					else if (selectstate != 0)
-						UI_Handler.notificationHandler.AddNotification("Cant place vias when something is being selected");
-					else
-					{
-						FileHandler.IsUpToDate = false;
-						byte[,] data = new byte[1, 1];
-						data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
-						data[0, 0] |= 128;
-						PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
+				//if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.IsMiddleButtonToggleOn())
+				//{
+				//	if (cursimframe > 0)
+				//		UI_Handler.notificationHandler.AddNotification("Cant place vias when the simulation is not reseted.");
+				//	else if (selectstate != 0)
+				//		UI_Handler.notificationHandler.AddNotification("Cant place vias when something is being selected");
+				//	else
+				//	{
+				//		FileHandler.IsUpToDate = false;
+				//		byte[,] data = new byte[1, 1];
+				//		data[0, 0] = IsWire[mo_worldposx, mo_worldposy];
+				//		data[0, 0] |= 128;
+				//		PlaceArea(new Rectangle(mo_worldposx, mo_worldposy, 1, 1), data);
 
-						Line line = new Line(new Point(mo_worldposx, mo_worldposy), new Point(mo_worldposx, mo_worldposy));
-						VertexPositionLine line1, line2;
-						line.Convert2LineVertices(data[0, 0], out line1, out line2);
+				//		Line line = new Line(new Point(mo_worldposx, mo_worldposy), new Point(mo_worldposx, mo_worldposy));
+				//		VertexPositionLine line1, line2;
+				//		line.Convert2LineVertices(data[0, 0], out line1, out line2);
 
-						if (lines2draw_count[LAYER_NUM] >= 500000)
-							DrawLines();
-						lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line1;
-						lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line2;
-					}
-				}
+				//		if (lines2draw_count[LAYER_NUM] >= 500000)
+				//			DrawLines();
+				//		lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line1;
+				//		lines2draw[LAYER_NUM][lines2draw_count[LAYER_NUM]++] = line2;
+				//	}
+				//}
 
 
 			}

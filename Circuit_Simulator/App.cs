@@ -6,6 +6,7 @@ using ScintillaNET;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security.Permissions;
 
 namespace Circuit_Simulator
@@ -79,6 +80,8 @@ namespace Circuit_Simulator
         public static int Render_PreviousMatrix_Index = 0;
         SpriteBatch spriteBatch;
         public static SpriteFont basefont;
+
+		public static bool IsConsoleWindow = false;
 		
 
         #region UI
@@ -193,7 +196,16 @@ namespace Circuit_Simulator
             Environment.Exit(0);
         }
 
-        protected override void LoadContent()
+		[DllImport("kernel32.dll")]
+		public static extern IntPtr GetConsoleWindow();
+
+		[DllImport("user32.dll")]
+		public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+		public const int SW_HIDE = 0;
+		public const int SW_SHOW = 5;
+
+		protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
             basefont = Content.Load<SpriteFont>("basefont");
@@ -203,17 +215,25 @@ namespace Circuit_Simulator
             colors[0] = Color.White;
             pixel.SetData(colors);
 
-			// Load Config
+			// Load Config 1
 			string[] configlines = File.ReadAllLines("config.txt");
-			for(int i = 0; i < configlines.Length; ++i)
-			{
-				string curline = configlines[i];
-				//configlines[i] = curline.Replace(" ", string.Empty);
-			}
 			string GCC_PATH = Array.Find(configlines, x => x.StartsWith("GCC_Compiler_PATH"));
 			Config.GCC_Compiler_PATH = GCC_PATH.Split('=')[1];
 			string SAVE_PATH = Array.Find(configlines, x => x.StartsWith("Save_Folder_PATH"));
 			Config.SAVE_PATH = SAVE_PATH.Split('=')[1];
+
+			// Load Config 2
+			configlines = File.ReadAllLines("config_2.txt");
+
+			for(int i = 0; i < 7; ++i)
+			{
+				string curstr = Array.Find(configlines, x => x.StartsWith("WIRECOL_LAYER" + (i + 1).ToString()));
+				string data = curstr.Split('=')[1];
+				int R = int.Parse(data.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+				int G = int.Parse(data.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+				int B = int.Parse(data.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+				Config.WIRE_COLORS[i] = new Color(R, G, B);
+			}
 
 			// Check for write permissions for the simulation files
 			bool WriteAccessToMainFolder = Extensions.HasWritePermissions(Directory.GetCurrentDirectory());
@@ -230,6 +250,9 @@ namespace Circuit_Simulator
             simulator = new Simulator();
             GraphicsChanged(null, EventArgs.Empty);
             string pathtoexe = Directory.GetCurrentDirectory();
+
+			IntPtr consolewindowhandle = GetConsoleWindow();
+			ShowWindow(consolewindowhandle, SW_HIDE);
             
         }
 
@@ -269,6 +292,16 @@ namespace Circuit_Simulator
                 //----------------------//
                 // BEGIN OF MAIN UPDATE //
                 //----------------------//
+
+				if(kb_states.IsKeyToggleDown(Keys.N))
+				{
+					IntPtr consolewindowhandle = GetConsoleWindow();
+					if (IsConsoleWindow)
+						ShowWindow(consolewindowhandle, SW_HIDE);
+					else
+						ShowWindow(consolewindowhandle, SW_SHOW);
+					IsConsoleWindow ^= true;
+				}
 
                 simulator.Update();
 

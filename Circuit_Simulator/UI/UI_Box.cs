@@ -15,7 +15,12 @@ namespace Circuit_Simulator.UI
         static Color BackgroundColor = new Color(new Vector3(0.15f));
         static Color BorderColor = new Color(new Vector3(0.45f));
 
-        public UI_Box(Pos pos, Point size) : base(pos, size)
+		public UI_Box(Pos pos) : base(pos)
+		{
+
+		}
+
+		public UI_Box(Pos pos, Point size) : base(pos, size)
         {
 
         }

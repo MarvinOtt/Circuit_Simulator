@@ -124,7 +124,7 @@ namespace Circuit_Simulator
             {
                 UI_Handler.UI_IsWindowHide = true;
               
-                App.simulator.ChangeToolmode(Simulator.TOOL_COMPONENT);
+                App.simulator.ChangeToolmode(Simulator.TOOL_SELECT);
                 IsCompDrag = true;
                 HalfSingle[] data = new HalfSingle[81 * 81];
                 List<ComponentPixel> datapixel = Components_Data[ID].data[Components_Data[ID].currentrotation];

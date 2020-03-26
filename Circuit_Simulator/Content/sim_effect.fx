@@ -23,7 +23,7 @@ int selection_startX, selection_endX, selection_startY, selection_endY; // Selec
 int Screenwidth, Screenheight, worldsizex, worldsizey, mousepos_X, mousepos_Y;
 int copyposX, copyposY;
 
-static float4 layercols[8] =
+float4 layercols[8] =
 {
 	float4(1, 0, 0, 1),
 	float4(0, 1, 0, 1),
