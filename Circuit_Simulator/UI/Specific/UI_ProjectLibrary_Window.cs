@@ -105,10 +105,10 @@ namespace Circuit_Simulator.UI.Specific
 
         public override void ChangedUpdate2True()
         {
-            for (int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
-            {
-                CompLibrary.AllUsedLibraries[i].LoadFromPath();
-            }
+            //for (int i = 0; i < CompLibrary.AllUsedLibraries.Count; ++i)
+            //{
+            //    CompLibrary.AllUsedLibraries[i].LoadFromPath();
+            //}
 
             Reload_UI();
 

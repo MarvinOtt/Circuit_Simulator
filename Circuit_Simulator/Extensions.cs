@@ -237,55 +237,116 @@ namespace Circuit_Simulator
             p.WaitForExit();
             System.Threading.Thread.Sleep(25);
         }
+		public static string MakeRelativePath(string fromPath, string toPath)
+		{
+			if (string.IsNullOrEmpty(fromPath))
+			{
+				throw new ArgumentNullException("fromPath");
+			}
 
-        public static string MakeRelativePath(string workingDirectory, string fullPath)
-        {
-            string result = string.Empty;
-            int offset;
+			if (string.IsNullOrEmpty(toPath))
+			{
+				throw new ArgumentNullException("toPath");
+			}
 
-            // this is the easy case.  The file is inside of the working directory.
-            if (fullPath.StartsWith(workingDirectory))
-            {
-                return fullPath.Substring(workingDirectory.Length + 1);
-            }
+			Uri fromUri = new Uri(AppendDirectorySeparatorChar(fromPath));
+			Uri toUri = new Uri(AppendDirectorySeparatorChar(toPath));
 
-            // the hard case has to back out of the working directory
-            string[] baseDirs = workingDirectory.Split(new char[] { ':', '\\', '/' });
-            string[] fileDirs = fullPath.Split(new char[] { ':', '\\', '/' });
+			if (fromUri.Scheme != toUri.Scheme)
+			{
+				return toPath;
+			}
 
-            // if we failed to split (empty strings?) or the drive letter does not match
-            if (baseDirs.Length <= 0 || fileDirs.Length <= 0 || baseDirs[0] != fileDirs[0])
-            {
-                // can't create a relative path between separate harddrives/partitions.
-                return fullPath;
-            }
+			Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+			string relativePath = Uri.UnescapeDataString(relativeUri.ToString());
 
-            // skip all leading directories that match
-            for (offset = 1; offset < baseDirs.Length; offset++)
-            {
-                if (baseDirs[offset] != fileDirs[offset])
-                    break;
-            }
+			if (string.Equals(toUri.Scheme, Uri.UriSchemeFile, StringComparison.OrdinalIgnoreCase))
+			{
+				relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+			}
 
-            // back out of the working directory
-            for (int i = 0; i < (baseDirs.Length - offset); i++)
-            {
-                result += "..\\";
-            }
+			return relativePath;
+		}
 
-            // step into the file path
-            for (int i = offset; i < fileDirs.Length - 1; i++)
-            {
-                result += fileDirs[i] + "\\";
-            }
+		private static string AppendDirectorySeparatorChar(string path)
+		{
+			// Append a slash only if the path is a directory and does not have a slash.
+			if (!Path.HasExtension(path) &&
+				!path.EndsWith(Path.DirectorySeparatorChar.ToString()))
+			{
+				return path + Path.DirectorySeparatorChar;
+			}
 
-            // append the file
-            result += fileDirs[fileDirs.Length - 1];
+			return path;
+		}
+		//public static String MakeRelativePath(String fromPath, String toPath)
+		//{
+		//	if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
+		//	if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
 
-            return result;
-        }
+		//	Uri fromUri = new Uri(fromPath);
+		//	Uri toUri = new Uri(toPath);
 
-        public static byte[] GetBytesFromString(this string str)
+		//	if (fromUri.Scheme != toUri.Scheme) { return toPath; } // path can't be made relative.
+
+		//	Uri relativeUri = fromUri.MakeRelativeUri(toUri);
+		//	String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
+
+		//	if (toUri.Scheme.Equals("file", StringComparison.InvariantCultureIgnoreCase))
+		//	{
+		//		relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+		//	}
+
+		//	return relativePath;
+		//}
+		//public static string MakeRelativePath(string workingDirectory, string fullPath)
+		//      {
+		//          string result = string.Empty;
+		//          int offset;
+
+		//          // this is the easy case.  The file is inside of the working directory.
+		//          if (fullPath.StartsWith(workingDirectory))
+		//          {
+		//              return fullPath.Substring(workingDirectory.Length + 1);
+		//          }
+
+		//          // the hard case has to back out of the working directory
+		//          string[] baseDirs = workingDirectory.Split(new char[] { ':', '\\', '/' });
+		//          string[] fileDirs = fullPath.Split(new char[] { ':', '\\', '/' });
+
+		//          // if we failed to split (empty strings?) or the drive letter does not match
+		//          if (baseDirs.Length <= 0 || fileDirs.Length <= 0 || baseDirs[0] != fileDirs[0])
+		//          {
+		//              // can't create a relative path between separate harddrives/partitions.
+		//              return fullPath;
+		//          }
+
+		//          // skip all leading directories that match
+		//          for (offset = 1; offset < baseDirs.Length; offset++)
+		//          {
+		//              if (baseDirs[offset] != fileDirs[offset])
+		//                  break;
+		//          }
+
+		//          // back out of the working directory
+		//          for (int i = 0; i < (baseDirs.Length - offset); i++)
+		//          {
+		//              result += "..\\";
+		//          }
+
+		//          // step into the file path
+		//          for (int i = offset; i < fileDirs.Length - 1; i++)
+		//          {
+		//              result += fileDirs[i] + "\\";
+		//          }
+
+		//          // append the file
+		//          result += fileDirs[fileDirs.Length - 1];
+
+		//          return result;
+		//      }
+
+		public static byte[] GetBytesFromString(this string str)
         {
             byte[] bytes = new byte[str.Length + 1];
             System.Buffer.BlockCopy(Encoding.ASCII.GetBytes(str), 0, bytes, 0, bytes.Length - 1);

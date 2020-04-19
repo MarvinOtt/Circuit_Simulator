@@ -161,12 +161,14 @@ namespace Circuit_Simulator
         public static int[,,] WireIDs;
         public static int[,] WireIDPs;
 
+		public static bool[] oldwiremasks = new bool[9];
+
         public static Point worldpos = new Point(-4000), copymouseoffset, copypos, copysize;
         public static int worldzoom = 3;
         public static int cursimframe = 0;
 
         public static int toolmode = TOOL_WIRE, oldtoolmode = TOOL_WIRE, simspeed, simspeed_count, selectstate = 0, copystate;
-        public static bool IsSimulating, IsAllHighlight;
+        public static bool IsSimulating, IsAllHighlight, IsPinDesc = true;
 
         #region Selection
 
@@ -645,41 +647,7 @@ namespace Circuit_Simulator
 					worldpos.X -= 10;
 				if(App.mo_states.New.MiddleButton == ButtonState.Pressed)
 					worldpos += App.mo_states.New.Position - App.mo_states.Old.Position;
-				if (App.kb_states.IsKeyToggleDown(Keys.Up))
-					simspeed++;
-				if (App.kb_states.IsKeyToggleDown(Keys.Down))
-					simspeed--;
-				if (App.kb_states.IsKeyToggleDown(Keys.LeftAlt))
-				{
-					IsAllHighlight ^= true;
-					Sim_Component.curhighlightID = 0;
-					Sim_Component.ClearAllHeighlighting();
-				}
-				if(App.kb_states.IsKeyToggleDown(Keys.Tab))
-				{
-					if (toolmode == TOOL_WIRE)
-						ChangeToolmode(TOOL_SELECT);
-					else
-						ChangeToolmode(TOOL_WIRE);
-				}
-				if (App.kb_states.New.IsKeyDown(Keys.D1))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[0]);
-				if (App.kb_states.New.IsKeyDown(Keys.D2))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[1]);
-				if (App.kb_states.New.IsKeyDown(Keys.D3))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[2]);
-				if (App.kb_states.New.IsKeyDown(Keys.D4))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[3]);
-				if (App.kb_states.New.IsKeyDown(Keys.D5))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[4]);
-				if (App.kb_states.New.IsKeyDown(Keys.D6))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[5]);
-				if (App.kb_states.New.IsKeyDown(Keys.D7))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[6]);
-				if (App.kb_states.New.IsKeyDown(Keys.D8))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[7]);
-				if (App.kb_states.New.IsKeyDown(Keys.D9))
-					UI_Handler.WireMaskBar_Pressed(UI_Handler.WireMaskHotbar.ui_elements[8]);
+				
 
 				if (App.kb_states.IsKeyToggleDown(Keys.Add))
 				{
@@ -721,10 +689,53 @@ namespace Circuit_Simulator
 				}
 				#endregion
 			}
+			if (App.kb_states.IsKeyToggleDown(Keys.Up))
+				simspeed++;
+			if (App.kb_states.IsKeyToggleDown(Keys.Down))
+				simspeed--;
+			if (App.kb_states.IsKeyToggleDown(Keys.LeftAlt))
+			{
+				IsAllHighlight ^= true;
+				Sim_Component.curhighlightID = 0;
+				Sim_Component.ClearAllHeighlighting();
+			}
+			if(App.kb_states.IsKeyToggleDown(Keys.F1))
+			{
+				IsPinDesc ^= true;
+			}
+			if (App.kb_states.IsKeyToggleDown(Keys.Tab))
+			{
+				if (toolmode == TOOL_WIRE)
+					ChangeToolmode(TOOL_SELECT);
+				else
+					ChangeToolmode(TOOL_WIRE);
+			}
+			if (App.kb_states.New.IsKeyDown(Keys.D1))
+				UI_Handler.SetWireMask(0);
+			if (App.kb_states.New.IsKeyDown(Keys.D2))
+				UI_Handler.SetWireMask(1);
+			if (App.kb_states.New.IsKeyDown(Keys.D3))
+				UI_Handler.SetWireMask(2);
+			if (App.kb_states.New.IsKeyDown(Keys.D4))
+				UI_Handler.SetWireMask(3);
+			if (App.kb_states.New.IsKeyDown(Keys.D5))
+				UI_Handler.SetWireMask(4);
+			if (App.kb_states.New.IsKeyDown(Keys.D6))
+				UI_Handler.SetWireMask(5);
+			if (App.kb_states.New.IsKeyDown(Keys.D7))
+				UI_Handler.SetWireMask(6);
+			if (App.kb_states.New.IsKeyDown(Keys.D8))
+				UI_Handler.SetWireMask(7);
+			if (App.kb_states.New.IsKeyDown(Keys.D9))
+				UI_Handler.SetWireMask(8);
 
-			if (selectstate > 0 && App.kb_states.IsKeyToggleDown(Keys.Escape))
+			if (selectstate > 0 && (App.kb_states.IsKeyToggleDown(Keys.Escape) || (App.mo_states.IsRightButtonToggleOn() && UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)))
 			{
 				selectstate = 0;
+				for(int i = 0; i < 9; ++i)
+				{
+					UI_Handler.WireMaskHotbar.ui_elements[i].IsActivated = oldwiremasks[i];
+				}
 			}
 			// Finishing Selection
 			if (App.mo_states.IsLeftButtonToggleOff() && selectstate == 1)
@@ -863,6 +874,14 @@ namespace Circuit_Simulator
 					// Starting Selection
 					if (IsInGrid && App.mo_states.IsLeftButtonToggleOn() && (selectstate == 0 || selectstate == 2))
 					{
+						if(selectstate == 0)
+						{
+							for(int i = 0; i < 9; ++i)
+							{
+								oldwiremasks[i] = UI_Handler.WireMaskHotbar.ui_elements[i].IsActivated;
+								UI_Handler.WireMaskHotbar.ui_elements[i].IsActivated = true;
+							}
+						}
 						selectstate = 1;
 						Selection_StartPos = mo_worldpos;
 					}
@@ -1046,6 +1065,10 @@ namespace Circuit_Simulator
 						if (IsValid)
 						{
 							selectstate = copystate = 0;
+							for (int i = 0; i < 9; ++i)
+							{
+								UI_Handler.WireMaskHotbar.ui_elements[i].IsActivated = oldwiremasks[i];
+							}
 							byte[,] data = new byte[copysize.X, copysize.Y];
 							Extensions.GetArea(IsWire, data, new Rectangle(copypos, copysize));
 							for (int x = 0; x < copysize.X; ++x)
@@ -1081,7 +1104,7 @@ namespace Circuit_Simulator
 				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.RightButton == ButtonState.Pressed)
 				{
 					if (cursimframe > 0)
-						UI_Handler.notificationHandler.AddNotification("Cant delete wires when the simulation is not reseted.");
+						UI_Handler.notificationHandler.AddNotification("Reset the simulation to alter the circuit");
 					else if (selectstate != 0)
 						UI_Handler.notificationHandler.AddNotification("Cant delete wires when something is being selected");
 					else
@@ -1104,7 +1127,7 @@ namespace Circuit_Simulator
 				if (IsValidPlacementCoo(mo_worldpos) && App.mo_states.New.LeftButton == ButtonState.Pressed)
 				{
 					if (cursimframe > 0)
-						UI_Handler.notificationHandler.AddNotification("Cant place wires when the simulation is not reseted.");
+						UI_Handler.notificationHandler.AddNotification("Reset the simulation to alter the circuit");
 					else if (selectstate != 0)
 					{
 						if(App.kb_states.New.IsKeyUp(Keys.LeftControl))
@@ -1167,7 +1190,7 @@ namespace Circuit_Simulator
 				if (IsInGrid && Sim_Component.CompType[mo_worldposx, mo_worldposy] != 0 && App.mo_states.IsRightButtonToggleOff())
 				{
 					if (cursimframe > 0)
-						UI_Handler.notificationHandler.AddNotification("Cant delete components when the simulation is not reseted.");
+						UI_Handler.notificationHandler.AddNotification("Reset the simulation to alter the circuit");
 					else if (selectstate != 0)
 						UI_Handler.notificationHandler.AddNotification("Cant delete components when something is being selected");
 					else
@@ -1187,7 +1210,7 @@ namespace Circuit_Simulator
 					if(curdata.valuebox_length > 0)
 					{
 						if (cursimframe > 0)
-							UI_Handler.notificationHandler.AddNotification("Cant edit component parameter when the simulation is not reseted.");
+							UI_Handler.notificationHandler.AddNotification("Reset the simulation to alter the circuit");
 						else if (selectstate != 0)
 							UI_Handler.notificationHandler.AddNotification("Cant edit component parameter when something is being selected");
 						else
@@ -1220,7 +1243,7 @@ namespace Circuit_Simulator
 			else
 				UI_Handler.GridInfo.HideInfo();
 
-			if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main)
+			if (UI_Handler.UI_Active_State != UI_Handler.UI_Active_Main || true)
 			{
 				sim_effect.Parameters["zoom"].SetValue((float)Math.Pow(2, worldzoom));
 				sim_effect.Parameters["coos"].SetValue(worldpos.ToVector2());
@@ -1370,7 +1393,6 @@ namespace Circuit_Simulator
            
 
             sim_comp.DrawLineOverlays(spritebatch);
-            sim_comp.Draw(spritebatch);
             
          
             sim_effect.Parameters["logictex"].SetValue(logic_target);
@@ -1385,7 +1407,8 @@ namespace Circuit_Simulator
             spritebatch.Begin();
            
             sim_comp.DrawCompOverlays(spritebatch);
-            //spritebatch.End();
-        }
+			sim_comp.Draw(spritebatch);
+			//spritebatch.End();
+		}
     }
 }

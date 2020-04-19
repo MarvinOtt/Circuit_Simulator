@@ -17,6 +17,8 @@ namespace Circuit_Simulator.COMP
         public static byte[] rottable_FLIPY = { 4, 7, 6, 5, 0, 3, 2, 1};
         public static SpriteFont overlayfont = App.content.Load<SpriteFont>("UI\\overlayfont");
         public List<ComponentPixel>[] data;
+		public string[] pindesc;
+		public Vector2[,] pindescpos;
         public List<string> parameters;
         public string name;
         public string OverlayText;
@@ -135,8 +137,8 @@ namespace Circuit_Simulator.COMP
 
         public void addData(ComponentPixel dat)
         {
-            if (dat.type > Sim_Component.PINOFFSET && dat.type - Sim_Component.PINOFFSET > pin_num)
-                pin_num = dat.type - Sim_Component.PINOFFSET;
+            //if (dat.type > Sim_Component.PINOFFSET && dat.type - Sim_Component.PINOFFSET > pin_num)
+            //    pin_num = dat.type - Sim_Component.PINOFFSET;
             data[(0) % 8].Add(dat);
             data[(1) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, dat.pos.X), dat.type));
             data[(2) % 8].Add(new ComponentPixel(new Point(-dat.pos.X, -dat.pos.Y), dat.type));
@@ -147,6 +149,7 @@ namespace Circuit_Simulator.COMP
             data[(7) % 8].Add(new ComponentPixel(new Point(-dat.pos.Y, -dat.pos.X), dat.type));
             for (int i = 0; i < 8; ++i)
                 CalculateBounds(i);
+			RecalculatePinNum();
         }
 
         public void ClearAllPixel()
@@ -206,6 +209,24 @@ namespace Circuit_Simulator.COMP
 
         }
 
+		public void RecalculatePinNum()
+		{
+			if (data[0].Count > 0)
+			{
+				pin_num = data[0].Max(x => x.type) - Sim_Component.PINOFFSET;
+				if (pin_num < 0)
+					pin_num = 0;
+			}
+			else
+				pin_num = 0;
+		}
+
+		public void GeneratePinDesc()
+		{
+			RecalculatePinNum();
+			pindesc = new string[pin_num];
+		}
+
         public void Finish()
         {
             for (int i = 0; i < 8; ++i)
@@ -222,8 +243,36 @@ namespace Circuit_Simulator.COMP
                         data[i][j] = new ComponentPixel(data[i][j].pos, data[i][j].type, (byte)(data[i][j].IsEdge | (1 << 3)));
                 }
             }
-
             ClickAction = AllClickActions[ClickAction_Type];
+
+			pindescpos = new Vector2[8, pindesc.Length];
+			for(int i = 0; i < pindesc.Length; ++i)
+			{
+				int count = 0;
+				Vector2 pos = Vector2.Zero;
+				for(int j = 0; j < data[0].Count; ++j)
+				{
+					if (data[0][j].type - (i + Sim_Component.PINOFFSET + 1) == 0)
+					{
+						pos += data[0][j].pos.ToVector2();
+						count++;
+					}
+				}
+				if(count == 0)
+				{
+					int breaki = 1;
+				}
+				pos /= count;
+				pindescpos[0, i] = pos;
+				pindescpos[1, i] = new Vector2(-pos.Y, pos.X);
+				pindescpos[2, i] = new Vector2(-pos.X, -pos.Y);
+				pindescpos[3, i] = new Vector2(pos.Y, -pos.X);
+				pindescpos[4, i] = new Vector2(pos.X, -pos.Y);
+				pindescpos[5, i] = new Vector2(pos.Y, pos.X);
+				pindescpos[6, i] = new Vector2(-pos.X, pos.Y);
+				pindescpos[7, i] = new Vector2(-pos.Y, -pos.X);
+			}
+
         }
 
         public void Save(FileStream stream)
@@ -241,6 +290,12 @@ namespace Circuit_Simulator.COMP
                 stream.Write(BitConverter.GetBytes(data[0][j].pos.Y), 0, 4);
                 stream.Write(BitConverter.GetBytes(data[0][j].type), 0, 1);
             }
+			stream.Write(BitConverter.GetBytes(pindesc.Length), 0, 4);
+			for (int i = 0; i < pindesc.Length; ++i)
+			{
+				bytearray = pindesc[i] == null ? "".GetBytesFromString() : pindesc[i].GetBytesFromString();
+				stream.Write(bytearray, 0, bytearray.Length);
+			}
             stream.Write(BitConverter.GetBytes(overlaylines.Length), 0, 4);
             for (int i = 0; i < overlaylines.Length; ++i)
             {
