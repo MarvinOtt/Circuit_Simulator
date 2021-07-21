@@ -85,7 +85,8 @@ namespace Circuit_Simulator
         public static byte[,] CompType;
         public static int[,][] CompGrid;
 		public static List<int>[,] CompOverlayGrid;
-        public static byte[,] CompNetwork;
+		public static List<int>[,] PinDescGrid;
+		public static byte[,] CompNetwork;
         public static Point[] pins2check;
         public static int pins2check_length;
         public static VertexPositionLine[] overlaylines;
@@ -105,6 +106,7 @@ namespace Circuit_Simulator
             CompType = new byte[Simulator.SIZEX, Simulator.SIZEY];
             CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
 			CompOverlayGrid = new List<int>[Simulator.SIZEX / 32, Simulator.SIZEY / 32];
+			PinDescGrid = new List<int>[Simulator.SIZEX / 32, Simulator.SIZEY / 32];
 			CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
             components = new Component[10000000];
             pins2check = new Point[20000000];
@@ -253,9 +255,57 @@ namespace Circuit_Simulator
 
         public void Draw(SpriteBatch spritebatch)
         {
-            //sim_effect.Parameters["comptex"].SetValue(CompTex);
-            //sim_effect.Parameters["highlighttex"].SetValue(HighlightTex);
-        }
+			if (Simulator.IsPinDesc && Simulator.worldzoom > 4)
+			{
+				int topleftchunk_X, topleftchunk_Y;
+				Simulator.Screen2worldcoo_int(Vector2.Zero, out topleftchunk_X, out topleftchunk_Y);
+				int bottomrightchunk_X, bottomrightchunk_Y;
+				Simulator.Screen2worldcoo_int(new Vector2(App.Screenwidth, App.Screenheight), out bottomrightchunk_X, out bottomrightchunk_Y);
+				int offset = 20;
+				topleftchunk_X -= offset;
+				topleftchunk_Y -= offset;
+				bottomrightchunk_X += offset;
+				bottomrightchunk_Y += offset;
+
+				topleftchunk_X = MathHelper.Clamp(topleftchunk_X / 32, 0, Simulator.SIZEX / 32 - 1);
+				topleftchunk_Y = MathHelper.Clamp(topleftchunk_Y / 32, 0, Simulator.SIZEY / 32 - 1);
+				bottomrightchunk_X = MathHelper.Clamp(bottomrightchunk_X / 32, 0, Simulator.SIZEX / 32 - 1);
+				bottomrightchunk_Y = MathHelper.Clamp(bottomrightchunk_Y / 32, 0, Simulator.SIZEY / 32 - 1);
+				for (int x = topleftchunk_X; x <= bottomrightchunk_X; ++x)
+				{
+					for (int y = topleftchunk_Y; y <= bottomrightchunk_Y; ++y)
+					{
+						if (PinDescGrid[x, y] != null)
+						{
+							for (int i = 0; i < PinDescGrid[x, y].Count; ++i)
+							{
+								int ID = PinDescGrid[x, y][i];
+								CompData compdata = Components_Data[components[ID].dataID];
+								for (int j = 0; j < compdata.pindesc.Length; ++j)
+								{
+									if (compdata.pindesc[j] != null)
+									{
+										Vector2 size = CompData.overlayfont.MeasureString(compdata.pindesc[j]);
+										float maxsize = Math.Max(size.X, size.Y);
+										float mul = 1.0f;
+										if (maxsize > 140)
+											mul = 140.0f / maxsize;
+										Vector2 pos = new Vector2((components[ID].pos.ToVector2().X + compdata.pindescpos[components[ID].rotation, j].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[ID].pos.ToVector2().Y + compdata.pindescpos[components[ID].rotation, j].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
+										spritebatch.DrawString(CompData.overlayfont, compdata.pindesc[j], pos, Color.Red, 0, size / 2, 0.0036f * mul * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
+									}
+								}
+								//if (compdata.OverlayText.Length > 0)
+								//{
+								//	Vector2 size = CompData.overlayfont.MeasureString(compdata.OverlayText);
+								//	Vector2 pos = new Vector2((components[ID].pos.ToVector2().X + compdata.OverlayTextPos[components[ID].rotation].X + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.X, (components[ID].pos.ToVector2().Y + compdata.OverlayTextPos[components[ID].rotation].Y + 0.5f) * (float)Math.Pow(2, Simulator.worldzoom) + Simulator.worldpos.Y);
+								//	spritebatch.DrawString(CompData.overlayfont, compdata.OverlayText, pos, Color.Black, 0, size / 2, compdata.OverlayTextSize[components[ID].rotation] * (float)Math.Pow(2, Simulator.worldzoom), SpriteEffects.None, 0);
+								//}
+							}
+						}
+					}
+				}
+			}
+		}
 
 		public static void ClearAllHeighlighting()
 		{

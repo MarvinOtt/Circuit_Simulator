@@ -18,8 +18,10 @@ namespace Circuit_Simulator.UI.Specific
         public UI_ValueInput Box_Name, Box_Category, Box_SimCode_FuncName, Box_InternalState_Length, Box_ClickType, ComponentValueInputCount, OverlayTextBox;
         public UI_Scrollable<UI_Element> Features;
         List<UI_ValueInput> inputlist = new List<UI_ValueInput>();
+		List<UI_ValueInput> pindesclist = new List<UI_ValueInput>();
         List<UI_String> labellist = new List<UI_String>();
-        UI_StringButton Code_Sim_Button;
+		List<UI_String> pindesclabellist = new List<UI_String>();
+		UI_StringButton Code_Sim_Button;
         UI_StringButton[] rotbuttons;
         UI_TexButton[] paintbuttons;
         UI_TexButton overlaybutton;
@@ -161,6 +163,9 @@ namespace Circuit_Simulator.UI.Specific
             }
             ComponentValueInputCount.MakeValueChanged();
             LoadInputCount();
+			if (rootcomp.pindesc == null)
+				rootcomp.GeneratePinDesc();
+			LoadPinDesc();
             RotButtonPressed(rotbuttons[0]);
         }
 
@@ -231,7 +236,7 @@ namespace Circuit_Simulator.UI.Specific
             IsInOverlayMode = true;
         }
 
-        public void PixelChanged()
+        public void PixelChanged(bool RefreshPinDesc = false)
         {
             if (gridpaint.currot == 0)
             {
@@ -303,13 +308,18 @@ namespace Circuit_Simulator.UI.Specific
 						}
 					}
 				}
-
+				if(RefreshPinDesc)
+				{
+					rootcomp.GeneratePinDesc();
+					LoadPinDesc();
+				}
+				rootcomp.Finish();
 				//for (int i = 0; i < gridpaint.ledsegmentpixel.Count; ++i)
-    //            {
-    //                Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
-    //                rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
-    //            }
-            }
+				//{
+				//    Line line = new Line(gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin, gridpaint.ledsegmentpixel_pos[i] - gridpaint.Origin);
+				//    rootcomp.addOverlayLine(line, 255, gridpaint.ledsegmentpixel[i]);
+				//}
+			}
         }
 
         public override void ChangedUpdate2True()
@@ -393,7 +403,41 @@ namespace Circuit_Simulator.UI.Specific
             Features.size = new Point(size.X - bezelsize * 2, size.Y - bezelsize - (Features.pos.Y_abs - absolutpos.Y));
             base.Resize();
         }
-        public void LoadInputCount()
+		public void SetPinDesc(object sender)
+		{
+			UI_ValueInput cur = sender as UI_ValueInput;
+			int index = pindesclist.FindIndex(x => x == cur);
+			rootcomp.pindesc[index] = cur.value;
+		}
+		public void LoadPinDesc()
+		{
+			for(int i = 0; i < pindesclist.Count; ++i)
+			{
+				Features.ui_elements.Remove(pindesclist[i]);
+				Features.ui_elements.Remove(pindesclabellist[i]);
+			}
+			pindesclist.Clear();
+			pindesclabellist.Clear();
+			for (int i = 0; i < rootcomp.pindesc.Length; i++)
+			{
+				if (i == 0)
+				{
+					pindesclist.Add(new UI_ValueInput(new Pos(560, 5), new Point(50, 20), UI_Handler.genbutconf, 3, 3));
+					pindesclabellist.Add(new UI_String(new Pos(500, 5), Point.Zero, UI_Handler.genbutconf, "Pin " + i + ":"));
+				}
+				else
+				{
+					pindesclabellist.Add(new UI_String(new Pos(0, 5, ORIGIN.BL, ORIGIN.DEFAULT, pindesclabellist[i - 1]), Point.Zero, UI_Handler.genbutconf, "Pin " + i + ":"));
+					pindesclist.Add(new UI_ValueInput(new Pos(60, 0, ORIGIN.DEFAULT, ORIGIN.DEFAULT, pindesclabellist[i]), new Point(50, 20), UI_Handler.genbutconf, 3, 3));
+					
+				}
+				pindesclist[i].value = rootcomp.pindesc[i] == null ? "" : rootcomp.pindesc[i];
+				pindesclist[i].ValueChanged += SetPinDesc;
+				Features.Add_UI_Elements(pindesclabellist[i]);
+				Features.Add_UI_Elements(pindesclist[i]);
+			}
+		}
+		public void LoadInputCount()
         {
             for (int i = 0; i < rootcomp.valuebox_length; i++)
             {
@@ -404,7 +448,7 @@ namespace Circuit_Simulator.UI.Specific
         public void SetParameterLabels(object sender)
         {
             UI_ValueInput  cur = sender as UI_ValueInput;
-            int index = inputlist.FindIndex(x => x.value == cur.value);
+            int index = inputlist.FindIndex(x => x == cur);
             rootcomp.parameters[index] = cur.value;
         }
         public void InputCount_ValueChanged(object sender)
