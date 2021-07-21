@@ -31,7 +31,7 @@ namespace Circuit_Simulator.UI.Specific
         List<Vector2> pinpositions;
         List<Vector2> ledsegmentpositions;
 
-        public delegate void PixelChanged_Handler(bool RefreshPinDesc);
+        public delegate void PixelChanged_Handler();
         public event PixelChanged_Handler PixelChanged = delegate { };
 
         private RasterizerState _rasterizerState = new RasterizerState() { ScissorTestEnable = true };
@@ -70,7 +70,7 @@ namespace Circuit_Simulator.UI.Specific
             y = (int)((screencoos.Y - worldpos.Y) / (float)Math.Pow(2, zoom));
         }
 
-        public void ApplyPixel(bool RefreshPinDesc = false)
+        public void ApplyPixel()
         {
             Array.Clear(ledsegment_IDs, 0, GridSize * GridSize);
             Array.Clear(data, 0, data.Length);
@@ -84,7 +84,7 @@ namespace Circuit_Simulator.UI.Specific
             }
             logictex.SetData(data);
             UpdatePinTextPos();
-            PixelChanged(RefreshPinDesc);
+            PixelChanged();
         }
 
         public void UpdatePinTextPos()
@@ -167,11 +167,8 @@ namespace Circuit_Simulator.UI.Specific
                                     ledsegmentpixel.Add(0);
                                     ledsegmentpixel_pos.Add(new Point(mouse_worldpos_X, mouse_worldpos_Y));
                                 }
-								if (type == 5)
-									ApplyPixel(true);
-								else
-									ApplyPixel();
-							}
+                                ApplyPixel();
+                            }
                         }
                         else
                         {
@@ -182,11 +179,8 @@ namespace Circuit_Simulator.UI.Specific
                                 ledsegmentpixel.Add(0);
                                 ledsegmentpixel_pos.Add(new Point(mouse_worldpos_X, mouse_worldpos_Y));
                             }
-							if(type == 5)
-								ApplyPixel(true);
-							else
-								ApplyPixel();
-						}
+                            ApplyPixel();
+                        }
                         if (curplacetype == 5)
                         {
                             for (int i = 0; i < 10; ++i)
@@ -199,10 +193,10 @@ namespace Circuit_Simulator.UI.Specific
                                     {
                                         int val = cur.type - (Sim_Component.PINOFFSET + 1);
                                         if (val == 0 && i != 0)
-                                            pixel[index] = new ComponentPixel(cur.pos, (byte)MathHelper.Clamp(i + Sim_Component.PINOFFSET + 1, 0, 240));
+                                            pixel[index] = new ComponentPixel(cur.pos, (byte)(i + Sim_Component.PINOFFSET + 1));
                                         else if (val != 0)
-                                            pixel[index] = new ComponentPixel(cur.pos, (byte)MathHelper.Clamp(val * 10 + i + Sim_Component.PINOFFSET + 1, 0, 240));
-                                        ApplyPixel(true);
+                                            pixel[index] = new ComponentPixel(cur.pos, (byte)(val * 10 + i + Sim_Component.PINOFFSET + 1));
+                                        ApplyPixel();
                                     }
                                 }
                             }
@@ -212,7 +206,7 @@ namespace Circuit_Simulator.UI.Specific
                                 if (pixel[index].type > Sim_Component.PINOFFSET)
                                 {
                                     pixel[index] = new ComponentPixel(pixel[index].pos, (byte)((pixel[index].type - (Sim_Component.PINOFFSET + 1)) / 10 + (Sim_Component.PINOFFSET + 1)));
-                                    ApplyPixel(true);
+                                    ApplyPixel();
                                 }
                             }
                             else if (App.kb_states.IsKeyToggleDown(Keys.Escape))
@@ -221,7 +215,7 @@ namespace Circuit_Simulator.UI.Specific
                                 if (pixel[index].type > Sim_Component.PINOFFSET)
                                 {
                                     pixel[index] = new ComponentPixel(pixel[index].pos, (byte)(Sim_Component.PINOFFSET + 1));
-                                    ApplyPixel(true);
+                                    ApplyPixel();
                                 }
                             }
                         }
@@ -237,7 +231,7 @@ namespace Circuit_Simulator.UI.Specific
                                     {
                                         int val = ledsegment_IDs[mouse_worldpos_X, mouse_worldpos_Y];// cur.type - (Sim_Component.PINOFFSET + 1);
                                         int index2 = ledsegmentpixel_pos.FindIndex(x => x.X == mouse_worldpos_X && x.Y == mouse_worldpos_Y);
-                                        ledsegmentpixel[index2] = (byte)MathHelper.Clamp(val * 10 + i, 0, 240);
+                                        ledsegmentpixel[index2] = (byte)(val * 10 + i);
                                         //ledsegment_IDs[mouse_worldpos_X, mouse_worldpos_Y] = (byte)(val * 10 + i);
                                         //if (val == 0 && i != 0)
                                         //    pixel[index] = new ComponentPixel(cur.pos, (byte)i);
@@ -272,11 +266,6 @@ namespace Circuit_Simulator.UI.Specific
                     if (App.mo_states.New.RightButton == ButtonState.Pressed)
                     {
                         int index = pixel.FindIndex(x => x.pos.X == (mouse_worldpos_X - Origin.X) && x.pos.Y == (mouse_worldpos_Y - Origin.Y));
-						int curtype = -1;
-						if (index >= 0)
-						{
-							curtype = pixel[index].type;
-						}
                         if (index >= 0)
                             pixel.RemoveAt(index);
                         index = ledsegmentpixel_pos.FindIndex(x => x.X == (mouse_worldpos_X) && x.Y == (mouse_worldpos_Y));
@@ -285,11 +274,8 @@ namespace Circuit_Simulator.UI.Specific
                             ledsegmentpixel_pos.RemoveAt(index);
                             ledsegmentpixel.RemoveAt(index);
                         }
-						if (curtype >= 5)
-							ApplyPixel(true);
-						else
-							ApplyPixel();
-					}
+                        ApplyPixel();
+                    }
                 }
                 else if(UI_EditComp_Window.IsInOverlayMode)
                 {

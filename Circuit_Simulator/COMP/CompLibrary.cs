@@ -211,16 +211,6 @@ namespace Circuit_Simulator.COMP
 						byte type = intbuffer[0];
 						newcomp.addData(new ComponentPixel(pos, type));
 					}
-
-					stream.Read(intbuffer, 0, 4);
-					int pindesclength = BitConverter.ToInt32(intbuffer, 0);
-					string[] pindesc = new string[pindesclength];
-					for(int i = 0; i < pindesclength; ++i)
-					{
-						string curdesc = stream.ReadNullTerminated();
-						pindesc[i] = curdesc;
-					}
-
 					stream.Read(intbuffer, 0, 4);
 					int OverlayLine_SegmentNum = BitConverter.ToInt32(intbuffer, 0);
 					newcomp.InitializeLineOverlays(OverlayLine_SegmentNum);
@@ -285,7 +275,7 @@ namespace Circuit_Simulator.COMP
 					//if (IsUpdateAfterSim)
 					//    newcomp.Code_AfterSim_FuncName = stream.ReadNullTerminated();
 					newcomp.Code_Sim_FuncName = stream.ReadNullTerminated();
-					newcomp.pindesc = pindesc;
+
 					newcomp.Finish();
 					bool State = AddComponent(newcomp);
 					if (!State)

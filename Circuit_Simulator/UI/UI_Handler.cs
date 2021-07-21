@@ -172,13 +172,12 @@ namespace Circuit_Simulator
 
             //GeneralInfo Box (Bottom Left)
             GeneralInfoBox = new UI_Box<UI_Element>(new Pos(-1, App.Screenheight - 24 + 1), new Point(App.Screenwidth + 2, 24));
-            GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(10, 2), Point.Zero, componentconf));
+            GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos( 10, 2), Point.Zero, componentconf));
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(150, 0), new Point(24, 24), "+", true, behave2conf));
             GeneralInfoBox.Add_UI_Elements(new UI_StringButton(new Pos(0, 0, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[1]), new Point(24, 24), "-", true, behave2conf));
             GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(0, 2, ORIGIN.TR, ORIGIN.DEFAULT, GeneralInfoBox.ui_elements[2]), Point.Zero, componentconf));
-			GeneralInfoBox.Add_UI_Elements(new UI_String(new Pos(400, 2), Point.Zero, componentconf));
 
-			layer_colors = Config.WIRE_COLORS;
+            layer_colors = Config.WIRE_COLORS;
 
             //Layer Select Hotbar
             LayerSelectHotbar = new UI_QuickHBElement<UI_Element>(new Pos(0, 0, ORIGIN.DEFAULT, ORIGIN.BL, GeneralInfoBox));
@@ -257,8 +256,7 @@ namespace Circuit_Simulator
 			notificationHandler = new UI_NotificationHandler(Pos.Zero);
 
             InitializeUISettings(spriteBatch);
-			SetWireMask(0);
-		}
+        }
 
         public void netbox_ValueChange(object sender)
         {
@@ -474,9 +472,8 @@ namespace Circuit_Simulator
             }
             for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
             {
-                (WireMaskHotbar.ui_elements[i]).GetsPressedLeft += WireMaskBar_PressedLeft;
-				(WireMaskHotbar.ui_elements[i]).GetsPressedRight += WireMaskBar_PressedRight;
-				//(WireMaskHotbar.ui_elements[i]).GetsHovered += WireMaskBar_Hovered;
+                (WireMaskHotbar.ui_elements[i]).GotToggledLeft += WireMaskBar_Pressed;
+                (WireMaskHotbar.ui_elements[i]).GetsHovered += WireMaskBar_Hovered;
             }
 
 
@@ -521,7 +518,7 @@ namespace Circuit_Simulator
 						UI_Handler.notificationHandler.AddNotification("Cant load a circuit when the simulation is not reseted.");
 				}
             };
-			WireMaskBar_PressedLeft(WireMaskHotbar.ui_elements[0]);
+			WireMaskBar_Pressed(WireMaskHotbar.ui_elements[0]);
 		}
         public void inreaseSimSpeed(object sender)
         {
@@ -548,54 +545,33 @@ namespace Circuit_Simulator
                 }
             }
         }
-        public static void WireMaskBar_PressedLeft(object sender)
+        public static void WireMaskBar_Pressed(object sender)
         {
             UI_TexButton cur = sender as UI_TexButton;
-			if (Simulator.selectstate != 0 || App.kb_states.New.IsKeyDown(Keys.LeftShift))
-			{
-				cur.IsActivated = true;
-			}
-			else
-			{
-				if (App.mo_states.Old.LeftButton == ButtonState.Pressed)
-				{
-					for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
-					{
-						UI_TexButton curbut = (WireMaskHotbar.ui_elements[i] as UI_TexButton);
-						if (curbut != cur)
-							curbut.IsActivated = false;
-					}
-					cur.IsActivated = true;
-				}
-			}
+            if (cur.IsActivated == false)
+            {
+                if (App.kb_states.New.IsKeyUp(Keys.LeftShift))
+                    cur.IsActivated = true;
+            }
+
+            if (App.kb_states.New.IsKeyUp(Keys.LeftShift))
+            {
+                for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
+                {
+                    UI_TexButton curbut = (WireMaskHotbar.ui_elements[i] as UI_TexButton);
+                    if (curbut != cur)
+                        curbut.IsActivated = false;
+                }
+            }
+
         }
 
-		public static void SetWireMask(int ID)
-		{
-			for (int i = 0; i < WireMaskHotbar.ui_elements.Count; ++i)
-			{
-				UI_TexButton curbut = (WireMaskHotbar.ui_elements[i] as UI_TexButton);
-				if (i != ID)
-					curbut.IsActivated = false;
-			}
-			(WireMaskHotbar.ui_elements[ID] as UI_TexButton).IsActivated = true;
-		}
-
-		public static void WireMaskBar_PressedRight(object sender)
-		{
-			UI_TexButton cur = sender as UI_TexButton;
-			if (Simulator.selectstate != 0 || App.kb_states.New.IsKeyDown(Keys.LeftShift))
-			{
-				cur.IsActivated = false;
-			}
-		}
-
-		//public void WireMaskBar_Hovered(object sender)
-  //      {
-  //          UI_TexButton cur = sender as UI_TexButton;
-  //          if ((App.mo_states.New.LeftButton == ButtonState.Pressed || App.mo_states.IsLeftButtonToggleOff()) && App.kb_states.New.IsKeyDown(Keys.LeftShift))
-  //              cur.IsActivated = true;
-  //      }
+        public void WireMaskBar_Hovered(object sender)
+        {
+            UI_TexButton cur = sender as UI_TexButton;
+            if ((App.mo_states.New.LeftButton == ButtonState.Pressed || App.mo_states.IsLeftButtonToggleOff()) && App.kb_states.New.IsKeyDown(Keys.LeftShift))
+                cur.IsActivated = true;
+        }
 
         // Gets called when something of the Window or Graphics got changed
         public void Window_Graphics_Changed(object sender, EventArgs e)

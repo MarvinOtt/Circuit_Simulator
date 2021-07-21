@@ -19,9 +19,7 @@ namespace Circuit_Simulator.UI
         public event Button_Activated_Handler GotActivatedLeft = delegate { };
         public event Button_Activated_Handler GotToggledLeft = delegate { };
         public event Button_Activated_Handler GotActivatedRight = delegate { };
-		public event Button_Activated_Handler GetsPressedLeft = delegate { };
-		public event Button_Activated_Handler GetsPressedRight = delegate { };
-		public event Button_Activated_Handler GetsHovered = delegate { };
+        public event Button_Activated_Handler GetsHovered = delegate { };
 
         public UI_Button(Pos pos, Point size, bool DrawBorder, Generic_Conf conf) : base(pos, size)
         {
@@ -43,17 +41,12 @@ namespace Circuit_Simulator.UI
                     if (IsActivated)
                         GotActivatedLeft(this);
                     GotToggledLeft(this);
-					GetsPressedLeft(this);
-				}
+                }
                 if (App.mo_states.IsRightButtonToggleOff())
                 {
                     GotActivatedRight(this);
                 }
-				if (App.mo_states.New.LeftButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-					GetsPressedLeft(this);
-				if (App.mo_states.New.RightButton == Microsoft.Xna.Framework.Input.ButtonState.Pressed)
-					GetsPressedRight(this);
-				GetsHovered(this);
+                GetsHovered(this);
             }
 			base.UpdateSpecific();
         }

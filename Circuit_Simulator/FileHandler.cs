@@ -359,7 +359,6 @@ namespace Circuit_Simulator
 
                     Sim_Component.CompGrid = new int[Simulator.SIZEX / 32, Simulator.SIZEY / 32][];
 					Sim_Component.CompOverlayGrid = new List<int>[Simulator.SIZEX / 32, Simulator.SIZEY / 32];
-					Sim_Component.PinDescGrid = new List<int>[Simulator.SIZEX / 32, Simulator.SIZEY / 32];
 
 					Sim_Component.CompNetwork = new byte[Simulator.SIZEX, Simulator.SIZEY];
                     Sim_Component.components = new Component[10000000];

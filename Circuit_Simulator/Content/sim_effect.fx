@@ -165,16 +165,16 @@ float4 getcoloratpos(float x, float y)
 			uint IsValid = 1;
 
 			uint edge_state = (((uint)(isedgetex[uint2(ux + 1, uy)].r + 0.5f)) & (1 << 0));
-			if (IsNotCompMask(comptype_int, comptype_p10, edge_state, x % 1 > 0.75f, x % 1 > 0.965f))
+			if (IsNotCompMask(comptype_int, comptype_p10, edge_state, x % 1 > 0.7f, x % 1 > 0.965f))
 				IsValid = 0;
 			edge_state = (((uint)(isedgetex[uint2(ux - 1, uy)].r + 0.5f)) & (1 << 2));
-			if (IsNotCompMask(comptype_int, comptype_m10, edge_state, x % 1 < 0.25f, x % 1 < 0.035f))
+			if (IsNotCompMask(comptype_int, comptype_m10, edge_state, x % 1 < 0.3f, x % 1 < 0.035f))
 				IsValid = 0;
 			edge_state = (((uint)(isedgetex[uint2(ux, uy + 1)].r + 0.5f)) & (1 << 1));
-			if (IsNotCompMask(comptype_int, comptype_0p1, edge_state, y % 1 > 0.75f, y % 1 > 0.965f))
+			if (IsNotCompMask(comptype_int, comptype_0p1, edge_state, y % 1 > 0.7f, y % 1 > 0.965f))
 				IsValid = 0;
 			edge_state = (((uint)(isedgetex[uint2(ux, uy - 1)].r + 0.5f)) & (1 << 3));
-			if (IsNotCompMask(comptype_int, comptype_0m1, edge_state, y % 1 < 0.25f, y % 1 < 0.035f))
+			if (IsNotCompMask(comptype_int, comptype_0m1, edge_state, y % 1 < 0.3f, y % 1 < 0.035f))
 				IsValid = 0;
 
 			if (IsValid)

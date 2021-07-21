@@ -293,7 +293,7 @@ namespace Circuit_Simulator
                 // BEGIN OF MAIN UPDATE //
                 //----------------------//
 
-				if(kb_states.IsKeyToggleDown(Keys.F2))
+				if(kb_states.IsKeyToggleDown(Keys.N))
 				{
 					IntPtr consolewindowhandle = GetConsoleWindow();
 					if (IsConsoleWindow)
