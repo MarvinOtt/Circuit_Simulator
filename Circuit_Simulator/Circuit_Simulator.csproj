@@ -1,134 +1,33 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6AE52FE5-920C-4683-9272-62664274C021}</ProjectGuid>
-    <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Circuit_Simulator</RootNamespace>
-    <AssemblyName>Circuit_Simulator</AssemblyName>
-    <FileAlignment>512</FileAlignment>
-    <MonoGamePlatform>Windows</MonoGamePlatform>
-    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <PlatformTarget>x64</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
-    <DefineConstants>TRACE;WINDOWS</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ApplicationIcon>Icon.ico</ApplicationIcon>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <PublishReadyToRun>false</PublishReadyToRun>
+    <TieredCompilation>false</TieredCompilation>
+    <UseWindowsForms>true</UseWindowsForms>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Component.cs" />
-    <Compile Include="COMP\CompLibrary.cs" />
-    <Compile Include="COMP\CompData.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="FileHandler.cs" />
-    <Compile Include="App.cs" />
-    <Compile Include="Network.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Simulator.cs" />
-    <Compile Include="Sim_Component.cs" />
-    <Compile Include="Sim_INF_DLL.cs" />
-    <Compile Include="UI\Specific\UI_ParameterWindow.cs" />
-    <Compile Include="UI\Specific\UI_GridPaint.cs" />
-    <Compile Include="UI\Specific\UI_ProjectLibrary_Window.cs" />
-    <Compile Include="UI\Specific\UI_SignalAnalyze.cs" />
-    <Compile Include="UI\UI_NotificationHandler.cs" />
-    <Compile Include="UI\UI_TextBox.cs" />
-    <Compile Include="UI\Specific\UI_EditComp_Window.cs" />
-    <Compile Include="UI\UI_STRUCTS.cs" />
-    <Compile Include="UI\Specific\UI_Drag_Comp.cs" />
-    <Compile Include="UI\Specific\UI_LibraryEdit_Window.cs" />
-    <Compile Include="UI\UI_Box.cs" />
-    <Compile Include="UI\UI_Button.cs" />
-    <Compile Include="UI\UI_Dropdown_Button.cs" />
-    <Compile Include="UI\UI_Configs.cs" />
-    <Compile Include="UI\Specific\UI_Component.cs" />
-    <Compile Include="UI\Specific\UI_ComponentBox.cs" />
-    <Compile Include="UI\Specific\UI_Categorie.cs" />
-    <Compile Include="UI\UI_InfoBox.cs" />
-    <Compile Include="UI\UI_Scrollable.cs" />
-    <Compile Include="UI\UI_String.cs" />
-    <Compile Include="UI\UI_StringButton.cs" />
-    <Compile Include="UI\UI_TexButton.cs" />
-    <Compile Include="UI\Specific\UI_Button_Menu.cs" />
-    <Compile Include="UI\Specific\UI_QuickHBElement.cs" />
-    <Compile Include="UI\UI_Element.cs" />
-    <Compile Include="UI\UI_Handler.cs" />
-    <Compile Include="UI\UI_List.cs" />
-    <Compile Include="UI\UI_MultiElement.cs" />
-    <Compile Include="UI\UI_Window.cs" />
-    <Compile Include="UI\UI_ValueInput.cs" />
+    <TrimmerRootAssembly Include="Microsoft.Xna.Framework.Content.ContentTypeReader" Visible="false" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="MonoGame.Framework">
-      <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
-    </Reference>
-    <Reference Include="ScintillaNET, Version=3.6.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\jacobslusser.ScintillaNET.3.6.3\lib\net40\ScintillaNET.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Icon.ico" />
+    <PackageReference Include="fernandreu.ScintillaNET" Version="4.0.4" />
+    <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.0.1641" />
+    <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.0.1641" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />
-    <None Include="App.config" />
-    <None Include="app.manifest" />
-    <None Include="backend_classdiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="packages.config" />
-    <None Include="UI_ClassDiagram.cd" />
   </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Connected Services\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="UI\Interfaces\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
